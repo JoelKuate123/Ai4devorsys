@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercices guides — Jour 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#FFFFFF; --accent:#0E8C86; --accent2:#0B6E68; --navy:#0B2D48;
+  --text:#16212B; --text2:#4B5C63; --card:#EAF4F3; --border:#D7E6E4;
+  --good:#1F9D67; --warn:#B9740A; --bad:#C1443B; --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:#F2F7F7;color:var(--text);line-height:1.55;}
+.page{max-width:1000px;margin:0 auto;background:var(--bg);padding:3.2rem 3.2rem 5rem;}
+header.doc{border-bottom:4px solid var(--accent);padding-bottom:1.4rem;margin-bottom:2.2rem;}
+.doc-org{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+h1{font-size:2.1rem;font-weight:800;color:var(--navy);margin:.6rem 0 .5rem;line-height:1.2;}
+.doc-sub{color:var(--text2);font-size:1.02rem;max-width:70ch;}
+.doc-meta{margin-top:1rem;display:flex;gap:1.6rem;flex-wrap:wrap;font-size:.85rem;color:var(--text2);}
+.doc-meta b{color:var(--navy);}
+h2{font-size:1.45rem;font-weight:800;color:var(--navy);margin:2.6rem 0 .9rem;padding-left:.8rem;border-left:5px solid var(--accent);}
+h3{font-size:1.1rem;font-weight:700;color:var(--accent2);margin:1.6rem 0 .6rem;}
+h4{font-size:.98rem;font-weight:700;color:var(--navy);margin:1.1rem 0 .4rem;}
+p{margin-bottom:.75rem;color:var(--text2);max-width:80ch;}
+p b, li b{color:var(--text);}
+ul,ol{margin:0 0 .9rem 1.3rem;color:var(--text2);}
+li{margin-bottom:.35rem;}
+a{color:var(--accent2);}
+pre{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1rem 1.2rem;font-family:'JetBrains Mono',Consolas,monospace;
+    font-size:.82rem;line-height:1.6;overflow-x:auto;margin:.7rem 0 1rem;white-space:pre-wrap;word-break:break-word;}
+pre .cm{color:#7FB3AE;}
+code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--card);color:var(--accent2);
+     padding:.08rem .34rem;border-radius:4px;font-size:.88em;}
+pre code{background:none;color:inherit;padding:0;}
+table{border-collapse:collapse;width:100%;margin:.8rem 0 1.4rem;font-size:.9rem;}
+th,td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left;vertical-align:top;}
+th{background:var(--card);color:var(--accent2);font-weight:700;}
+td{color:var(--text2);}
+td b{color:var(--text);}
+td code{white-space:nowrap;}
+.note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.warn{background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.good{background:#EEF9F3;border-left:4px solid var(--good);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.step{border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.4rem;margin:1.1rem 0;background:#FBFDFD;}
+.step-h{display:flex;align-items:baseline;gap:.7rem;margin-bottom:.5rem;}
+.step-n{background:var(--accent);color:#fff;font-weight:800;font-size:.8rem;border-radius:20px;padding:.18rem .7rem;white-space:nowrap;}
+.step-t{font-size:1.05rem;font-weight:700;color:var(--navy);}
+.badge{display:inline-block;background:var(--card);color:var(--accent2);border-radius:20px;padding:.12rem .65rem;
+       font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-right:.4rem;}
+.badge.deb{background:#EEF9F3;color:var(--good);}
+.badge.int{background:#FFF6E8;color:var(--warn);}
+.badge.avc{background:#FDEDEC;color:var(--bad);}
+.fill{width:100%;border:none;border-bottom:1px dashed #9FBDBA;background:#FCFEFE;font-family:'Inter',sans-serif;
+      font-size:.95rem;color:var(--text);padding:.35rem .2rem;}
+.fill:focus{outline:none;border-bottom-color:var(--accent);background:#F4FBFA;}
+textarea.fill{border:1px dashed #9FBDBA;border-radius:8px;padding:.6rem .8rem;min-height:5.5rem;resize:vertical;line-height:1.5;}
+.ck{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem 0;border-bottom:1px dotted var(--border);}
+.ck input{margin-top:.32rem;width:1.05rem;height:1.05rem;accent-color:var(--accent);flex:none;}
+.ck label{font-size:.95rem;color:var(--text2);}
+.ck label b{color:var(--text);}
+.toolbar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;display:flex;gap:.7rem;align-items:center;
+         padding:.6rem 1rem;flex-wrap:wrap;}
+.toolbar span{font-size:.82rem;color:#B9D6D3;margin-right:auto;}
+.toolbar button{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:.45rem .95rem;
+                font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;}
+.toolbar button:hover{background:#12A79F;}
+.toolbar button.ghost{background:transparent;border:1px solid #2A4C63;}
+footer.doc{margin-top:3.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text2);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.kpi{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;}
+.kpi div{flex:1;min-width:150px;background:var(--card);border-radius:10px;padding:.9rem 1.1rem;}
+.kpi b{display:block;font-size:1.5rem;color:var(--navy);}
+.kpi span{font-size:.82rem;color:var(--text2);}
+@media (max-width:820px){
+  .page{padding:1.6rem 1.1rem 3rem;}
+  h1{font-size:1.55rem;} h2{font-size:1.2rem;}
+  .grid2{grid-template-columns:1fr;}
+  table{display:block;overflow-x:auto;}
+}
+@media print{
+  body{background:#fff;}
+  .toolbar{display:none !important;}
+  .page{max-width:none;padding:0;}
+  h2{page-break-after:avoid;} .step,table,pre{page-break-inside:avoid;}
+  .fill{border-bottom:1px solid #999;background:none;}
+  textarea.fill{border:1px solid #999;min-height:4.5rem;}
+  a{color:#0B6E68;text-decoration:none;}
+  @page{margin:14mm 12mm;}
+}
+
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span>JOUR 2 · EXERCICES GUIDES</span>
+  <span id="compteur"></span>
+  <button id="btnPdf">&#11015; Exporter en PDF</button>
+  <button id="btnRaz" class="ghost">Effacer mes reponses</button>
+</div>
+<div class="page">
+<header class="doc">
+  <div class="doc-org">Digital House Company</div>
+  <h1>Journée 2 · Exercices guidés</h1>
+  <p class="doc-sub">La programmation par prompt · Les outils du cloud. Deux exercices, onze étapes. Votre outil de travail aujourd'hui, c'est le texte.</p>
+  <div class="doc-meta"><span><b>Durée totale</b> 2 h 45</span> <span><b>Niveau</b> débutant</span> <span><b>Langages</b> HTML et CSS</span> <span><b>À installer</b> rien</span></div>
+</header>
+<div class="note">Chaque étape tient en une action. Faites-les <b>dans l'ordre</b>, et ne passez à la suivante que lorsque la précédente fonctionne. Les cases se cochent à l'écran, et la page retient vos coches. Les zones de texte sont à remplir : c'est là que se joue l'apprentissage.</div>
+<div class="warn"><b>Toujours rien à installer, et toujours pas de JavaScript.</b> Aujourd'hui, votre outil de travail est le <b>texte</b> : six modèles de prompt, deux grilles de contrôle, et une page web à faire produire, à relire, puis à mettre en ligne.</div>
+<h2>Avant de commencer · 3 minutes</h2>
+<div class="step"><div class="step-h"><span class="step-n">0</span><span class="step-t">Vérifier que tout fonctionne</span></div><span class="badge deb">Debutant</span><ol><li>Ouvrez <code>Jour2_Prompt_et_Cloud/codebase/index.html</code>.</li><li>Cliquez sur la première carte : les six techniques s'affichent.</li><li>Ouvrez un onglet avec votre assistant (Copilot Chat, ChatGPT, Claude…).</li></ol><div class="ck"><input type="checkbox"><label>Le sommaire du jour 2 s'affiche</label></div><div class="ck"><input type="checkbox"><label>J'ai un assistant ouvert dans un onglet, prêt à recevoir un prompt</label></div><div class="ck"><input type="checkbox"><label>J'ai encore en tête l'exercice d'hier : le prompt réel fait vingt lignes, pas une phrase</label></div></div>
+<h2>Exercice 3 · Les six techniques, et la spécification</h2>
+<p><b>Durée :</b> 1 h 15 · <b>En binôme</b> · Dossier <code>exercice_3_prompts/</code></p>
+<p><b>Ce que vous allez comprendre :</b> qu'une technique de prompt n'est pas une astuce à retenir, mais un <b>texte réutilisable</b> — quelque chose qu'on écrit une fois, qu'on corrige, et qu'on partage dans une équipe.</p>
+<div class="step"><div class="step-h"><span class="step-n">3.1</span><span class="step-t">Parcourez les six techniques</span></div><span class="badge deb">Debutant</span><p>Ouvrez <code>exercice_3_prompts/index.html</code>. Pour chaque technique : lisez le <i>quand</i> et le <i>quand surtout pas</i>, puis copiez le modèle et essayez-le <b>une fois</b>. Ne les enchaînez pas.</p><table><thead><tr><th>Technique</th><th>Ce que j'en retiens en une phrase</th></tr></thead><tbody><tr><td>1 · Rôle</td><td><input class='fill' type='text'></td></tr><tr><td>2 · Few-shot</td><td><input class='fill' type='text'></td></tr><tr><td>3 · Chain-of-thought</td><td><input class='fill' type='text'></td></tr><tr><td>4 · Format imposé</td><td><input class='fill' type='text'></td></tr><tr><td>5 · Self-consistency</td><td><input class='fill' type='text'></td></tr><tr><td>6 · Prompt de modification</td><td><input class='fill' type='text'></td></tr></tbody></table><h4>La technique que je n'utiliserai probablement jamais, et pourquoi</h4><textarea class="fill" rows="2" placeholder="Savoir ce qu'on n'utilisera pas fait partie du métier."></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">3.2</span><span class="step-t">La self-consistency, pour de vrai</span></div><span class="badge deb">Debutant</span><div class="warn"><b>Trois conversations SÉPARÉES, pas trois messages à la suite.</b> Dans une même conversation, le modèle voit ses réponses précédentes et se répète : le vote ne vaut plus rien, et vous croyez avoir vérifié quelque chose alors que vous avez demandé trois fois la même chose à quelqu'un qui se souvient de sa réponse.</div><ol><li>Choisissez une question fermée. Par exemple : <i>« Ce titre est-il positif, neutre ou négatif ? “Hausse de 4 % du prix de l'électricité” — un seul mot. »</i></li><li>Ouvrez trois conversations neuves.</li><li>Posez la même question dans chacune.</li></ol><table><thead><tr><th>Tour</th><th>Réponse obtenue</th></tr></thead><tbody><tr><td>1</td><td><input class='fill' type='text'></td></tr><tr><td>2</td><td><input class='fill' type='text'></td></tr><tr><td>3</td><td><input class='fill' type='text'></td></tr></tbody></table><h4>Les trois réponses sont-elles identiques ? Que concluez-vous ?</h4><textarea class="fill" rows="3" placeholder="Si elles divergent, ce n'est pas un échec de la méthode : c'est l'information la plus utile de la journée."></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">3.3</span><span class="step-t">Rédigez votre prompt de spécification</span></div><span class="badge deb">Debutant</span><ol><li>Ouvrez <code>exercice_3_prompts/grille_de_controle.html</code>.</li><li>Copiez le prompt complet de la section 1.</li><li>Remplacez les quatre valeurs entre majuscules par les vôtres.</li></ol><h4>Mon idée d'application, en une phrase</h4><textarea class="fill" rows="2" placeholder="Prenez une idée qui vous concerne vraiment : c'est plus instructif."></textarea><div class="grid2"><div><h4>Mon budget mensuel</h4><input class="fill" type="text" placeholder="euros"></div><div><h4>Mon public visé</h4><input class="fill" type="text" placeholder=""></div></div><h4>L'interdit que je pose</h4><textarea class="fill" rows="2" placeholder="Ce que l'application ne doit surtout pas faire. C'est souvent ce que le modèle ajoutera quand même — on le vérifie au contrôle 8."></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">3.4</span><span class="step-t">Passez la grille sur 10</span></div><span class="badge deb">Debutant</span><p>Collez votre prompt dans l'assistant, récupérez la spécification, et vérifiez les dix points.</p><table><thead><tr><th>#</th><th>Ce qu'on vérifie</th><th>OK ?</th></tr></thead><tbody><tr><td>1</td><td>Les huit sections, dans l'ordre, avec les titres exacts</td><td><input class='fill' type='text'></td></tr><tr><td>2</td><td>Aucun texte parasite avant ni après</td><td><input class='fill' type='text'></td></tr><tr><td>3</td><td>Au moins deux profils d'utilisateurs, distincts</td><td><input class='fill' type='text'></td></tr><tr><td>4</td><td>Chaque fonctionnalité a une priorité</td><td><input class='fill' type='text'></td></tr><tr><td>5</td><td>Les sources de données sont nommées</td><td><input class='fill' type='text'></td></tr><tr><td>6</td><td><b>Chaque critère de qualité contient un chiffre</b></td><td><input class='fill' type='text'></td></tr><tr><td>7</td><td>Le budget est un nombre seul</td><td><input class='fill' type='text'></td></tr><tr><td>8</td><td>Mon interdit est respecté</td><td><input class='fill' type='text'></td></tr><tr><td>9</td><td>Chaque risque a une parade</td><td><input class='fill' type='text'></td></tr><tr><td>10</td><td>Rien n'est inventé (« à déterminer » là où il faut)</td><td><input class='fill' type='text'></td></tr></tbody></table><h4>Mon premier score</h4><input class="fill" type="text" placeholder="/10"><div class="good"><b>Le contrôle 6 est celui qui fait tout le travail.</b> « Les utilisateurs sont contents » est une intention. « 3 nouvelles publiées avant 8 h » est un critère. Une spécification écrite par un modèle est fluide, complète et <b>vide</b> tant que personne n'a vérifié ce point.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">3.5</span><span class="step-t">Corrigez le prompt, pas la réponse</span></div><span class="badge deb">Debutant</span><p>C'est le cœur de la journée. Prenez le contrôle qui a échoué et regardez le tableau en bas de <code>grille_de_controle.html</code> : il indique quelle ligne renforcer.</p><h4>Le contrôle qui a échoué, et ce que j'ai changé dans mon prompt</h4><textarea class="fill" rows="3" placeholder=""></textarea><div class="grid2"><div><h4>Premier score</h4><input class="fill" type="text" placeholder="/10"></div><div><h4>Score après correction</h4><input class="fill" type="text" placeholder="/10"></div></div><div class="note"><b>Un prompt ne s'écrit pas, il se corrige.</b> La première version n'est jamais la bonne, et ce n'est pas un problème : c'est la méthode.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">3.6</span><span class="step-t">L'injection de prompt, en trois minutes</span></div><span class="badge int">Intermediaire</span><p>Descendez à la dernière section de <code>exercice_3_prompts/index.html</code> et lisez le modèle de cadrage.</p><h4>Dans votre travail, à quel endroit du texte venu de l'extérieur entrerait-il un jour dans un prompt ?</h4><textarea class="fill" rows="3" placeholder="Un commentaire client, le contenu d'un document, un message reçu, un champ de formulaire…"></textarea><div class="warn">Ce cadrage <b>réduit</b> le risque, il ne l'annule pas. La vraie protection est architecturale : ne jamais donner à un modèle un outil qu'on ne voudrait pas voir déclenché par le contenu qu'il lit. On y revient demain, avec MCP.</div></div>
+<h2>Exercice 4 · Construire et déployer une page</h2>
+<p><b>Durée :</b> 1 h 30 · <b>En binôme</b> · Dossier <code>exercice_4_page_web/</code></p>
+<p><b>Ce que vous allez comprendre :</b> qu'on peut mettre une page en ligne en trois minutes sans écrire de code, et que le vrai travail est ailleurs — dans la relecture, le chiffrage, et la question de savoir où vit la clé.</p>
+<div class="step"><div class="step-h"><span class="step-n">4.1</span><span class="step-t">Tour 1 · Obtenir une page qui s'affiche</span></div><span class="badge deb">Debutant</span><ol><li>Ouvrez <code>exercice_4_page_web/index.html</code> et lisez le cahier des charges.</li><li>Copiez le prompt de la section 2.</li><li>Collez-le dans votre assistant, récupérez la page.</li><li>Enregistrez-la sous <code>bonnes-nouvelles.html</code> dans ce dossier.</li><li>Ouvrez-la et passez la grille sur 7 du jour 1.</li></ol><div class="grid2"><div><h4>Mon score</h4><input class="fill" type="text" placeholder="/7"></div><div><h4>La page est-elle lisible sur mobile ?</h4><input class="fill" type="text" placeholder="Réduisez la fenêtre pour vérifier"></div></div><h4>Le modèle a-t-il bien étiqueté ses nouvelles comme « exemple fictif » ?</h4><textarea class="fill" rows="2" placeholder="C'était la dernière consigne du prompt. Une page qui présente des nouvelles fabriquées comme réelles est une fausse information."></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">4.2</span><span class="step-t">Tour 2 · Une modification cadrée</span></div><span class="badge deb">Debutant</span><p>Utilisez le <b>prompt de modification</b> du matin. Collez votre page, demandez <b>un</b> changement, et listez ce qui ne doit pas bouger.</p><h4>La modification que j'ai demandée</h4><textarea class="fill" rows="2" placeholder=""></textarea><h4>La liste des changements que le modèle a annoncés</h4><textarea class="fill" rows="3" placeholder=""></textarea><h4>Ce qu'il a réellement changé, après vérification</h4><textarea class="fill" rows="3" placeholder="Les deux listes ne coïncident pas toujours. C'est l'exercice."></textarea><div class="good">Un modèle annonce sincèrement ce qu'il <b>croit</b> avoir changé. Ce n'est pas toujours ce qu'il a changé.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">4.3</span><span class="step-t">Tour 3 · Mettre en ligne</span></div><span class="badge deb">Debutant</span><p>Trois minutes, gratuit, sans carte bancaire.</p><ol><li>Ouvrez <code>app.netlify.com/drop</code> dans votre navigateur.</li><li>Glissez-y le dossier qui contient votre <code>bonnes-nouvelles.html</code>.</li><li>Renommez d'abord le fichier en <code>index.html</code> : c'est le nom que cherche un serveur web par défaut.</li><li>L'adresse s'affiche. Ouvrez-la sur votre téléphone.</li></ol><h4>L'adresse de ma page en ligne</h4><input class="fill" type="text" placeholder="https://…"><h4>Sur téléphone : qu'est-ce qui ne va pas ?</h4><textarea class="fill" rows="2" placeholder="Il y a presque toujours quelque chose. C'est instructif."></textarea><div class="note"><b>Ce que vous venez de faire</b> est exactement ce que fait une agence pour une page vitrine : rédiger, relire, publier. La différence est que vous n'avez pas écrit le HTML — vous l'avez <b>commandé et vérifié</b>.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">4.4</span><span class="step-t">Le calcul de coût, avec VOS chiffres</span></div><span class="badge deb">Debutant</span><p>Votre page est statique : elle ne coûte rien. Mais si l'application classait automatiquement des titres, il y aurait un appel par titre, et une facture. Remplissez ce tableau pour <b>votre</b> projet réel.</p><table><thead><tr><th></th><th>Ma valeur</th></tr></thead><tbody><tr><td>Appels par jour</td><td><input class='fill' type='text'></td></tr><tr><td>Longueur du message système, en caractères</td><td><input class='fill' type='text'></td></tr><tr><td>→ soit environ, en tokens (÷ 4)</td><td><input class='fill' type='text'></td></tr><tr><td>Longueur de la partie variable, en tokens</td><td><input class='fill' type='text'></td></tr><tr><td>Tokens reçus par appel</td><td><input class='fill' type='text'></td></tr><tr><td>Modèle envisagé</td><td><input class='fill' type='text'></td></tr><tr><td>Coût mensuel estimé</td><td><input class='fill' type='text'></td></tr><tr><td>Coût avec le modèle le moins cher qui ferait le travail</td><td><input class='fill' type='text'></td></tr><tr><td><b>Écart annuel</b></td><td><input class='fill' type='text'></td></tr></tbody></table><h4>Pourquoi le message système pèse-t-il si lourd, alors qu'on ne l'écrit qu'une fois ?</h4><textarea class="fill" rows="2" placeholder="Indice : à quelle fréquence est-il envoyé ?"></textarea><h4>Ma conclusion sur ce calcul</h4><textarea class="fill" rows="2" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">4.5</span><span class="step-t">Où vit la clé d'API</span></div><span class="badge deb">Debutant</span><p>Lisez la section 5 de <code>exercice_4_page_web/index.html</code>, puis répondez sans regarder.</p><h4>Pourquoi une clé d'API ne va-t-elle jamais dans le navigateur ?</h4><textarea class="fill" rows="3" placeholder="En une phrase, comme si vous l'expliquiez à un collègue."></textarea><h4>Un projet de mon équipe où une clé traîne peut-être là où il ne faut pas</h4><textarea class="fill" rows="2" placeholder="Personne ne lira cette fiche à part vous."></textarea><div class="good">L'architecture tient en une ligne : <b>navigateur → votre serveur → le modèle</b>. La clé s'arrête au milieu. On construit ce serveur demain, en Python, autour du RAG.</div></div>
+<h3>Livrable de la journée 2</h3>
+<div class="ck"><input type="checkbox"><label>Un prompt de spécification qui obtient au moins 8/10</label></div><div class="ck"><input type="checkbox"><label>Les deux scores notés, et la correction apportée au prompt</label></div><div class="ck"><input type="checkbox"><label>Une page « Bonnes Nouvelles » <b>en ligne</b>, avec son adresse notée</label></div><div class="ck"><input type="checkbox"><label>Le tableau de coût rempli avec les chiffres de mon projet réel</label></div><div class="ck"><input type="checkbox"><label>Je sais expliquer en une phrase où vit la clé d'API</label></div>
+<h2>Bilan de la journée</h2>
+<h4>La technique de prompt que j'utiliserai le plus</h4><textarea class="fill" rows="2" placeholder=""></textarea>
+<h4>Le chiffre de la journée que je retiens</h4><textarea class="fill" rows="2" placeholder=""></textarea>
+<h4>Ce que je vais vérifier dans mes propres projets dès mon retour</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<footer class="doc">
+  Formation animee par <b>Kuate Joel Parfait</b> — Digital House Company · hello@dhcompany.pro<br>
+  Ce document est prevu pour etre rempli a l'ecran puis exporte en PDF
+  (bouton « Exporter en PDF » ou <code>Ctrl</code>+<code>P</code> → « Enregistrer au format PDF »).
+</footer>
+</div>
+<script>
+
+// Sauvegarde locale des reponses : pratique pour reprendre une fiche entre
+// deux journees. Tout est entoure de try/catch, la page fonctionne meme
+// si le navigateur refuse le stockage (mode prive, fichier local bride...).
+(function () {
+  var KEY = 'fiche::' + (document.title || 'sans-titre');
+  var champs = document.querySelectorAll('.fill, .ck input[type=checkbox]');
+
+  function charger() {
+    try {
+      var brut = localStorage.getItem(KEY);
+      if (!brut) return;
+      var data = JSON.parse(brut);
+      champs.forEach(function (el, i) {
+        if (data[i] === undefined) return;
+        if (el.type === 'checkbox') { el.checked = data[i]; } else { el.value = data[i]; }
+      });
+      majCompteur();
+    } catch (e) { /* stockage indisponible : on continue sans */ }
+  }
+
+  function sauver() {
+    try {
+      var data = [];
+      champs.forEach(function (el) { data.push(el.type === 'checkbox' ? el.checked : el.value); });
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) { /* idem */ }
+  }
+
+  function majCompteur() {
+    var cases = document.querySelectorAll('.ck input[type=checkbox]');
+    var faits = document.querySelectorAll('.ck input[type=checkbox]:checked');
+    var out = document.getElementById('compteur');
+    if (out && cases.length) { out.textContent = faits.length + ' / ' + cases.length + ' coche(s)'; }
+  }
+
+  champs.forEach(function (el) {
+    el.addEventListener('input', function () { sauver(); majCompteur(); });
+    el.addEventListener('change', function () { sauver(); majCompteur(); });
+  });
+
+  var bPdf = document.getElementById('btnPdf');
+  if (bPdf) bPdf.addEventListener('click', function () { window.print(); });
+
+  var bRaz = document.getElementById('btnRaz');
+  if (bRaz) bRaz.addEventListener('click', function () {
+    if (!confirm('Effacer toutes vos reponses de cette fiche ?')) return;
+    champs.forEach(function (el) { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    majCompteur();
+  });
+
+  charger();
+  majCompteur();
+})();
+
+</script>
+</body>
+</html>

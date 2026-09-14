@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercices guides — Jour 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#FFFFFF; --accent:#0E8C86; --accent2:#0B6E68; --navy:#0B2D48;
+  --text:#16212B; --text2:#4B5C63; --card:#EAF4F3; --border:#D7E6E4;
+  --good:#1F9D67; --warn:#B9740A; --bad:#C1443B; --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:#F2F7F7;color:var(--text);line-height:1.55;}
+.page{max-width:1000px;margin:0 auto;background:var(--bg);padding:3.2rem 3.2rem 5rem;}
+header.doc{border-bottom:4px solid var(--accent);padding-bottom:1.4rem;margin-bottom:2.2rem;}
+.doc-org{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+h1{font-size:2.1rem;font-weight:800;color:var(--navy);margin:.6rem 0 .5rem;line-height:1.2;}
+.doc-sub{color:var(--text2);font-size:1.02rem;max-width:70ch;}
+.doc-meta{margin-top:1rem;display:flex;gap:1.6rem;flex-wrap:wrap;font-size:.85rem;color:var(--text2);}
+.doc-meta b{color:var(--navy);}
+h2{font-size:1.45rem;font-weight:800;color:var(--navy);margin:2.6rem 0 .9rem;padding-left:.8rem;border-left:5px solid var(--accent);}
+h3{font-size:1.1rem;font-weight:700;color:var(--accent2);margin:1.6rem 0 .6rem;}
+h4{font-size:.98rem;font-weight:700;color:var(--navy);margin:1.1rem 0 .4rem;}
+p{margin-bottom:.75rem;color:var(--text2);max-width:80ch;}
+p b, li b{color:var(--text);}
+ul,ol{margin:0 0 .9rem 1.3rem;color:var(--text2);}
+li{margin-bottom:.35rem;}
+a{color:var(--accent2);}
+pre{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1rem 1.2rem;font-family:'JetBrains Mono',Consolas,monospace;
+    font-size:.82rem;line-height:1.6;overflow-x:auto;margin:.7rem 0 1rem;white-space:pre-wrap;word-break:break-word;}
+pre .cm{color:#7FB3AE;}
+code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--card);color:var(--accent2);
+     padding:.08rem .34rem;border-radius:4px;font-size:.88em;}
+pre code{background:none;color:inherit;padding:0;}
+table{border-collapse:collapse;width:100%;margin:.8rem 0 1.4rem;font-size:.9rem;}
+th,td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left;vertical-align:top;}
+th{background:var(--card);color:var(--accent2);font-weight:700;}
+td{color:var(--text2);}
+td b{color:var(--text);}
+td code{white-space:nowrap;}
+.note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.warn{background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.good{background:#EEF9F3;border-left:4px solid var(--good);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.step{border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.4rem;margin:1.1rem 0;background:#FBFDFD;}
+.step-h{display:flex;align-items:baseline;gap:.7rem;margin-bottom:.5rem;}
+.step-n{background:var(--accent);color:#fff;font-weight:800;font-size:.8rem;border-radius:20px;padding:.18rem .7rem;white-space:nowrap;}
+.step-t{font-size:1.05rem;font-weight:700;color:var(--navy);}
+.badge{display:inline-block;background:var(--card);color:var(--accent2);border-radius:20px;padding:.12rem .65rem;
+       font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-right:.4rem;}
+.badge.deb{background:#EEF9F3;color:var(--good);}
+.badge.int{background:#FFF6E8;color:var(--warn);}
+.badge.avc{background:#FDEDEC;color:var(--bad);}
+.fill{width:100%;border:none;border-bottom:1px dashed #9FBDBA;background:#FCFEFE;font-family:'Inter',sans-serif;
+      font-size:.95rem;color:var(--text);padding:.35rem .2rem;}
+.fill:focus{outline:none;border-bottom-color:var(--accent);background:#F4FBFA;}
+textarea.fill{border:1px dashed #9FBDBA;border-radius:8px;padding:.6rem .8rem;min-height:5.5rem;resize:vertical;line-height:1.5;}
+.ck{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem 0;border-bottom:1px dotted var(--border);}
+.ck input{margin-top:.32rem;width:1.05rem;height:1.05rem;accent-color:var(--accent);flex:none;}
+.ck label{font-size:.95rem;color:var(--text2);}
+.ck label b{color:var(--text);}
+.toolbar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;display:flex;gap:.7rem;align-items:center;
+         padding:.6rem 1rem;flex-wrap:wrap;}
+.toolbar span{font-size:.82rem;color:#B9D6D3;margin-right:auto;}
+.toolbar button{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:.45rem .95rem;
+                font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;}
+.toolbar button:hover{background:#12A79F;}
+.toolbar button.ghost{background:transparent;border:1px solid #2A4C63;}
+footer.doc{margin-top:3.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text2);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.kpi{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;}
+.kpi div{flex:1;min-width:150px;background:var(--card);border-radius:10px;padding:.9rem 1.1rem;}
+.kpi b{display:block;font-size:1.5rem;color:var(--navy);}
+.kpi span{font-size:.82rem;color:var(--text2);}
+@media (max-width:820px){
+  .page{padding:1.6rem 1.1rem 3rem;}
+  h1{font-size:1.55rem;} h2{font-size:1.2rem;}
+  .grid2{grid-template-columns:1fr;}
+  table{display:block;overflow-x:auto;}
+}
+@media print{
+  body{background:#fff;}
+  .toolbar{display:none !important;}
+  .page{max-width:none;padding:0;}
+  h2{page-break-after:avoid;} .step,table,pre{page-break-inside:avoid;}
+  .fill{border-bottom:1px solid #999;background:none;}
+  textarea.fill{border:1px solid #999;min-height:4.5rem;}
+  a{color:#0B6E68;text-decoration:none;}
+  @page{margin:14mm 12mm;}
+}
+
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span>JOUR 1 · EXERCICES GUIDES</span>
+  <span id="compteur"></span>
+  <button id="btnPdf">&#11015; Exporter en PDF</button>
+  <button id="btnRaz" class="ghost">Effacer mes reponses</button>
+</div>
+<div class="page">
+<header class="doc">
+  <div class="doc-org">Digital House Company</div>
+  <h1>Journée 1 · Exercices guidés</h1>
+  <p class="doc-sub">Introduction à l'IA · VSCode et GitHub Copilot. Deux exercices, douze étapes, en HTML et CSS. Aucune installation, aucun JavaScript.</p>
+  <div class="doc-meta"><span><b>Durée totale</b> 1 h 45</span> <span><b>Niveau</b> débutant</span> <span><b>Langages</b> HTML et CSS</span> <span><b>À installer</b> rien</span></div>
+</header>
+<div class="note">Chaque étape tient en une action. Faites-les <b>dans l'ordre</b>, et ne passez à la suivante que lorsque la précédente fonctionne. Les cases se cochent à l'écran, et la page retient vos coches. Les zones de texte sont à remplir : c'est là que se joue l'apprentissage.</div>
+<div class="warn"><b>Rien à installer aujourd'hui, et pas une ligne de JavaScript.</b> Vous allez lire et écrire du <b>HTML</b> et du <b>CSS</b>, et faire produire le reste par l'assistant. Vous double-cliquez un fichier, il s'ouvre dans votre navigateur, ça marche. Si une étape vous demande d'ouvrir un terminal, c'est que vous avez sauté une ligne.</div>
+<h2>Avant de commencer · 5 minutes</h2>
+<div class="step"><div class="step-h"><span class="step-n">0</span><span class="step-t">Vérifier que tout fonctionne</span></div><span class="badge deb">Debutant</span><ol><li>Ouvrez le dossier <code>Jour1_Introduction_IA_et_Copilot/codebase/</code>.</li><li>Double-cliquez <code>index.html</code> : le sommaire de la journée s'affiche.</li><li>Cliquez sur la première carte, puis sur une question : l'assistant doit répondre.</li></ol><div class="ck"><input type="checkbox"><label>Le sommaire s'affiche dans mon navigateur</label></div><div class="ck"><input type="checkbox"><label>L'assistant répond quand je clique une question</label></div><div class="ck"><input type="checkbox"><label>VS Code est ouvert sur le dossier <code>codebase/</code></label></div><div class="ck"><input type="checkbox"><label>L'extension GitHub Copilot est active (icône en bas à droite, non barrée)</label></div><div class="ck"><input type="checkbox"><label>L'extension <b>Live Preview</b> de Microsoft est installée</label></div><div class="good"><b>Live Preview change la journée.</b> Clic droit sur un fichier HTML, <i>Show Preview</i>, et la page se recharge toute seule à chaque enregistrement. Vous ne basculez plus vers le navigateur.</div></div>
+<h2>Exercice 1 · Un assistant sans IA</h2>
+<p><b>Durée :</b> 40 minutes · <b>En binôme</b> · Dossier <code>exercice_1_assistant_regles/</code></p>
+<p><b>Ce que vous allez comprendre :</b> ce qu'est une IA <i>symbolique</i>, pourquoi elle est prévisible et explicable, et pourquoi elle a fini par céder la place aux modèles statistiques.</p>
+<div class="step"><div class="step-h"><span class="step-n">1.1</span><span class="step-t">Parlez-lui</span></div><span class="badge deb">Debutant</span><ol><li>Double-cliquez <code>exercice_1_assistant_regles/index.html</code>.</li><li>Cliquez sur cinq des neuf questions.</li><li>Sous chaque réponse, lisez la mention <b>« règle appliquée »</b>.</li></ol><h4>Une question, et le nom de la règle qui a répondu</h4><textarea class="fill" rows="2" placeholder="Exemple : « Quels sont vos horaires ? » → règle « horaires »"></textarea><h4>Que se passe-t-il dans la barre d'adresse quand vous cliquez ?</h4><textarea class="fill" rows="2" placeholder="Regardez ce qui s'ajoute à la fin de l'adresse. C'est un indice."></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">1.2</span><span class="step-t">Essayez d'écrire une question</span></div><span class="badge deb">Debutant</span><ol><li>Cliquez dans le champ de saisie, en bas de la fenêtre de l'assistant.</li><li>Essayez de taper quelque chose.</li></ol><h4>Que se passe-t-il ? Pourquoi, à votre avis ?</h4><textarea class="fill" rows="3" placeholder="Ce n'est pas un bug. Le champ est volontairement inactif."></textarea><div class="note"><b>Un système à règles ne sait pas lire une phrase libre.</b> Il ne connaît que les neuf questions prévues à l'avance, une par une. C'est tout le sujet de l'exercice.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">1.3</span><span class="step-t">Trouvez sa limite</span></div><span class="badge deb">Debutant</span><ol><li>Descendez à la section <b>« Ce qu'il ne sait pas faire »</b>.</li><li>Lisez les quatre questions sans règle.</li></ol><h4>Pourquoi ne répond-il rien à « Est-ce que je peux payer en plusieurs fois ? »</h4><textarea class="fill" rows="2" placeholder="Écrivez-le avec vos mots. Ce n'est pas une question piège."></textarea><h4>Combien de règles faudrait-il pour couvrir 95 % des questions d'un vrai service client ? Et qui les écrirait ?</h4><textarea class="fill" rows="3" placeholder="Il n'y a pas de bonne réponse chiffrée. C'est le raisonnement qui compte."></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">1.4</span><span class="step-t">Trouvez le moteur — il fait deux lignes</span></div><span class="badge deb">Debutant</span><p>Ouvrez <code>assistant.css</code> dans VS Code et allez à la <b>section 4</b>.</p><pre><code>/* Par défaut, TOUTES les réponses sont cachées. */
+.reponse         { display: none; }
+
+/* « :target » désigne l'élément dont l'identifiant se trouve
+   dans l'adresse de la page. */
+.reponse:target  { display: block; }</code></pre><p>C'est un « <b>si… alors…</b> » : SI l'adresse contient cet identifiant, ALORS affiche ce bloc. Une règle. Écrite à la main. Répétée neuf fois.</p><h4>En une phrase : où est « l'intelligence » de ce programme ?</h4><textarea class="fill" rows="2" placeholder="Indice : elle n'est pas dans le code."></textarea><h4>Deux lignes de CSS. Qu'est-ce que cela vous dit sur ce qu'on appelle « intelligence artificielle » dans le commerce ?</h4><textarea class="fill" rows="3" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">1.5</span><span class="step-t">Ajoutez la dixième règle</span></div><span class="badge deb">Debutant</span><p>C'est votre première modification de code de la formation. Deux endroits à toucher, et rien d'autre.</p><h4>1 · Le lien, dans index.html</h4><p>Cherchez le bloc <code>&lt;div class="questions"&gt;</code> et ajoutez une ligne à la fin :</p><pre><code>&amp;lt;a href="#regle-paiement"&amp;gt;Puis-je payer en plusieurs fois ?&amp;lt;/a&amp;gt;</code></pre><h4>2 · Le bloc de réponse, dans le même fichier</h4><p>Cherchez le bloc <code>&lt;div class="zone-reponse"&gt;</code> et ajoutez une réponse avant sa balise fermante :</p><pre><code>&amp;lt;div class="reponse" id="regle-paiement"&amp;gt;
+  &amp;lt;p&amp;gt;Le paiement se fait par virement, à 30 jours. Un échelonnement est possible.&amp;lt;/p&amp;gt;
+  &amp;lt;span class="regle-appliquee"&amp;gt;règle appliquée : &amp;lt;b&amp;gt;paiement&amp;lt;/b&amp;gt;&amp;lt;/span&amp;gt;
+&amp;lt;/div&amp;gt;</code></pre><div class="warn"><b>Le piège :</b> l'identifiant après le <code>#</code> du lien doit être <b>exactement</b> celui du <code>id</code> du bloc. Une lettre de différence, et rien ne s'affiche. C'est l'erreur numéro un.</div><ol><li>Enregistrez les deux modifications.</li><li>Revenez au navigateur et <b>rechargez la page</b> (touche F5).</li><li>Cliquez sur votre nouvelle question.</li></ol><div class="ck"><input type="checkbox"><label>Ma dixième règle fonctionne</label></div><div class="ck"><input type="checkbox"><label>J'ai rechargé la page après avoir enregistré</label></div><div class="ck"><input type="checkbox"><label>J'ai vérifié que l'identifiant du lien et celui du bloc sont identiques</label></div></div>
+<div class="step"><div class="step-h"><span class="step-n">1.6</span><span class="step-t">Faites travailler Copilot — et relisez-le</span></div><span class="badge deb">Debutant</span><ol><li>Dans <code>index.html</code>, juste sous votre nouvelle réponse, tapez ce commentaire :</li></ol><pre><code>&amp;lt;!-- Règle pour les demandes d'annulation d'inscription --&amp;gt;</code></pre><ol><li>Appuyez sur <b>Entrée</b> et attendez la suggestion en gris.</li><li><b>Ne faites pas Tab tout de suite.</b> Lisez-la d'abord.</li><li>Appuyez sur <code>Alt+]</code> : la proposition suivante est différente.</li><li>Choisissez, acceptez, ajoutez le lien correspondant, rechargez, testez.</li></ol><h4>Ce que Copilot a bien deviné</h4><textarea class="fill" rows="2" placeholder=""></textarea><h4>Ce qu'il a inventé, oublié ou mal fait</h4><textarea class="fill" rows="2" placeholder="Par exemple : un identifiant qui ne correspond à aucun lien, une classe CSS qui n'existe pas, du texte en anglais."></textarea></div>
+<h3>Livrable de l'exercice 1</h3>
+<div class="ck"><input type="checkbox"><label>Deux règles ajoutées, dont une écrite par Copilot et relue</label></div><div class="ck"><input type="checkbox"><label>L'assistant répond correctement aux onze questions</label></div><div class="ck"><input type="checkbox"><label>Toutes les zones de texte ci-dessus remplies</label></div>
+<h2>Exercice 2 · Générer une page web à partir d'un prompt</h2>
+<p><b>Durée :</b> 1 heure · <b>En binôme</b> · Dossier <code>exercice_2_page_generee/</code></p>
+<p><b>Ce que vous allez comprendre :</b> que le prompt fait le résultat, que le modèle oublie toujours quelque chose, et que la seule façon de le savoir est de <b>mesurer</b>.</p>
+<div class="step"><div class="step-h"><span class="step-n">2.1</span><span class="step-t">Lisez le prompt, et comptez ses lignes</span></div><span class="badge deb">Debutant</span><ol><li>Ouvrez <code>exercice_2_page_generee/index.html</code>.</li><li>Lisez le prompt de la section 1, en entier.</li></ol><div class="grid2"><div><h4>En combien de mots auriez-vous formulé la demande ?</h4><input class="fill" type="text" placeholder=""></div><div><h4>Combien de lignes fait le prompt ?</h4><input class="fill" type="text" placeholder=""></div></div><h4>Laquelle de ces contraintes supprimeriez-vous en premier ? Et que se passerait-il ?</h4><textarea class="fill" rows="2" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">2.2</span><span class="step-t">Faites-le produire</span></div><span class="badge deb">Debutant</span><p>Trois chemins possibles, selon ce dont vous disposez.</p><table><thead><tr><th>Situation</th><th>Ce que vous faites</th></tr></thead><tbody><tr><td><b>Copilot Chat</b> dans VS Code</td><td><code>Ctrl</code>+<code>Alt</code>+<code>I</code>, collez, envoyez. Le bouton <i>Insert into new file</i> crée directement le fichier.</td></tr><tr><td><b>Un assistant de chat</b></td><td>Collez, envoyez, copiez le bloc de code obtenu.</td></tr><tr><td><b>Ni l'un ni l'autre</b></td><td>Ouvrez <code>exemple_reussi.html</code> : vous ferez l'exercice dessus. Vous ne perdez rien de l'essentiel, qui est la relecture.</td></tr></tbody></table><ol><li>Ouvrez <code>gabarit.html</code>, effacez tout, collez le résultat.</li><li>Enregistrez sous <code>ma-page.html</code> (Fichier → Enregistrer sous).</li><li>Double-cliquez le fichier : il s'ouvre dans votre navigateur.</li></ol><div class="warn"><b>Ne collez jamais de code d'entreprise dans un chat public.</b> Cette page d'exercice ne contient rien de confidentiel, mais prenez l'habitude dès aujourd'hui : la question se pose <b>avant</b> de coller.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">2.3</span><span class="step-t">Passez la grille sur 7</span></div><span class="badge deb">Debutant</span><p>Affichez le code source de votre page (<code>Ctrl</code>+<code>U</code> dans le navigateur) et vérifiez les sept points, un par un.</p><table><thead><tr><th>#</th><th>Ce qu'on cherche</th><th>Présent ?</th></tr></thead><tbody><tr><td>1</td><td><code>&lt;!DOCTYPE html&gt;</code> en toute première ligne</td><td><input class='fill' type='text'></td></tr><tr><td>2</td><td><code>lang="fr"</code> sur la balise <code>&lt;html&gt;</code></td><td><input class='fill' type='text'></td></tr><tr><td>3</td><td><code>&lt;meta charset="utf-8"&gt;</code></td><td><input class='fill' type='text'></td></tr><tr><td>4</td><td>Une balise <code>viewport</code></td><td><input class='fill' type='text'></td></tr><tr><td>5</td><td>Une balise <code>&lt;style&gt;</code> non vide</td><td><input class='fill' type='text'></td></tr><tr><td>6</td><td>Aucun <code>http</code> dans le fichier</td><td><input class='fill' type='text'></td></tr><tr><td>7</td><td><code>&lt;/html&gt;</code> en dernière ligne</td><td><input class='fill' type='text'></td></tr></tbody></table><div class="grid2"><div><h4>Mon score</h4><input class="fill" type="text" placeholder="/7"></div><div><h4>Le contrôle qui a échoué</h4><input class="fill" type="text" placeholder=""></div></div><div class="good"><b>Astuce pour le contrôle 6 :</b> dans le code source, faites <code>Ctrl</code>+<code>F</code> et cherchez <code>http</code>. S'il y a un résultat, la page dépend d'internet pour s'afficher correctement — et cassera le jour où il n'y en aura pas.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">2.4</span><span class="step-t">Comparez avec la page de référence</span></div><span class="badge deb">Debutant</span><ol><li>Ouvrez <code>exemple_reussi.html</code> dans VS Code.</li><li>Chaque contrôle y est signalé par un commentaire <code>&lt;!-- CONTRÔLE n --&gt;</code>.</li><li>Comparez son <code>&lt;head&gt;</code> au vôtre, ligne par ligne.</li></ol><h4>Qu'est-ce qui manquait dans votre page, et que la référence a ?</h4><textarea class="fill" rows="3" placeholder=""></textarea><h4>Sur les sept contrôles, lequel auriez-vous oublié en écrivant la page vous-même, sans grille ?</h4><textarea class="fill" rows="2" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">2.5</span><span class="step-t">Le second tour : ajoutez une contrainte</span></div><span class="badge deb">Debutant</span><p>Reprenez votre prompt et ajoutez <b>une seule</b> contrainte. Par exemple :</p><ul><li>« le fond est sombre et le texte clair » ;</li><li>« les horaires sont dans un tableau <code>&lt;table&gt;</code> » ;</li><li>« chaque champ du formulaire a un <code>&lt;label&gt;</code> relié à lui » ;</li><li>« aucune couleur autre que des nuances de gris et une seule couleur d'accent ».</li></ul><h4>Ma contrainte</h4><textarea class="fill" rows="2" placeholder=""></textarea><div class="grid2"><div><h4>Ma contrainte a-t-elle été respectée ?</h4><input class="fill" type="text" placeholder="oui / non / à moitié"></div><div><h4>Nouveau score sur les 7 contrôles</h4><input class="fill" type="text" placeholder="/7"></div></div><div class="note"><b>Le piège classique :</b> en ajoutant une contrainte, le modèle en oublie une autre. C'est pour cela qu'on garde une grille — et qu'on la refait <b>à chaque tour</b>.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">2.6</span><span class="step-t">Le fichier de style, lu en entier</span></div><span class="badge int">Intermediaire</span><p>Ouvrez <code>css/style.css</code>, à la racine de la code base. Douze sections, toutes commentées. C'est le fichier le plus rentable de la journée.</p><h4>Une chose que vous ne saviez pas faire en CSS et que vous avez apprise là</h4><textarea class="fill" rows="2" placeholder="Par exemple : les variables de couleur, l'unité « ch », @media, ou grid."></textarea><h4>La section que vous relirez ce soir</h4><input class="fill" type="text" placeholder=""></div>
+<h3>Livrable de l'exercice 2</h3>
+<div class="ck"><input type="checkbox"><label>Deux pages générées, avec des contraintes différentes</label></div><div class="ck"><input type="checkbox"><label>Les deux scores sur 7 notés</label></div><div class="ck"><input type="checkbox"><label>La liste écrite des contraintes que le modèle a ignorées</label></div><div class="ck"><input type="checkbox"><label>J'ai comparé ma page à <code>exemple_reussi.html</code></label></div>
+<h2>Bilan de la journée</h2>
+<h4>Ce que j'ai compris aujourd'hui et que je ne savais pas ce matin</h4><textarea class="fill" rows="4" placeholder=""></textarea>
+<h4>La question que je veux poser demain matin</h4><textarea class="fill" rows="2" placeholder=""></textarea>
+<h4>Une chose que j'appliquerai dès mon retour au bureau</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<footer class="doc">
+  Formation animee par <b>Kuate Joel Parfait</b> — Digital House Company · hello@dhcompany.pro<br>
+  Ce document est prevu pour etre rempli a l'ecran puis exporte en PDF
+  (bouton « Exporter en PDF » ou <code>Ctrl</code>+<code>P</code> → « Enregistrer au format PDF »).
+</footer>
+</div>
+<script>
+
+// Sauvegarde locale des reponses : pratique pour reprendre une fiche entre
+// deux journees. Tout est entoure de try/catch, la page fonctionne meme
+// si le navigateur refuse le stockage (mode prive, fichier local bride...).
+(function () {
+  var KEY = 'fiche::' + (document.title || 'sans-titre');
+  var champs = document.querySelectorAll('.fill, .ck input[type=checkbox]');
+
+  function charger() {
+    try {
+      var brut = localStorage.getItem(KEY);
+      if (!brut) return;
+      var data = JSON.parse(brut);
+      champs.forEach(function (el, i) {
+        if (data[i] === undefined) return;
+        if (el.type === 'checkbox') { el.checked = data[i]; } else { el.value = data[i]; }
+      });
+      majCompteur();
+    } catch (e) { /* stockage indisponible : on continue sans */ }
+  }
+
+  function sauver() {
+    try {
+      var data = [];
+      champs.forEach(function (el) { data.push(el.type === 'checkbox' ? el.checked : el.value); });
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) { /* idem */ }
+  }
+
+  function majCompteur() {
+    var cases = document.querySelectorAll('.ck input[type=checkbox]');
+    var faits = document.querySelectorAll('.ck input[type=checkbox]:checked');
+    var out = document.getElementById('compteur');
+    if (out && cases.length) { out.textContent = faits.length + ' / ' + cases.length + ' coche(s)'; }
+  }
+
+  champs.forEach(function (el) {
+    el.addEventListener('input', function () { sauver(); majCompteur(); });
+    el.addEventListener('change', function () { sauver(); majCompteur(); });
+  });
+
+  var bPdf = document.getElementById('btnPdf');
+  if (bPdf) bPdf.addEventListener('click', function () { window.print(); });
+
+  var bRaz = document.getElementById('btnRaz');
+  if (bRaz) bRaz.addEventListener('click', function () {
+    if (!confirm('Effacer toutes vos reponses de cette fiche ?')) return;
+    champs.forEach(function (el) { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    majCompteur();
+  });
+
+  charger();
+  majCompteur();
+})();
+
+</script>
+</body>
+</html>

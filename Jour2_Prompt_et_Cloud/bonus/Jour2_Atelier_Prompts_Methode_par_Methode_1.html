@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jour 2 — Atelier : un site par prompts, méthode par méthode</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0B2D48;--accent:#0E8C86;--card:#EAF4F3;--border:#D7E6E4;--text:#16212B;--muted:#5B6B76;--code:#0F2733;--sand:#FBF6EC;--warn:#B9740A;--bad:#C1443B}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',sans-serif;color:var(--text);background:#fff;line-height:1.55;font-size:16px}
+main{max-width:860px;margin:0 auto;padding:40px 24px 100px}
+h1{font-size:34px;line-height:1.15;color:var(--navy);margin:0 0 12px;font-weight:800}
+h2{font-size:24px;color:var(--navy);margin:0 0 8px;font-weight:800}
+h3{font-size:15px;color:var(--navy);margin:20px 0 6px;font-weight:700}
+p{max-width:70ch}
+ul,ol{max-width:70ch;padding-left:22px}
+li{margin:4px 0}
+.kicker{font-size:13px;color:var(--accent);font-weight:600;margin-bottom:8px}
+.lead{font-size:17px;color:#2C3B47}
+code{font-family:'JetBrains Mono',monospace;background:var(--card);padding:.1em .4em;border-radius:4px;font-size:.88em}
+kbd{font-family:'JetBrains Mono',monospace;font-size:.85em;border:1px solid var(--border);border-radius:4px;padding:0 4px}
+.mail{background:var(--sand);border:1px solid #EAD9B8;border-radius:10px;padding:18px 22px;margin:18px 0;font-size:15px}
+.mail .from{font-size:13px;color:var(--muted);margin-bottom:10px;font-family:'JetBrains Mono',monospace}
+.mail p{margin:8px 0}
+.route{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 0}
+.route span{font-size:12px;padding:3px 10px;border-radius:99px;background:var(--card);color:var(--navy)}
+.step{border:1.5px solid var(--border);border-radius:12px;margin:34px 0;overflow:hidden}
+.step header{display:flex;gap:14px;align-items:baseline;padding:16px 22px;background:linear-gradient(90deg,var(--card),#fff);border-bottom:1px solid var(--border)}
+.step header .n{font-family:'JetBrains Mono',monospace;font-size:24px;color:var(--accent);font-weight:600}
+.step header h2{font-size:20px;margin:0}
+.step header small{display:block;font-size:13px;color:var(--muted);font-weight:500;margin-top:2px}
+.step .body{padding:6px 22px 20px}
+.parts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:8px 0 4px}
+.parts div{background:var(--card);border-radius:8px;padding:10px 12px;font-size:14px}
+.parts b{display:block;color:var(--navy);margin-bottom:2px}
+.codebox{position:relative;margin:10px 0}
+.codebox .copy{position:absolute;top:8px;right:8px;font-family:inherit;font-size:11px;padding:4px 10px;border:1.5px solid var(--border);background:#fff;color:var(--navy);border-radius:6px;cursor:pointer}
+.codebox pre{background:#F4F8F8;border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin:0;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.5;white-space:pre-wrap;color:var(--code)}
+.codebox pre b{color:var(--accent);font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.04em}
+.see{display:flex;gap:10px;background:#E6F5EE;border-radius:8px;padding:10px 14px;font-size:14.5px;max-width:76ch}
+.see b{color:#1F9D67;white-space:nowrap}
+.improve{background:var(--sand);border-left:4px solid var(--warn);border-radius:0 8px 8px 0;padding:12px 16px;margin-top:16px}
+.improve h3{margin:0 0 6px;color:var(--warn)}
+.improve ol{margin:4px 0 10px}
+textarea{width:100%;min-height:110px;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.5;padding:10px;border:1.5px solid var(--border);border-radius:8px;resize:vertical;background:#fff}
+textarea:focus{outline:3px solid #48C9C0;outline-offset:2px;border-color:var(--accent)}
+.commit{font-family:'JetBrains Mono',monospace;font-size:12px;background:var(--card);padding:6px 10px;border-radius:6px;display:inline-block;margin-top:12px;color:var(--navy)}
+.commit::before{content:"$ ";opacity:.5}
+.actions{display:flex;gap:10px;margin:18px 0}
+button.b{font-family:inherit;font-size:14px;font-weight:600;border:1.5px solid var(--navy);background:#fff;color:var(--navy);padding:8px 16px;border-radius:8px;cursor:pointer}
+button.b.primary{background:var(--navy);color:#fff}
+footer{border-top:1px solid var(--border);padding-top:14px;font-size:13px;color:var(--muted);margin-top:40px}
+@media(max-width:700px){.parts{grid-template-columns:1fr}h1{font-size:26px}}
+@media print{.copy,.actions{display:none}.step{break-inside:avoid}textarea{min-height:90px}}
+</style>
+</head>
+<body>
+<main>
+
+<div class="kicker">Formation « IA pour les développeurs » · Jour 2 · Module 3 en pratique</div>
+<h1>Un site par prompts, méthode par méthode</h1>
+<p class="lead">Un client vous envoie un e-mail. Vous allez construire son site dans GitHub Copilot sans écrire une ligne de code vous-même. À chaque étape, une méthode du cours : on vous explique comment elle fonctionne, on vous donne un prompt qui marche à copier-coller, puis vous l'améliorez. Le site est terminé et en ligne à la dernière étape.</p>
+
+<div class="actions">
+  <button class="b primary" onclick="exportAnswers()">Exporter mes prompts (.md)</button>
+  <button class="b" onclick="window.print()">Imprimer / PDF</button>
+</div>
+
+<h2>La demande</h2>
+<div class="mail">
+  <div class="from">De : marc.dubois@…  ·  Objet : site internet du club  ·  mardi 9 septembre</div>
+  <p>Bonjour,</p>
+  <p>Je suis le président du Club Sportif de la Basilique, une ASBL de quartier à Koekelberg (Avenue de la Basilique 385, 1081) qui existe depuis 1987. On a trois salles, un terrain extérieur et une équipe de bénévoles. Je voudrais créer un site pour ça : les gens du quartier nous cherchent sur leur téléphone et ne trouvent rien.</p>
+  <p>Il faudrait une présentation du club, la liste des activités, un tableau des horaires, quelques témoignages de membres et un formulaire de contact. Nos activités : Basket (mardi et jeudi 18h-20h, dès 8 ans), Yoga (samedi 9h-10h, adultes, sur inscription), Football (mercredi 17h-19h, dès 6 ans), Boxe (lundi et vendredi 19h-21h, dès 14 ans), Gym douce (mardi 10h-11h, seniors), Escalade (sur réservation, dès 10 ans), Volley (jeudi 20h-22h, adultes), Danse (mercredi 14h-15h30, 6-12 ans). L'accueil est ouvert du lundi au vendredi de 17h à 20h.</p>
+  <p>Nos couleurs sont le vert forêt (#1F6F4A) et le sable (#F2E9D8). Pas de réseaux sociaux ni d'icônes partout, on veut quelque chose de simple. Personne chez nous ne saura maintenir du code compliqué, donc le plus simple possible. Notre slogan : « Le sport pour tous, à Koekelberg, depuis 1987 ».</p>
+  <p>Merci d'avance,<br>Marc</p>
+</div>
+<p>Tout ce que vous savez du projet est dans cet e-mail. Ce qui n'y est pas est « à déterminer » : un bon prompt ne laisse pas le modèle l'inventer.</p>
+
+<h3>Avant de commencer</h3>
+<ul>
+  <li>Dossier vide <code>club-quartier</code> ouvert dans VS Code, <code>git init</code>.</li>
+  <li>Copilot Chat ouvert (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>I</kbd>). Mode <b>Edit</b> quand le prompt doit créer ou modifier des fichiers, mode <b>Ask</b> quand vous voulez une réponse à lire.</li>
+  <li>Après chaque étape : ouvrir <code>index.html</code> dans le navigateur, regarder <code>git diff</code>, commiter.</li>
+</ul>
+<div class="route">
+  <span>1 Prompt détaillé</span><span>2 Rôle</span><span>3 Few-shot</span><span>4 Chain-of-thought</span><span>5 Format de sortie</span><span>6 Itération</span><span>7 Modification cadrée</span><span>8 Négation positive</span><span>9 Chaîne de prompts</span><span>10 Self-consistency</span><span>Objectif : site en ligne</span>
+</div>
+
+<!-- ============================== 1 -->
+<section class="step" id="m1">
+  <header><span class="n">1</span><div><h2>Le prompt détaillé : les six blocs</h2><small>Résultat : le squelette du site — index.html et style.css</small></div></header>
+  <div class="body">
+    <h3>Comment ça fonctionne</h3>
+    <p>Le modèle ne connaît ni votre projet ni vos contraintes : face à une demande floue, il choisit l'interprétation la plus banale. Un prompt professionnel se lit comme un ticket pour un développeur qu'on n'a jamais rencontré. Il a six parties :</p>
+    <div class="parts">
+      <div><b>RÔLE</b>qui parle, avec quelle expertise</div>
+      <div><b>CONTEXTE</b>le projet, ce qui existe, les contraintes</div>
+      <div><b>TÂCHE</b>une seule action, un verbe précis</div>
+      <div><b>CONTRAINTES</b>ce qui est imposé ou interdit</div>
+      <div><b>FORMAT</b>la forme exacte de la réponse</div>
+      <div><b>EXEMPLE</b>un morceau du résultat attendu</div>
+    </div>
+    <h3>Prompt à copier-coller (mode Edit)</h3>
+    <div class="codebox"><button class="copy" onclick="copyCode(this)">Copier</button><pre><b>RÔLE</b>
+Tu es intégrateur web, spécialisé en HTML sémantique et CSS sans dépendance.
+
+<b>CONTEXTE</b>
+Site du Club Sportif de la Basilique, ASBL de quartier à Koekelberg, consulté surtout sur téléphone. Personne au club ne maintiendra du JavaScript.
+
+<b>TÂCHE</b>
+Crée la structure vide du site.
+
+<b>CONTRAINTES</b>
+- Deux fichiers seulement : index.html et style.css.
+- lang="fr", meta charset et viewport, un seul h1 avec le nom du club.
+- Un nav avec une liste de liens vers #presentation, #activites, #horaires, #temoignages, #contact.
+- Cinq sections avec cet id et un h2, vides sinon. Un footer vide.
+- Aucun JavaScript, aucune police ni bibliothèque externe.
+- Sous 600 px, les liens du menu passent à la ligne. Focus clavier visible.
+
+<b>FORMAT</b>
+Crée les deux fichiers, puis liste en cinq lignes ce que contient chacun.
+
+<b>EXEMPLE</b> d'un lien du menu :
+&lt;li&gt;&lt;a href="#activites"&gt;Activités&lt;/a&gt;&lt;/li&gt;</pre></div>
+    <div class="see"><b>Vous devez voir</b><span>deux fichiers, une page avec le titre et six liens, cinq sections vides. Rien d'autre : pas de contenu inventé, pas de README, pas de script.</span></div>
+    <div class="improve">
+      <h3>À vous : comment améliorer ce prompt ?</h3>
+      <ol>
+        <li>Relancez-le sans le bloc CONTEXTE. Qu'est-ce qui change dans le menu ?</li>
+        <li>Le CSS produit contient-il des couleurs ou une grille que vous n'avez pas demandées ? Quelle contrainte l'empêcherait ?</li>
+        <li>Réécrivez le prompt avec votre amélioration, relancez, gardez la meilleure version.</li>
+      </ol>
+      <textarea data-key="m1" placeholder="Ma version améliorée…"></textarea>
+    </div>
+    <div class="commit">git add -A &amp;&amp; git commit -m "1 squelette"</div>
+  </div>
+</section>
+
+<!-- ============================== 2 -->
+<section class="step" id="m2">
+  <header><span class="n">2</span><div><h2>Le rôle : donner un métier au modèle</h2><small>Résultat : la section Présentation, accessible</small></div></header>
+  <div class="body">
+    <h3>Comment ça fonctionne</h3>
+    <p>« Tu es un architecte logiciel senior » déplace la zone de probabilité : vocabulaire, niveau de détail, préoccupations. Un rôle efficace a trois parties :</p>
+    <div class="parts">
+      <div><b>Un métier précis</b>« intégrateur spécialisé en accessibilité » bat « expert mondial »</div>
+      <div><b>Ce qu'il vérifie</b>trois contrôles concrets — c'est ça qui oriente vraiment la réponse</div>
+      <div><b>Comment il répond</b>« concis, sans préambule ni flatterie » évite le « En tant qu'expert… »</div>
+    </div>
+    <h3>Prompt à copier-coller (mode Edit)</h3>
+    <div class="codebox"><button class="copy" onclick="copyCode(this)">Copier</button><pre>Tu es un intégrateur web, spécialisé en accessibilité.
+Tu vérifies systématiquement :
+- que chaque image a un alt qui décrit ce qu'elle montre
+- que le texte de chaque lien dit où il mène
+- qu'il n'y a qu'un seul h1 par page
+Tu réponds de façon concise et technique, sans préambule ni flatterie.
+
+Dans #file:index.html, remplis la section #presentation avec :
+- le slogan « Le sport pour tous, à Koekelberg, depuis 1987 » ;
+- un paragraphe à partir de ces faits : ASBL depuis 1987, trois salles, un terrain extérieur, une équipe de bénévoles ;
+- l'image images/salle.jpg ;
+- un lien vers #contact pour s'inscrire.
+Ne modifie rien en dehors de cette section. Termine par la liste des lignes ajoutées.</pre></div>
+    <div class="see"><b>Vous devez voir</b><span>un slogan en paragraphe (pas un deuxième h1), un alt descriptif, un lien dont le texte dit où il mène, et aucune autre section touchée.</span></div>
+    <div class="improve">
+      <h3>À vous : comment améliorer ce prompt ?</h3>
+      <ol>
+        <li>Remplacez les trois contrôles par « Tu es un expert mondial du web » et relancez dans une nouvelle conversation. Comparez le alt et le lien.</li>
+        <li>Quel quatrième contrôle ajouteriez-vous au rôle pour cette section ? (indice : la hiérarchie des titres)</li>
+      </ol>
+      <textarea data-key="m2" placeholder="Ma version améliorée…"></textarea>
+    </div>
+    <div class="commit">git add -A &amp;&amp; git commit -m "2 presentation"</div>
+  </div>
+</section>
+
+<!-- ============================== 3 -->
+<section class="step" id="m3">
+  <header><span class="n">3</span><div><h2>Le few-shot : montrer plutôt qu'expliquer</h2><small>Résultat : huit cartes d'activités identiques dans leur structure</small></div></header>
+  <div class="body">
+    <h3>Comment ça fonctionne</h3>
+    <p>Deux exemples bien choisis remplacent un paragraphe de consignes : le modèle copie la forme avant le fond. Trois règles :</p>
+    <div class="parts">
+      <div><b>Exemples dans le format exact</b>du HTML réel, pas une description du HTML</div>
+      <div><b>Un cas limite parmi eux</b>c'est là que le modèle dérape sinon</div>
+      <div><b>La dernière ligne en suspens</b>« Sortie : » sans rien après — le modèle complète le motif</div>
+    </div>
+    <h3>Prompt à copier-coller (mode Ask, puis collez le résultat dans la section #activites)</h3>
+    <div class="codebox"><button class="copy" onclick="copyCode(this)">Copier</button><pre>Transforme chaque activité en une carte HTML, en respectant strictement la structure des exemples.
+
+Exemple 1 —
+Entrée : Basket (mardi et jeudi 18h-20h, dès 8 ans)
+Sortie :
+&lt;article class="carte"&gt;
+  &lt;h3&gt;Basket&lt;/h3&gt;
+  &lt;p class="horaire"&gt;Mardi et jeudi, 18 h – 20 h&lt;/p&gt;
+  &lt;p class="public"&gt;Dès 8 ans&lt;/p&gt;
+&lt;/article&gt;
+
+Exemple 2 —
+Entrée : Yoga (samedi 9h-10h, adultes, sur inscription)
+Sortie :
+&lt;article class="carte"&gt;
+  &lt;h3&gt;Yoga&lt;/h3&gt;
+  &lt;p class="horaire"&gt;Samedi, 9 h – 10 h&lt;/p&gt;
+  &lt;p class="public"&gt;Adultes — sur inscription&lt;/p&gt;
+&lt;/article&gt;
+
+Entrée : Football (mercredi 17h-19h, dès 6 ans)
+Entrée : Boxe (lundi et vendredi 19h-21h, dès 14 ans)
+Entrée : Gym douce (mardi 10h-11h, seniors)
+Entrée : Escalade (sur réservation, dès 10 ans)
+Entrée : Volley (jeudi 20h-22h, adultes)
+Entrée : Danse (mercredi 14h-15h30, 6-12 ans)
+Sortie :</pre></div>
+    <div class="see"><b>Vous devez voir</b><span>six cartes de plus, mêmes balises, mêmes classes ; Escalade sans horaire inventé ; Danse « 14 h – 15 h 30 ».</span></div>
+    <div class="improve">
+      <h3>À vous : comment améliorer ce prompt ?</h3>
+      <ol>
+        <li>Remplacez l'exemple Yoga par une activité « simple » (Football). Relancez : qu'arrive-t-il à Escalade ?</li>
+        <li>Complétez la ligne « Sortie : » vous-même avec la première carte. Le résultat est-il encore complet ?</li>
+        <li>Comment transformer ce prompt pour que Copilot insère directement les cartes dans le fichier (mode Edit) sans toucher au reste ?</li>
+      </ol>
+      <textarea data-key="m3" placeholder="Ma version améliorée…"></textarea>
+    </div>
+    <div class="commit">git add -A &amp;&amp; git commit -m "3 activites"</div>
+  </div>
+</section>
+
+<!-- ============================== 4 -->
+<section class="step" id="m4">
+  <header><span class="n">4</span><div><h2>Le chain-of-thought : raisonner avant de coder</h2><small>Résultat : les cartes en grille responsive</small></div></header>
+  <div class="body">
+    <h3>Comment ça fonctionne</h3>
+    <p>Demander de raisonner par étapes : chaque étape écrite devient le contexte de la suivante, et le modèle se trompe moins. Utile pour un choix ou un diagnostic, inutile pour une transformation mécanique. Trois parties :</p>
+    <div class="parts">
+      <div><b>Le problème</b>en deux ou trois phrases, sans hypothèse</div>
+      <div><b>L'ordre imposé</b>reformuler, lister, comparer, conclure</div>
+      <div><b>Une conclusion limitée</b>trois lignes maximum, sinon l'utile est noyé</div>
+    </div>
+    <h3>Prompt à copier-coller (mode Ask)</h3>
+    <div class="codebox"><button class="copy" onclick="copyCode(this)">Copier</button><pre>Dans #file:index.html, la section #activites contient huit article.carte. Je veux quatre colonnes sur grand écran et une seule sous 600 px, sans JavaScript.
+
+Procède dans cet ordre :
+1. Reformule le besoin en une phrase.
+2. Liste ce que tu sais du contexte et ce qui te manque.
+3. Propose deux techniques CSS différentes.
+4. Compare-les : simplicité, robustesse à 400 px, lisibilité pour un débutant.
+5. Conclus par une seule recommandation, sans la coder.
+
+Termine par une section « CONCLUSION » de trois lignes maximum.</pre></div>
+    <p>Puis, en mode Edit : <em>« Implémente la CONCLUSION dans #file:style.css, sans modifier index.html ni aucune règle existante. Liste les règles ajoutées. »</em></p>
+    <div class="see"><b>Vous devez voir</b><span>deux techniques réellement comparées, une conclusion courte, puis une grille 4 → 1 colonnes et un diff vide sur index.html.</span></div>
+    <div class="improve">
+      <h3>À vous : comment améliorer ce prompt ?</h3>
+      <ol>
+        <li>Retirez « sans la coder » et relancez. Où finit le raisonnement ? Pourquoi est-ce un problème ?</li>
+        <li>Le raisonnement affiché vous a-t-il convaincu ? Vérifiez la conclusion dans le CSS : le raisonnement n'est pas une preuve.</li>
+        <li>Ajoutez une étape 3 bis : « pour chaque technique, ce qui casse si une carte a un titre très long ».</li>
+      </ol>
+      <textarea data-key="m4" placeholder="Ma version améliorée…"></textarea>
+    </div>
+    <div class="commit">git add -A &amp;&amp; git commit -m "4 grille"</div>
+  </div>
+</section>
+
+<!-- ============================== 5 -->
+<section class="step" id="m5">
+  <header><span class="n">5</span><div><h2>Le format de sortie : du texte au JSON, du JSON au tableau</h2><small>Résultat : la section Horaires</small></div></header>
+  <div class="body">
+    <h3>Comment ça fonctionne</h3>
+    <p>Un texte libre est fait pour un humain, du JSON est fait pour du code. Le format se montre par un exemple de structure, jamais par une description. Trois parties :</p>
+    <div class="parts">
+      <div><b>La structure montrée</b>un objet exemple avec les clés exactes</div>
+      <div><b>La règle du manquant</b>« null », jamais une invention</div>
+      <div><b>Rien autour</b>« aucun texte avant ni après » — sinon le code ne peut pas lire</div>
+    </div>
+    <h3>Prompt à copier-coller (mode Ask)</h3>
+    <div class="codebox"><button class="copy" onclick="copyCode(this)">Copier</button><pre>Extrais tous les créneaux d'activité de #file:index.html.
+Réponds UNIQUEMENT par un tableau JSON de cette forme exacte, un objet par créneau :
+[
+  {"activite": "Basket", "jour": "mardi", "debut": "18:00", "fin": "20:00", "public": "dès 8 ans"}
+]
+Une activité sur plusieurs jours donne plusieurs objets. Heures au format HH:MM.
+Si une information est absente, écris null. N'invente jamais de valeur.
+Aucun texte avant. Aucun texte après.</pre></div>
+    <p>Relisez le JSON (Basket : deux objets ; Escalade : null ; Danse : 15:30). Puis, en mode Edit : <em>« Voici les créneaux validés : [JSON]. Remplis la section #horaires de #file:index.html avec un tableau trié par jour puis par heure, avec caption et th scope="col". Les activités sans créneau vont dans une phrase sous le tableau. Ne modifie rien d'autre. »</em></p>
+    <div class="see"><b>Vous devez voir</b><span>du JSON pur, dix objets dont Escalade à null ; puis un tableau de neuf lignes, trié, et une phrase pour l'escalade.</span></div>
+    <div class="improve">
+      <h3>À vous : comment améliorer ce prompt ?</h3>
+      <ol>
+        <li>Retirez « Aucun texte avant. Aucun texte après. ». Que se passe-t-il ? Où faut-il aussi répéter cette ligne ?</li>
+        <li>Décrivez le format en prose (« un JSON avec l'activité, le jour… ») au lieu de le montrer. Relancez deux fois : les clés sont-elles les mêmes ?</li>
+        <li>Quelle contrainte manque pour que « mardi et jeudi » ne soit jamais un seul objet ?</li>
+      </ol>
+      <textarea data-key="m5" placeholder="Ma version améliorée…"></textarea>
+    </div>
+    <div class="commit">git add -A &amp;&amp; git commit -m "5 horaires"</div>
+  </div>
+</section>
+
+<!-- ============================== 6 -->
+<section class="step" id="m6">
+  <header><span class="n">6</span><div><h2>L'itération : une contrainte à la fois</h2><small>Résultat : la section Témoignages</small></div></header>
+  <div class="body">
+    <h3>Comment ça fonctionne</h3>
+    <p>Aucun prompt n'est bon du premier coup. On écrit court, on lance, on regarde ce qui cloche, on ajoute une seule contrainte, on relance. Une modification à la fois, sinon on ne sait pas laquelle a produit l'amélioration. Trois parties :</p>
+    <div class="parts">
+      <div><b>Version courte</b>deux lignes, on lance</div>
+      <div><b>Un défaut, une contrainte</b>on corrige le prompt, pas le résultat</div>
+      <div><b>Un journal</b>version, contrainte ajoutée, effet — comme un historique Git</div>
+    </div>
+    <h3>Prompt v1 à copier-coller (mode Edit)</h3>
+    <div class="codebox"><button class="copy" onclick="copyCode(this)">Copier</button><pre>Dans #file:index.html, remplis la section #temoignages avec trois témoignages de membres du club.</pre></div>
+    <div class="see"><b>Vous devez voir</b><span>quelque chose qui cloche : témoignages trop longs, noms complets inventés, pas de balise sémantique, rien n'indique qu'ils sont fictifs. C'est voulu.</span></div>
+    <div class="improve">
+      <h3>À vous : améliorez ce prompt en trois tours</h3>
+      <ol>
+        <li>Notez UN défaut. Ajoutez UNE contrainte qui le corrige. <code>git checkout -- .</code>, relancez.</li>
+        <li>Répétez jusqu'à v4. Contraintes attendues quelque part dans votre journal : prénom seul et deux phrases ; blockquote et cite ; commentaire HTML « témoignages provisoires, à remplacer avec accord écrit ».</li>
+        <li>Relancez v4 deux fois : la structure est-elle identique ? Si oui, le prompt est stable.</li>
+      </ol>
+      <textarea data-key="m6" style="min-height:160px" placeholder="v1 — défaut : …
+v2 — contrainte ajoutée : … / effet : …
+v3 — …
+v4 — …"></textarea>
+    </div>
+    <div class="commit">git add -A &amp;&amp; git commit -m "6 temoignages v4"</div>
+  </div>
+</section>
+
+<!-- ============================== 7 -->
+<section class="step" id="m7">
+  <header><span class="n">7</span><div><h2>La modification cadrée : changer une chose, et rien d'autre</h2><small>Résultat : les couleurs du club, en variables CSS</small></div></header>
+  <div class="body">
+    <h3>Comment ça fonctionne</h3>
+    <p>L'erreur du débutant : « améliore cette page ». Le modèle réécrit tout, renomme, supprime, et vous ne savez plus ce qui a bougé. La bonne méthode a trois parties :</p>
+    <div class="parts">
+      <div><b>Le fichier existant</b>fourni tel quel</div>
+      <div><b>MODIFICATION DEMANDÉE / NE MODIFIE PAS</b>une phrase, puis une liste explicite</div>
+      <div><b>La liste des lignes changées</b>demandée à la fin : votre diff à relire en trois secondes</div>
+    </div>
+    <h3>Prompt à copier-coller (mode Edit)</h3>
+    <div class="codebox"><button class="copy" onclick="copyCode(this)">Copier</button><pre>Voici le fichier existant : #file:style.css
+
+MODIFICATION DEMANDÉE :
+Applique les couleurs du club — vert forêt #1F6F4A et sable #F2E9D8 — en les déclarant une seule fois dans :root et en les réutilisant partout ; tout texte garde un contraste d'au moins 4,5:1 avec son fond.
+
+NE MODIFIE PAS :
+- les noms de classes et de sélecteurs
+- les largeurs, marges, grilles et points de rupture
+- l'ordre des règles
+- les tailles de police
+
+Applique les changements, puis liste les lignes réellement changées avec leur numéro.</pre></div>
+    <div class="see"><b>Vous devez voir</b><span>des variables dans :root, plus aucune couleur en dur, et une liste de lignes qui correspond exactement à <code>git diff style.css</code>.</span></div>
+    <div class="improve">
+      <h3>À vous : comment améliorer ce prompt ?</h3>
+      <ol>
+        <li>Dans une autre conversation : « améliore les couleurs de #file:style.css ». Regardez le diff. Annulez. Combien de choses ont changé sans qu'on le demande ?</li>
+        <li>La liste annoncée par Copilot correspond-elle au diff réel ? Si non, quelle ligne du NE MODIFIE PAS manquait ?</li>
+        <li>Réutilisez ce même gabarit pour le pied de page (méthode 8) : c'est le prompt que vous écrirez le plus souvent dans votre métier.</li>
+      </ol>
+      <textarea data-key="m7" placeholder="Ma version améliorée…"></textarea>
+    </div>
+    <div class="commit">git add -A &amp;&amp; git commit -m "7 couleurs"</div>
+  </div>
+</section>
+
+<!-- ============================== 8 -->
+<section class="step" id="m8">
+  <header><span class="n">8</span><div><h2>Négation, clarté, position : dire ce qu'on veut</h2><small>Résultat : le pied de page</small></div></header>
+  <div class="body">
+    <h3>Comment ça fonctionne</h3>
+    <p>« Ne mets pas d'emoji » marche mal ; « écris uniquement en texte brut » marche. Trois réglages :</p>
+    <div class="parts">
+      <div><b>Interdit + alternative</b>chaque « ne … pas » est accompagné de ce qu'on veut à la place</div>
+      <div><b>Un verbe par phrase</b>« analyse, résume et propose » sera mal exécuté</div>
+      <div><b>Début et fin</b>la contrainte critique est placée en première et en dernière ligne</div>
+    </div>
+    <h3>Prompt à copier-coller (mode Edit)</h3>
+    <div class="codebox"><button class="copy" onclick="copyCode(this)">Copier</button><pre>Le pied de page contient uniquement du texte et un seul lien.
+
+Remplis le footer de #file:index.html avec, sur quatre lignes :
+1. Club Sportif de la Basilique — Avenue de la Basilique 385, 1081 Koekelberg
+2. Accueil : du lundi au vendredi, de 17 h à 20 h
+3. ASBL — numéro d'entreprise : à déterminer
+4. un lien « Retour en haut » vers le header (ajoute-lui id="haut").
+Style dans #file:style.css : fond sable, texte vert forêt, avec les variables de :root, 14 px minimum.
+
+Le pied de page contient uniquement du texte et un seul lien. Aucune icône, aucune image, aucun réseau social.</pre></div>
+    <div class="see"><b>Vous devez voir</b><span>un footer de quatre lignes, un seul lien, aucun pictogramme, et « à déterminer » resté tel quel.</span></div>
+    <div class="improve">
+      <h3>À vous : comment améliorer ce prompt ?</h3>
+      <ol>
+        <li>Relancez avec la version de Marc : « Fais un pied de page. Pas d'icônes, pas de réseaux sociaux, pas trop long. » Comptez les icônes.</li>
+        <li>Supprimez la répétition de la première ligne en fin de prompt. Le résultat change-t-il ?</li>
+        <li>Reformulez « pas trop long » en contrainte chiffrée.</li>
+      </ol>
+      <textarea data-key="m8" placeholder="Ma version améliorée…"></textarea>
+    </div>
+    <div class="commit">git add -A &amp;&amp; git commit -m "8 pied de page"</div>
+  </div>
+</section>
+
+<!-- ============================== 9 -->
+<section class="step" id="m9">
+  <header><span class="n">9</span><div><h2>La chaîne de prompts : découper pour réussir</h2><small>Résultat : le formulaire de contact, validé sans JavaScript</small></div></header>
+  <div class="body">
+    <h3>Comment ça fonctionne</h3>
+    <p>Un prompt qui demande cinq choses en réussit trois. La solution : une chaîne, où chaque maillon est testable et relu avant le suivant. Un prompt qui fait cinq choses est un mauvais prompt, comme une fonction qui fait cinq choses.</p>
+    <div class="parts">
+      <div><b>Maillon 1 : décider</b>la liste des champs, en tableau, relue par vous</div>
+      <div><b>Maillon 2 : produire</b>le HTML à partir du tableau validé</div>
+      <div><b>Maillon 3 : finir</b>le CSS des états</div>
+    </div>
+    <h3>Maillon 1 à copier-coller (mode Ask)</h3>
+    <div class="codebox"><button class="copy" onclick="copyCode(this)">Copier</button><pre>Besoin : formulaire de contact d'un club de sport. Le visiteur donne son nom, son e-mail, l'activité qui l'intéresse (parmi les huit de #file:index.html), un message, et accepte que ses données servent uniquement à lui répondre.
+
+Réponds uniquement par un tableau : Champ | Élément et type HTML | Obligatoire | Attributs de validation natifs | Texte d'aide (une phrase).
+Aucun code, aucun texte avant ni après le tableau.</pre></div>
+    <p>Relisez et corrigez le tableau (Copilot ajoute souvent un téléphone que personne n'a demandé). Puis maillon 2, mode Edit : <em>« Voici les champs validés : [tableau]. Remplis la section #contact de #file:index.html avec ce formulaire : chaque champ avec un label relié par for/id, ses attributs de validation, un small d'aide ; un bouton “Envoyer la demande” ; aucun JavaScript. Ne modifie rien d'autre. »</em> Puis maillon 3 : <em>« Dans #file:style.css, ajoute le style du formulaire : champs pleine largeur (560 px max), label en gras au-dessus, bordure rouge sombre sur :user-invalid, bouton vert forêt. Variables de :root uniquement. Ne touche à aucune règle existante. »</em></p>
+    <div class="see"><b>Vous devez voir</b><span>cliquer un libellé donne le focus au champ ; l'envoi vide et un e-mail sans @ sont refusés par le navigateur ; le select contient exactement les huit activités.</span></div>
+    <div class="improve">
+      <h3>À vous : comment améliorer cette chaîne ?</h3>
+      <ol>
+        <li>Demandez tout en un seul prompt dans une autre conversation. Comptez ce qui manque (consentement ? labels ? select complet ?).</li>
+        <li>Quel maillon pourrait être confié à un modèle moins cher ? Lequel ne peut pas ?</li>
+        <li>Ajoutez un maillon 4 : « liste les cas limites du formulaire auxquels je n'ai pas pensé ».</li>
+      </ol>
+      <textarea data-key="m9" placeholder="Mes maillons améliorés…"></textarea>
+    </div>
+    <div class="commit">git add -A &amp;&amp; git commit -m "9 formulaire"</div>
+  </div>
+</section>
+
+<!-- ============================== 10 -->
+<section class="step" id="m10">
+  <header><span class="n">10</span><div><h2>La self-consistency : voter plutôt que croire</h2><small>Résultat : le site vérifié, puis publié</small></div></header>
+  <div class="body">
+    <h3>Comment ça fonctionne</h3>
+    <p>On pose la même question fermée N fois, dans N conversations séparées, et on garde la réponse majoritaire. Le modèle se trompe de façon aléatoire : il se trompe rarement trois fois de la même manière. Si les trois divergent, c'est le signal le plus utile : la question passe à un humain.</p>
+    <div class="parts">
+      <div><b>Une question fermée</b>réponse en un mot, sans justification</div>
+      <div><b>Trois conversations séparées</b>pas trois messages à la suite : le modèle se répète</div>
+      <div><b>Le vote, puis la vérification</b>on ouvre la ligne annoncée dans le fichier</div>
+    </div>
+    <h3>Question à poser trois fois (trois nouvelles conversations, mode Ask)</h3>
+    <div class="codebox"><button class="copy" onclick="copyCode(this)">Copier</button><pre>Dans #file:style.css, existe-t-il une règle qui provoque un débordement horizontal sur un écran de 400 px de large ?
+Réponds par « oui » suivi du numéro de ligne, ou par « non ». Sans justification.</pre></div>
+    <div class="see"><b>Vous devez voir</b><span>trois réponses notées, une majorité, et la ligne vérifiée dans le fichier. Testez aussi vous-même à 400 px (F12, mode appareil).</span></div>
+    <div class="improve">
+      <h3>À vous : et pour finir, publiez</h3>
+      <ol>
+        <li>Notez les trois réponses. Si elles divergent, que faites-vous ?</li>
+        <li>Écrivez, avec les six blocs de la méthode 1, le prompt qui demande la procédure de publication sur GitHub Pages (dépôt public, branche main, dossier racine), commandes incluses. Relisez chaque commande avant de l'exécuter.</li>
+        <li>Envoyez l'URL à Marc. Objectif atteint.</li>
+      </ol>
+      <textarea data-key="m10" style="min-height:160px" placeholder="Tour 1 : …  Tour 2 : …  Tour 3 : …  → majoritaire : …
+
+Mon prompt de publication (six blocs) :"></textarea>
+    </div>
+    <div class="commit">git add -A &amp;&amp; git commit -m "10 publication" &amp;&amp; git push</div>
+  </div>
+</section>
+
+<h2>Ce que vous emportez</h2>
+<ul>
+  <li>Un site en ligne, construit sans écrire de code, en dix prompts que vous pouvez relire, expliquer et refaire.</li>
+  <li>Dix versions améliorées de votre main : c'est votre bibliothèque de départ. Exportez-les.</li>
+  <li>Une habitude : quand le résultat est mauvais, on corrige le prompt, jamais le code.</li>
+</ul>
+
+<footer>Kuate Joël Parfait — Digital House Company — hello@dhcompany.pro<br>Formation « IA pour les développeurs », Jour 2 : la programmation par prompt. Atelier, septembre 2026.</footer>
+</main>
+
+<script>
+function copyCode(b){navigator.clipboard.writeText(b.parentElement.querySelector('pre').innerText).then(()=>{const o=b.textContent;b.textContent='Copié';setTimeout(()=>b.textContent=o,1400);});}
+function exportAnswers(){
+  let md='# Atelier Jour 2 — mes prompts améliorés\n\n';
+  document.querySelectorAll('section.step').forEach(s=>{
+    const t=s.querySelector('textarea');
+    md+=`## ${s.querySelector('h2').textContent}\n\n\`\`\`\n${t.value.trim()||'(vide)'}\n\`\`\`\n\n`;
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([md],{type:'text/markdown;charset=utf-8'}));
+  a.download='jour2-mes-prompts.md';a.click();
+}
+</script>
+</body>
+</html>

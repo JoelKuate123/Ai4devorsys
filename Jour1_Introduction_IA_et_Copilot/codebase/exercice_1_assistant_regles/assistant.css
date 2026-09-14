@@ -1,0 +1,253 @@
+/* =========================================================================
+   assistant.css — la feuille de style de l'assistant à règles.
+   =========================================================================
+   Tout le « moteur » de cet assistant tient dans la section 4 ci-dessous.
+   Deux lignes. Lisez-les, elles sont la leçon de l'exercice.
+
+   Le reste du fichier n'est que de la mise en forme.
+   ========================================================================= */
+
+
+/* -------------------------------------------------------------------------
+   1. LA BASE — reprise de la charte de la formation
+   ------------------------------------------------------------------------- */
+:root {
+  --accent:  #0E8C86;
+  --accent2: #0B6E68;
+  --navy:    #0B2D48;
+  --text:    #16212B;
+  --text2:   #4B5C63;
+  --card:    #EAF4F3;
+  --border:  #D7E6E4;
+  --fond:    #F2F7F7;
+  --good:    #1F9D67;
+  --warn:    #B9740A;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background: var(--fond);
+  color: var(--text);
+  line-height: 1.6;
+  padding: 2rem 1.2rem 4rem;
+}
+
+.page { max-width: 820px; margin: 0 auto; }
+
+.surtitre { font-size: .75rem; letter-spacing: .16em; text-transform: uppercase;
+            color: var(--accent2); font-weight: 700; }
+h1 { font-size: 1.8rem; color: var(--navy); margin: .5rem 0 .6rem; line-height: 1.2; }
+h2 { font-size: 1.2rem; color: var(--navy); margin: 2.4rem 0 .8rem;
+     padding-left: .8rem; border-left: 4px solid var(--accent); }
+.intro { color: var(--text2); max-width: 68ch; margin-bottom: 1.8rem; }
+p  { margin-bottom: .8rem; color: var(--text2); max-width: 72ch; }
+ol, ul { margin: 0 0 1rem 1.4rem; color: var(--text2); }
+li { margin-bottom: .35rem; }
+b { color: var(--text); }
+
+code { font-family: 'JetBrains Mono', Consolas, monospace; background: var(--card);
+       color: var(--accent2); padding: .08rem .35rem; border-radius: 4px; font-size: .9em; }
+
+
+/* -------------------------------------------------------------------------
+   2. LA FENÊTRE DE L'ASSISTANT
+   ------------------------------------------------------------------------- */
+.assistant {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;      /* pour que l'en-tête colorée épouse les coins arrondis */
+  margin-bottom: 1.4rem;
+}
+
+.entete-assistant {
+  background: var(--navy);
+  color: #fff;
+  padding: .7rem 1.2rem;
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+
+/* -------------------------------------------------------------------------
+   3. LES QUESTIONS CLIQUABLES
+   -------------------------------------------------------------------------
+   Ce sont de simples liens. « display: flex » avec « flex-wrap: wrap »
+   les met côte à côte et les fait passer à la ligne quand la place manque.
+   ------------------------------------------------------------------------- */
+.questions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  padding: 1.1rem 1.2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.questions a {
+  display: inline-block;
+  background: var(--card);
+  color: var(--accent2);
+  text-decoration: none;
+  font-size: .85rem;
+  padding: .35rem .8rem;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+
+.questions a:hover { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+
+/* -------------------------------------------------------------------------
+   4. LE MOTEUR — DEUX LIGNES
+   -------------------------------------------------------------------------
+   Voilà. C'est ici. Tout l'assistant tient dans les deux règles qui suivent.
+
+   Par défaut, TOUTES les réponses sont cachées.
+
+   « :target » désigne l'élément dont l'identifiant se trouve dans l'adresse
+   de la page. Quand vous cliquez sur le lien « #regle-horaires », l'adresse
+   devient « …/index.html#regle-horaires », et le bloc qui porte cet
+   identifiant devient — et lui seul — le « target ».
+
+   C'est un « si… alors… » : SI l'adresse contient cet identifiant,
+   ALORS affiche ce bloc. Une règle. Écrite à la main.
+   ------------------------------------------------------------------------- */
+.reponse         { display: none; }
+.reponse:target  { display: block; }
+
+
+/* -------------------------------------------------------------------------
+   5. LA ZONE DE RÉPONSE
+   ------------------------------------------------------------------------- */
+.zone-reponse {
+  padding: 1.2rem;
+  min-height: 110px;   /* la fenêtre ne saute pas quand la réponse change */
+}
+
+.zone-reponse .reponse {
+  background: var(--card);
+  border-radius: 12px;
+  border-bottom-left-radius: 3px;   /* la petite pointe de la bulle */
+  padding: .8rem 1.1rem;
+  max-width: 90%;
+}
+
+.zone-reponse .reponse p { color: var(--text); margin-bottom: .4rem; }
+
+.regle-appliquee {
+  display: block;
+  font-size: .76rem;
+  color: var(--accent2);
+  font-style: italic;
+}
+
+/* Le message d'attente, affiché tant qu'aucune question n'est cliquée.
+
+   « :has() » veut dire « qui contient ». On lit la règle ainsi :
+   quand la zone de réponse CONTIENT une réponse ciblée,
+   alors on cache le message d'attente.
+
+   C'est du CSS moderne, pris en charge par tous les navigateurs
+   depuis 2023. Sans lui, le message resterait affiché en permanence. */
+.attente { color: #9FBDBA; font-style: italic; }
+.zone-reponse:has(.reponse:target) .attente { display: none; }
+
+
+/* -------------------------------------------------------------------------
+   6. LE CHAMP DE SAISIE INACTIF
+   -------------------------------------------------------------------------
+   Il est là uniquement pour montrer ce que le programme NE SAIT PAS faire.
+   ------------------------------------------------------------------------- */
+.saisie {
+  display: flex;
+  gap: .5rem;
+  padding: 0 1.2rem 1.2rem;
+}
+
+.saisie input {
+  flex: 1;                       /* le champ prend toute la place restante */
+  padding: .6rem .85rem;
+  border: 1px dashed var(--border);
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: .92rem;
+  background: #FAFCFC;
+  color: #9FBDBA;
+  cursor: not-allowed;
+}
+
+.saisie button {
+  background: var(--border);
+  color: #9FBDBA;
+  border: none;
+  border-radius: 9px;
+  padding: .6rem 1.2rem;
+  font-family: inherit;
+  font-size: .9rem;
+  font-weight: 600;
+  cursor: not-allowed;
+}
+
+.note-saisie {
+  font-size: .85rem;
+  padding: 0 1.2rem 1.2rem;
+  margin: 0;
+  color: var(--text2);
+}
+
+
+/* -------------------------------------------------------------------------
+   7. LES QUESTIONS SANS RÉPONSE
+   ------------------------------------------------------------------------- */
+ul.ratees { list-style: none; margin-left: 0; }
+
+ul.ratees li {
+  background: #FFF6E8;
+  border-left: 3px solid var(--warn);
+  border-radius: 0 7px 7px 0;
+  padding: .5rem .9rem;
+  margin-bottom: .4rem;
+  font-size: .92rem;
+  color: var(--text2);
+}
+
+
+/* -------------------------------------------------------------------------
+   8. LES ENCADRÉS ET LE TABLEAU
+   ------------------------------------------------------------------------- */
+.attention, .bien {
+  border-left: 4px solid var(--warn);
+  border-radius: 6px;
+  padding: .85rem 1.1rem;
+  margin: 1.2rem 0;
+  font-size: .95rem;
+  color: var(--text2);
+  background: #FFF6E8;
+}
+.bien { border-left-color: var(--good); background: #EEF9F3; }
+
+table { border-collapse: collapse; width: 100%; margin: .8rem 0 1.4rem; font-size: .89rem; }
+th, td { border: 1px solid var(--border); padding: .5rem .7rem; text-align: left; vertical-align: top; }
+th { background: var(--card); color: var(--accent2); font-weight: 700; }
+td { color: var(--text2); }
+td b { color: var(--text); }
+
+footer {
+  margin-top: 3rem; padding-top: 1.2rem;
+  border-top: 1px solid var(--border);
+  font-size: .85rem; color: var(--text2);
+}
+
+
+/* -------------------------------------------------------------------------
+   9. LE TÉLÉPHONE
+   ------------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  body { padding: 1.2rem .9rem 3rem; }
+  h1 { font-size: 1.4rem; }
+  .questions a { font-size: .8rem; }
+  .zone-reponse .reponse { max-width: 100%; }
+  table { display: block; overflow-x: auto; }
+}

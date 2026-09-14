@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercice 3 · La grille de contrôle sur 10</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="page">
+
+  <header>
+    <div class="surtitre">Exercice 3 · Travaux pratiques</div>
+    <h1>Rédiger une spécification, et la contrôler</h1>
+    <p class="intro">
+      Énoncé du programme : <i>« faire un prompt de spécification d'une
+      application web qui donne les nouvelles positives du jour »</i>.
+      On ne code pas l'application. On écrit le prompt, et on
+      <b>vérifie</b> que la spécification obtenue est utilisable.
+    </p>
+  </header>
+
+
+  <!-- ===================================================================== -->
+  <h2>1 · Le prompt complet</h2>
+
+  <p>
+    Copiez-le, remplacez les quatre valeurs entre majuscules par les vôtres,
+    et collez-le dans votre assistant.
+  </p>
+
+<pre><code># RÔLE
+Tu es un analyste fonctionnel, spécialisé en rédaction de spécifications
+d'applications web légères.
+
+Tu vérifies systématiquement :
+- qu'une fonctionnalité annoncée est réalisable avec le budget indiqué
+- qu'aucune donnée personnelle n'est collectée sans raison
+- qu'un critère de qualité est mesurable, pas une intention
+- qu'une source de données est nommée et vérifiable
+
+Tu réponds de façon concise, sans préambule ni flatterie.
+
+# CONTEXTE
+Une petite équipe de deux personnes veut lancer cette application en trois
+semaines, sans financement.
+
+# TÂCHE
+Rédige la spécification fonctionnelle de : VOTRE IDÉE D'APPLICATION
+
+# CONTRAINTES
+- Budget d'exploitation : BUDGET euros par mois maximum.
+- Public visé : VOTRE PUBLIC.
+- Aucune inscription obligatoire pour consulter le contenu.
+- Lisible sur mobile en priorité.
+- Interdit : CE QUE L'APPLICATION NE DOIT SURTOUT PAS FAIRE.
+
+# FORMAT DE SORTIE
+Réponds UNIQUEMENT sous cette forme exacte, section par section :
+
+## Titre
+une ligne
+
+## Problème résolu
+une phrase
+
+## Utilisateurs
+- profil 1
+- profil 2
+
+## Fonctionnalités
+- nom court — ce que ça fait — (indispensable | souhaitable)
+
+## Sources de données
+- nom de la source — pourquoi elle est fiable
+
+## Critères de qualité
+- chaque critère contient une VALEUR CHIFFRÉE
+
+## Contraintes
+- budget mensuel, en euros, sous forme de nombre seul
+- données personnelles : aucune | minimales | sensibles
+- hébergement : où, et pourquoi
+
+## Risques
+- le risque — la parade
+
+Aucun texte avant. Aucun texte après.
+Si une information est absente, écris « à déterminer ».
+N'invente jamais de valeur.</code></pre>
+
+
+  <!-- ===================================================================== -->
+  <h2>2 · La grille de contrôle</h2>
+
+  <p>
+    Dix contrôles. Relisez la réponse obtenue et cochez ce qui est vrai.
+    <b>Chaque case non cochée est une ligne à corriger dans votre prompt</b>,
+    pas dans la réponse.
+  </p>
+
+  <h3>Ce qui doit être présent</h3>
+  <ul class="grille">
+    <li>
+      <input type="checkbox" id="g1">
+      <label for="g1">
+        <b>1 · Les huit sections sont là</b>, dans l'ordre demandé,
+        avec les titres exacts.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="g2">
+      <label for="g2">
+        <b>2 · Aucun texte parasite.</b> Pas de « Bien sûr ! », pas de
+        « J'espère que cela vous aidera » à la fin.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="g3">
+      <label for="g3">
+        <b>3 · Au moins deux profils d'utilisateurs</b>, et ils sont
+        distincts l'un de l'autre.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="g4">
+      <label for="g4">
+        <b>4 · Chaque fonctionnalité a une priorité</b> : indispensable
+        ou souhaitable. Si tout est indispensable, rien ne l'est.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="g5">
+      <label for="g5">
+        <b>5 · Les sources de données sont nommées.</b> « Des sites
+        d'actualité » n'est pas une source. « Le flux RSS de tel média » en
+        est une.
+      </label>
+    </li>
+  </ul>
+
+  <h3>Ce qui doit résister à la relecture</h3>
+  <ul class="grille">
+    <li>
+      <input type="checkbox" id="g6">
+      <label for="g6">
+        <b>6 · Chaque critère de qualité contient un chiffre.</b>
+        « Les utilisateurs sont contents » est une intention.
+        « 3 nouvelles publiées avant 8 h » est un critère.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="g7">
+      <label for="g7">
+        <b>7 · Le budget est un nombre seul.</b> Pas « environ 10 € »,
+        pas « 10 euros/mois ». Juste le nombre, comme demandé.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="g8">
+      <label for="g8">
+        <b>8 · L'interdit que vous avez posé est respecté.</b> Relisez la
+        section Fonctionnalités en le cherchant : c'est là qu'il revient,
+        déguisé.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="g9">
+      <label for="g9">
+        <b>9 · Chaque risque a une parade.</b> Un risque sans parade
+        n'est pas une analyse, c'est une inquiétude.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="g10">
+      <label for="g10">
+        <b>10 · Rien n'est inventé.</b> Cherchez les chiffres et les noms
+        que vous n'avez pas fournis. Le modèle devait écrire
+        « à déterminer » — l'a-t-il fait ?
+      </label>
+    </li>
+  </ul>
+
+  <p><b>Notez votre score sur 10 dans votre fiche participant.</b></p>
+
+
+  <!-- ===================================================================== -->
+  <h2>3 · Le second tour</h2>
+
+  <p>
+    Prenez le contrôle qui a échoué et corrigez <b>votre prompt</b>, pas la
+    réponse. Une case non cochée est presque toujours une consigne manquante
+    ou trop vague.
+  </p>
+
+  <table>
+    <tr><th>Si ce contrôle échoue…</th><th>…c'est cette ligne qu'il faut renforcer</th></tr>
+    <tr>
+      <td>2 · texte parasite</td>
+      <td>« Aucun texte avant. Aucun texte après. » — répétez-la <b>à la fin</b> du prompt aussi.</td>
+    </tr>
+    <tr>
+      <td>6 · critères non mesurables</td>
+      <td>Ajoutez un exemple : « exemple de critère accepté :
+          <i>3 nouvelles publiées avant 8 h</i> ; exemple refusé :
+          <i>les utilisateurs sont satisfaits</i> ».</td>
+    </tr>
+    <tr>
+      <td>7 · budget mal formaté</td>
+      <td>Montrez-le : « budget_mensuel : 10 » plutôt que de le décrire.</td>
+    </tr>
+    <tr>
+      <td>8 · interdit ignoré</td>
+      <td>Déplacez l'interdit <b>en haut</b> du prompt, dans le bloc RÔLE.
+          Ce qui est en fin de prompt pèse moins.</td>
+    </tr>
+    <tr>
+      <td>10 · valeurs inventées</td>
+      <td>« N'invente jamais de valeur » suffit rarement. Ajoutez :
+          « si tu n'as pas l'information, écris exactement :
+          <i>à déterminer</i> ».</td>
+    </tr>
+  </table>
+
+  <div class="bien">
+    <b>C'est le cœur de la journée.</b> Un prompt ne s'écrit pas, il se
+    <b>corrige</b>. La première version n'est jamais la bonne, et ce n'est
+    pas un problème : c'est la méthode.
+  </div>
+
+
+  <!-- ===================================================================== -->
+  <h2>Ce que cet exercice démontre</h2>
+
+  <ul>
+    <li>
+      <b>On ne demande pas un document, on demande une structure.</b>
+      Une structure se vérifie ; un texte libre ne se vérifie pas.
+    </li>
+    <li>
+      <b>Dix contrôles valent mieux qu'une impression.</b> « C'est mieux »
+      n'est pas une évaluation ; « 9/10 au lieu de 5/10 » en est une.
+    </li>
+    <li>
+      <b>Une spécification écrite par un modèle est fluide, complète et
+      vide</b> tant que personne n'a vérifié que ses critères contiennent
+      des chiffres.
+    </li>
+  </ul>
+
+  <footer>
+    Formation animée par <b>Kuate Joël Parfait</b> — Digital House Company ·
+    hello@dhcompany.pro
+  </footer>
+
+</div>
+
+</body>
+</html>

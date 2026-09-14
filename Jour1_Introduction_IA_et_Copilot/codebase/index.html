@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code base — Journee 1</title>
+<style>
+  :root{--accent:#0E8C86;--accent2:#0B6E68;--navy:#0B2D48;--text:#16212B;
+        --text2:#4B5C63;--card:#EAF4F3;--border:#D7E6E4;--good:#1F9D67;--warn:#B9740A;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#F2F7F7;color:var(--text);
+       padding:2.4rem 1.2rem 5rem;line-height:1.55;}
+  .wrap{max-width:880px;margin:0 auto;}
+  .org{font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+  h1{font-size:2rem;color:var(--navy);margin:.5rem 0 .4rem;line-height:1.2;}
+  .sub{color:var(--text2);font-size:1rem;margin-bottom:2rem;max-width:68ch;}
+  h2{font-size:1.15rem;color:var(--navy);margin:2rem 0 .8rem;padding-left:.7rem;border-left:4px solid var(--accent);}
+  .cartes{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;}
+  a.carte{display:block;background:#fff;border:1px solid var(--border);border-radius:11px;padding:1.1rem 1.2rem;
+          text-decoration:none;color:inherit;transition:border-color .15s,transform .15s;}
+  a.carte:hover{border-color:var(--accent);transform:translateY(-2px);}
+  a.carte .tag{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+  a.carte h3{font-size:1.02rem;color:var(--navy);margin:.35rem 0 .35rem;}
+  a.carte p{font-size:.86rem;color:var(--text2);}
+  .note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;padding:.85rem 1.1rem;
+        font-size:.92rem;color:var(--text2);margin:1.2rem 0;}
+  .note code, p code, li code{font-family:'JetBrains Mono',Consolas,monospace;background:#fff;color:var(--accent2);
+        padding:.08rem .34rem;border-radius:4px;font-size:.88em;border:1px solid var(--border);}
+  ol,ul{margin:.5rem 0 1rem 1.3rem;color:var(--text2);font-size:.93rem;}
+  li{margin-bottom:.3rem;}
+  footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="org">Digital House Company · L'IA pour les developpeurs</div>
+  <h1>Code base de la journée 1</h1>
+  <p class="sub">Introduction à l'IA · VSCode et GitHub Copilot. <b>Tout est en HTML et en CSS.</b> Aucun JavaScript, aucune installation, aucune clé d'API : vous double-cliquez un fichier, il s'ouvre dans votre navigateur, ça marche.</p>
+<div class="cartes"><a class="carte" href="exercice_1_assistant_regles/index.html"><span class="tag">Exercice 1 · Module 1</span><h3>Un assistant sans IA</h3><p>Neuf règles écrites à la main, en HTML et CSS pur. Tout le « moteur » tient en deux lignes de CSS — et il ne comprend que ce qui a été prévu.</p></a><a class="carte" href="exercice_2_page_generee/index.html"><span class="tag">Exercice 2 · Module 2</span><h3>Générer une page par prompt</h3><p>Vous écrivez le prompt, le modèle écrit le HTML. Puis vous faites le seul travail qui compte : relire, avec une grille sur 7.</p></a><a class="carte" href="exercice_2_page_generee/exemple_reussi.html"><span class="tag">Référence</span><h3>Une page qui obtient 7/7</h3><p>Chaque contrôle de la grille est signalé par un commentaire dans le code. Comparez-la à la vôtre.</p></a><a class="carte" href="README.md"><span class="tag">Documentation</span><h3>Lire le README</h3><p>Ce qu'il y a dans le dossier, et pourquoi il n'y a pas de JavaScript aujourd'hui.</p></a></div><h2>Dans quel ordre travailler</h2><ol><li>Ouvrez <code>exercice_1_assistant_regles/index.html</code> et cliquez sur les neuf questions.</li><li>Regardez les quatre questions qu'il <b>ne comprend pas</b> : chacune demanderait une règle de plus, écrite à la main.</li><li>Ouvrez <code>assistant.css</code> dans VS Code et trouvez les <b>deux lignes</b> qui font tout le travail (section 4 du fichier).</li><li>Ajoutez une dixième règle : un lien, un bloc, et c'est fini.</li><li>Passez à l'exercice 2 : le prompt, la page produite, la grille sur 7.</li></ol><div class="note"><b>Pas de JavaScript aujourd'hui.</b> Vous allez lire et écrire du HTML et du CSS, et faire produire le reste par l'assistant. C'est délibéré : on apprend d'abord à <b>relire</b> ce qu'une IA écrit, avant d'apprendre à écrire soi-même.</div><div class="note"><b>Un conseil pour la journée :</b> installez l'extension <b>Live Preview</b> de Microsoft dans VS Code. Clic droit sur un fichier HTML, <i>Show Preview</i>, et la page se recharge toute seule à chaque enregistrement.</div>
+  <footer>
+    Formation animee par <b>Kuate Joel Parfait</b> — hello@dhcompany.pro
+  </footer>
+</div>
+</body>
+</html>

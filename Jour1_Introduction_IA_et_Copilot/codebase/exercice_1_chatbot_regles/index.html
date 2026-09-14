@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercice 1 · Un chatbot sans IA</title>
+<!--
+  Aucune installation : double-cliquez ce fichier, il s'ouvre dans le navigateur.
+  Tout le CSS est ici pour que la page reste autonome.
+-->
+<style>
+  :root{--accent:#0E8C86;--accent2:#0B6E68;--navy:#0B2D48;--text:#16212B;
+        --text2:#4B5C63;--card:#EAF4F3;--border:#D7E6E4;--good:#1F9D67;--warn:#B9740A;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#F2F7F7;
+       color:var(--text);padding:1.8rem 1.2rem 4rem;line-height:1.55;}
+  .wrap{max-width:760px;margin:0 auto;}
+  h1{font-size:1.6rem;color:var(--navy);}
+  .sub{color:var(--text2);font-size:.95rem;margin:.3rem 0 1.4rem;}
+  .bloc{background:#fff;border:1px solid var(--border);border-radius:11px;
+        padding:1.1rem 1.2rem;margin-bottom:1.1rem;}
+  .bloc h2{font-size:.85rem;color:var(--accent2);text-transform:uppercase;
+           letter-spacing:.08em;margin-bottom:.8rem;}
+  .conv{display:flex;flex-direction:column;gap:.7rem;min-height:110px;margin-bottom:1rem;}
+  .msg{padding:.65rem 1rem;border-radius:12px;max-width:86%;font-size:.94rem;}
+  .msg.moi{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-right-radius:3px;}
+  .msg.lui{align-self:flex-start;background:var(--card);border-bottom-left-radius:3px;}
+  .msg .regle{display:block;font-size:.74rem;color:var(--accent2);margin-top:.3rem;font-style:italic;}
+  .msg.rate{background:#FFF6E8;}
+  .msg.rate .regle{color:var(--warn);}
+  .barre{display:flex;gap:.6rem;}
+  input[type=text]{flex:1;padding:.6rem .85rem;border:1px solid var(--border);border-radius:9px;
+                   font-family:inherit;font-size:.94rem;background:#fff;}
+  button{background:var(--accent);color:#fff;border:none;border-radius:9px;padding:.6rem 1.2rem;
+         font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit;}
+  button:hover{background:var(--accent2);}
+  button.ghost{background:#fff;color:var(--accent2);border:1px solid var(--border);
+               font-size:.8rem;padding:.32rem .75rem;font-weight:500;}
+  .exemples{margin-top:.8rem;display:flex;gap:.4rem;flex-wrap:wrap;}
+  .kpi{display:flex;gap:.8rem;flex-wrap:wrap;}
+  .kpi div{flex:1;min-width:120px;background:var(--card);border-radius:9px;padding:.7rem .9rem;}
+  .kpi b{display:block;font-size:1.4rem;color:var(--navy);}
+  .kpi span{font-size:.75rem;color:var(--text2);}
+  .rangee{display:flex;gap:.6rem;flex-wrap:wrap;align-items:flex-end;}
+  .champ{display:flex;flex-direction:column;gap:.22rem;flex:1;min-width:150px;}
+  label{font-size:.76rem;color:var(--text2);font-weight:600;}
+  .champ input{padding:.45rem .6rem;border:1px solid var(--border);border-radius:7px;
+               font-family:inherit;font-size:.88rem;}
+  ul.ratees{list-style:none;font-size:.88rem;color:var(--text2);}
+  ul.ratees li{padding:.35rem 0;border-bottom:1px dotted var(--border);}
+  .note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;
+        padding:.75rem 1rem;font-size:.9rem;color:var(--text2);margin-top:1rem;}
+  code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--card);
+       color:var(--accent2);padding:.08rem .34rem;border-radius:4px;font-size:.88em;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Un « chatbot » qui ne contient aucune IA</h1>
+  <p class="sub">
+    Neuf règles écrites à la main. Zéro donnée d'entraînement, zéro apprentissage.
+    C'est ainsi qu'ont fonctionné les assistants des sites web pendant vingt ans.
+  </p>
+
+  <div class="bloc">
+    <h2>1 · Parlez-lui</h2>
+    <div class="conv" id="conversation"></div>
+    <div class="barre">
+      <input id="question" type="text" placeholder="Posez une question…" autocomplete="off">
+      <button id="btnEnvoyer">Envoyer</button>
+    </div>
+    <div class="exemples" id="exemples"></div>
+  </div>
+
+  <div class="bloc">
+    <h2>2 · Sa vraie limite</h2>
+    <p style="font-size:.92rem;color:#4B5C63;margin-bottom:.8rem">
+      Onze questions lui sont posées. Regardez celles qu'il rate : chacune demanderait
+      une nouvelle règle, écrite à la main. C'est exactement le mur qu'a rencontré
+      l'IA symbolique dans les années 1990.
+    </p>
+    <div class="kpi" id="bilan"></div>
+    <h2 style="margin-top:1rem">Les questions qu'il ne comprend pas</h2>
+    <ul class="ratees" id="ratees"></ul>
+  </div>
+
+  <div class="bloc">
+    <h2>3 · Ajoutez une règle vous-même</h2>
+    <div class="rangee">
+      <div class="champ">
+        <label for="nom">Nom de la règle</label>
+        <input id="nom" type="text" value="paiement">
+      </div>
+      <div class="champ">
+        <label for="cles">Mots-clés, séparés par des virgules</label>
+        <input id="cles" type="text" value="payer, paiement, facture, echelonner">
+      </div>
+    </div>
+    <div class="rangee" style="margin-top:.6rem">
+      <div class="champ" style="flex:3">
+        <label for="reponse">La réponse</label>
+        <input id="reponse" type="text" value="Le paiement se fait par virement, à 30 jours. Un échelonnement est possible.">
+      </div>
+      <button id="btnAjouter">Ajouter la règle</button>
+    </div>
+    <div class="note" id="apresAjout" style="display:none"></div>
+  </div>
+
+  <div class="note">
+    <b>Ce que cet exercice démontre.</b> Ce programme est <b>explicable</b> : il dit
+    toujours quelle règle il a utilisée. Il est <b>prévisible</b> : la même question
+    donne toujours la même réponse. Et il est <b>limité</b> : chaque nouvelle formulation
+    demande du travail humain. Demain, l'exercice 2 fera la même chose avec un LLM —
+    l'inverse exact sur les trois points. Ouvrez <code>chatbot.js</code> :
+    tout le programme tient en une liste de règles et une boucle.
+  </div>
+</div>
+
+<script src="chatbot.js"></script>
+<script>
+/* --------------------------------------------------------------------------
+ * Le code d'interface. Aucune règle métier ici : elles sont toutes dans
+ * chatbot.js, ce qui permet de le tester sans navigateur.
+ * ------------------------------------------------------------------------ */
+
+const el = function (id) { return document.getElementById(id); };
+
+/** Échappe le HTML : on n'injecte jamais du texte utilisateur tel quel. */
+function echapper(texte) {
+  const d = document.createElement('div');
+  d.textContent = String(texte == null ? '' : texte);
+  return d.innerHTML;
+}
+
+/** Ajoute un message dans la conversation. */
+function ajouterMessage(classe, contenuHtml) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + classe;
+  div.innerHTML = contenuHtml;
+  el('conversation').appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/** Envoie la question saisie et affiche la réponse. */
+function envoyer() {
+  const question = el('question').value.trim();
+  if (!question) return;
+
+  ajouterMessage('moi', echapper(question));
+  el('question').value = '';
+
+  const r = Chatbot.repondre(question);
+
+  ajouterMessage(r.comprise ? 'lui' : 'lui rate',
+    echapper(r.reponse) + '<span class="regle">règle appliquée : '
+    + echapper(r.regle || 'aucune') + '</span>');
+}
+
+/** Recalcule et affiche le bilan de compréhension. */
+function afficherBilan() {
+  const bilan = Chatbot.tauxDeComprehension(Chatbot.QUESTIONS_EXEMPLE);
+
+  el('bilan').innerHTML =
+    '<div><b>' + Chatbot.REGLES.length + '</b><span>règles écrites à la main</span></div>' +
+    '<div><b>' + bilan.comprises + ' / ' + bilan.total + '</b><span>questions comprises</span></div>' +
+    '<div><b>' + bilan.pourcentage + ' %</b><span>taux de compréhension</span></div>';
+
+  el('ratees').innerHTML = bilan.ratees.length
+    ? bilan.ratees.map(function (q) { return '<li>' + echapper(q) + '</li>'; }).join('')
+    : '<li>Toutes les questions d\'exemple sont comprises.</li>';
+}
+
+// Les questions d'exemple, sous forme de boutons cliquables.
+Chatbot.QUESTIONS_EXEMPLE.slice(0, 7).forEach(function (q) {
+  const b = document.createElement('button');
+  b.className = 'ghost';
+  b.textContent = q;
+  b.addEventListener('click', function () { el('question').value = q; envoyer(); });
+  el('exemples').appendChild(b);
+});
+
+el('btnEnvoyer').addEventListener('click', envoyer);
+el('question').addEventListener('keydown', function (e) { if (e.key === 'Enter') envoyer(); });
+
+el('btnAjouter').addEventListener('click', function () {
+  const cles = el('cles').value.split(',').map(function (m) { return m.trim(); })
+    .filter(function (m) { return m.length > 0; });
+
+  if (!el('nom').value.trim() || cles.length === 0 || !el('reponse').value.trim()) {
+    return;
+  }
+
+  const total = Chatbot.ajouterRegle(el('nom').value.trim(), cles, el('reponse').value.trim());
+
+  el('apresAjout').style.display = 'block';
+  el('apresAjout').innerHTML = '<b>' + total + ' règles maintenant.</b> '
+    + 'Essayez une question qui contient l\'un de vos mots-clés. '
+    + 'Puis regardez le taux ci-dessus : a-t-il bougé ?';
+
+  afficherBilan();
+});
+
+afficherBilan();
+el('question').focus();
+</script>
+</body>
+</html>

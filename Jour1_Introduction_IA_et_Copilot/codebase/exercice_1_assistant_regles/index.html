@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercice 1 · Un assistant sans IA</title>
+
+<!--
+  ===========================================================================
+  Cette page est un « assistant » qui répond à des questions.
+  Elle ne contient PAS UNE SEULE LIGNE DE JAVASCRIPT.
+
+  Tout ce que vous voyez fonctionner — les questions cliquables, la réponse
+  qui apparaît — est fait en HTML et en CSS. Rien d'autre.
+
+  C'est exactement ainsi qu'ont fonctionné les « assistants » des sites web
+  pendant vingt ans : une liste de questions prévues à l'avance, et une
+  réponse écrite à la main pour chacune.
+  ===========================================================================
+-->
+
+<link rel="stylesheet" href="assistant.css">
+</head>
+<body>
+
+<div class="page">
+
+  <header>
+    <div class="surtitre">Exercice 1 · Module 1</div>
+    <h1>Un assistant qui ne contient aucune IA</h1>
+    <p class="intro">
+      Neuf règles écrites à la main. Zéro donnée d'entraînement, zéro
+      apprentissage, <b>zéro JavaScript</b>. Cliquez sur une question :
+      la réponse correspondante apparaît.
+    </p>
+  </header>
+
+
+  <!-- =====================================================================
+       LA CONVERSATION
+       =====================================================================
+       Chaque question est un LIEN qui pointe vers une ancre (#regle-xxx).
+       Chaque réponse est un bloc qui porte cet identifiant.
+
+       Le CSS cache toutes les réponses, sauf celle dont l'identifiant se
+       trouve dans l'adresse de la page. C'est le sélecteur « :target ».
+
+       Une règle = un lien + un bloc. Rien de plus.
+       ================================================================== -->
+
+  <section class="assistant">
+
+    <div class="entete-assistant">Assistant du centre de formation</div>
+
+    <!-- ---- Les questions prévues ---------------------------------- -->
+    <div class="questions">
+      <a href="#regle-bonjour">Bonjour</a>
+      <a href="#regle-horaires">Quels sont vos horaires ?</a>
+      <a href="#regle-tarifs">Combien ça coûte ?</a>
+      <a href="#regle-formations">Quelles formations proposez-vous ?</a>
+      <a href="#regle-adresse">Où êtes-vous situés ?</a>
+      <a href="#regle-contact">Comment vous joindre ?</a>
+      <a href="#regle-inscription">Comment s'inscrire ?</a>
+      <a href="#regle-merci">Merci</a>
+      <a href="#regle-aurevoir">Au revoir</a>
+    </div>
+
+    <!-- ---- Les réponses, une par règle ---------------------------- -->
+    <div class="zone-reponse">
+
+      <!-- Ce bloc s'affiche tant qu'aucune question n'a été cliquée. -->
+      <p class="attente">Cliquez sur une question ci-dessus.</p>
+
+      <div class="reponse" id="regle-bonjour">
+        <p>Bonjour ! Posez-moi une question sur nos horaires, nos tarifs ou nos formations.</p>
+        <span class="regle-appliquee">règle appliquée : <b>bonjour</b></span>
+      </div>
+
+      <div class="reponse" id="regle-horaires">
+        <p>Nous sommes ouverts du lundi au vendredi, de 9 h à 18 h. Fermé le week-end.</p>
+        <span class="regle-appliquee">règle appliquée : <b>horaires</b></span>
+      </div>
+
+      <div class="reponse" id="regle-tarifs">
+        <p>Une journée de formation coûte 450 € hors taxes, repas compris.</p>
+        <span class="regle-appliquee">règle appliquée : <b>tarifs</b></span>
+      </div>
+
+      <div class="reponse" id="regle-formations">
+        <p>Nous proposons trois parcours : intelligence artificielle, développement web, et données.</p>
+        <span class="regle-appliquee">règle appliquée : <b>formations</b></span>
+      </div>
+
+      <div class="reponse" id="regle-adresse">
+        <p>Avenue de la Basilique 385, à 1081 Koekelberg. Métro Simonis, dix minutes à pied.</p>
+        <span class="regle-appliquee">règle appliquée : <b>adresse</b></span>
+      </div>
+
+      <div class="reponse" id="regle-contact">
+        <p>Écrivez-nous à hello@dhcompany.pro, nous répondons sous 24 heures ouvrées.</p>
+        <span class="regle-appliquee">règle appliquée : <b>contact</b></span>
+      </div>
+
+      <div class="reponse" id="regle-inscription">
+        <p>Les inscriptions se font par e-mail. Il reste des places sur les sessions de novembre.</p>
+        <span class="regle-appliquee">règle appliquée : <b>inscription</b></span>
+      </div>
+
+      <div class="reponse" id="regle-merci">
+        <p>Avec plaisir ! Autre chose ?</p>
+        <span class="regle-appliquee">règle appliquée : <b>merci</b></span>
+      </div>
+
+      <div class="reponse" id="regle-aurevoir">
+        <p>Bonne journée, et à bientôt !</p>
+        <span class="regle-appliquee">règle appliquée : <b>au revoir</b></span>
+      </div>
+
+    </div>
+
+    <!-- ---- Le champ qui ne marche pas, et c'est voulu ------------- -->
+    <div class="saisie">
+      <input type="text" placeholder="Écrivez votre question ici…" readonly>
+      <button type="button" disabled>Envoyer</button>
+    </div>
+    <p class="note-saisie">
+      Ce champ est volontairement inactif. <b>Un système à règles ne peut pas
+      lire une phrase libre</b> : il ne connaît que les neuf questions
+      prévues à l'avance. C'est tout le sujet de l'exercice.
+    </p>
+
+  </section>
+
+
+  <!-- =====================================================================
+       LA LIMITE
+       ================================================================== -->
+  <h2>Ce qu'il ne sait pas faire</h2>
+
+  <p>
+    Voici quatre questions qu'un vrai visiteur poserait. Aucune n'a de règle.
+    L'assistant ne répondrait rien du tout.
+  </p>
+
+  <ul class="ratees">
+    <li>Est-ce que je peux payer en plusieurs fois ?</li>
+    <li>Y a-t-il un certificat à la fin ?</li>
+    <li>Auriez-vous une session en soirée ?</li>
+    <li>Mon employeur peut-il financer ma participation ?</li>
+  </ul>
+
+  <div class="attention">
+    <b>Chacune demanderait une nouvelle règle</b>, écrite à la main : un lien
+    de plus, un bloc de plus. Et il en faudrait des centaines pour couvrir
+    les formulations réelles des visiteurs.
+    <br><br>
+    C'est exactement le mur qu'a rencontré l'IA symbolique dans les
+    années 1990. Chaque point de pourcentage supplémentaire coûte du travail
+    humain, et le coût augmente à mesure qu'on avance.
+  </div>
+
+
+  <!-- =====================================================================
+       CE QU'IL FAUT REGARDER
+       ================================================================== -->
+  <h2>Ce qu'il faut regarder dans le code</h2>
+
+  <p>
+    Ouvrez ce fichier dans VS Code (clic droit → <i>Ouvrir avec</i>), puis
+    <code>assistant.css</code>. Vous y trouverez trois choses, et rien d'autre.
+  </p>
+
+  <table>
+    <tr><th>Où</th><th>Quoi</th><th>Pourquoi c'est important</th></tr>
+    <tr>
+      <td><code>index.html</code></td>
+      <td>Neuf liens <code>&lt;a href="#regle-…"&gt;</code></td>
+      <td>Ce sont les <b>déclencheurs</b>. Chacun a été écrit par un humain.</td>
+    </tr>
+    <tr>
+      <td><code>index.html</code></td>
+      <td>Neuf blocs <code>&lt;div class="reponse" id="regle-…"&gt;</code></td>
+      <td>Ce sont les <b>réponses</b>. Elles ne changent jamais.</td>
+    </tr>
+    <tr>
+      <td><code>assistant.css</code></td>
+      <td>Deux lignes : <code>.reponse{display:none}</code> et
+          <code>.reponse:target{display:block}</code></td>
+      <td>C'est <b>tout le moteur</b>. Deux lignes de CSS remplacent
+          ce que beaucoup croient être de l'intelligence.</td>
+    </tr>
+  </table>
+
+  <div class="bien">
+    <b>Ce programme a deux qualités qu'un LLM n'a pas.</b><br>
+    Il est <b>prévisible</b> : la même question donne toujours la même réponse.
+    Il est <b>explicable</b> : il affiche toujours quelle règle il a appliquée.
+    <br><br>
+    Et il a un défaut qu'un LLM n'a pas : il ne comprend
+    <b>que ce qui a été prévu</b>.
+  </div>
+
+
+  <h2>Votre travail</h2>
+  <p>
+    Le pas à pas complet est dans <b>Exercices_guidés_Jour1.html</b>, à la
+    racine du dossier de la journée. En résumé :
+  </p>
+  <ol>
+    <li>cliquez sur les neuf questions, observez la mention « règle appliquée » ;</li>
+    <li>ouvrez <code>assistant.css</code> et trouvez les deux lignes du moteur ;</li>
+    <li><b>ajoutez une dixième règle</b> : un lien, un bloc, et c'est fini ;</li>
+    <li>demandez à Copilot d'en écrire une onzième, puis <b>relisez-la</b>.</li>
+  </ol>
+
+  <footer>
+    Formation animée par <b>Kuate Joël Parfait</b> — Digital House Company ·
+    hello@dhcompany.pro
+  </footer>
+
+</div>
+
+</body>
+</html>

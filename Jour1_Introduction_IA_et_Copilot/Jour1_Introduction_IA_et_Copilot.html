@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jour 1 — L'\''IA pour les développeurs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;
+  --bg2:#F2F7F7;
+  --accent:#0E8C86;
+  --accent2:#0B6E68;
+  --navy:#0B2D48;
+  --navy2:#08202F;
+  --text:#16212B;
+  --text2:#4B5C63;
+  --card:#EAF4F3;
+  --border:#D7E6E4;
+  --good:#1F9D67;
+  --warn:#B9740A;
+  --bad:#C1443B;
+  --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
+.deck{position:relative;width:100vw;height:100vh;}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;padding:5.5vh 8vw;opacity:0;transition:opacity .25s ease;overflow-y:auto;}
+.slide.active{display:flex;opacity:1;}
+.slide-tag{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;}
+.slide-title{font-size:2.1rem;font-weight:800;margin-bottom:1.2rem;line-height:1.22;max-width:94%;color:var(--navy);}
+.slide h3.subtitle{font-size:1.15rem;font-weight:400;color:var(--text2);margin-bottom:1rem;}
+ul.points{list-style:none;max-width:88%;}
+ul.points li{font-size:1.1rem;line-height:1.5;margin-bottom:.7rem;padding-left:1.7rem;position:relative;color:var(--text2);}
+ul.points li::before{content:"\203A";position:absolute;left:0;color:var(--accent2);font-weight:700;font-size:1.3rem;}
+ul.points li b, ul.points li strong{color:var(--text);font-weight:700;}
+ul.points ul{list-style:none;margin-top:.4rem;}
+ul.points ul li{font-size:.98rem;margin-bottom:.3rem;}
+ul.points ul li::before{content:"\2013";font-size:1rem;}
+.note{margin-top:1.2rem;padding:.85rem 1.2rem;background:var(--card);border-left:4px solid var(--accent);border-radius:6px;font-size:.98rem;color:var(--text2);max-width:88%;}
+.note b{color:var(--accent2);}
+.warn{margin-top:1.2rem;padding:.85rem 1.2rem;background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;font-size:.98rem;color:var(--text2);max-width:88%;}
+.warn b{color:var(--warn);}
+.src{margin-top:.9rem;font-size:.85rem;color:var(--text2);max-width:88%;}
+.src a{color:var(--accent2);text-decoration:none;border-bottom:1px dotted var(--accent2);}
+.src a:hover{color:var(--navy);}
+.slide-cover{align-items:flex-start;background:radial-gradient(circle at 80% 20%, #E3F2F1 0%, var(--bg) 60%);}
+.cover-org{font-size:.92rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);margin-bottom:1.6rem;}
+.cover-title{font-size:3rem;font-weight:800;max-width:88%;line-height:1.16;margin-bottom:1rem;color:var(--navy);}
+.cover-sub{font-size:1.25rem;color:var(--text2);max-width:78%;margin-bottom:2rem;}
+.cover-meta{display:flex;gap:2.2rem;flex-wrap:wrap;font-size:.95rem;color:var(--text2);}
+.cover-meta span b{color:var(--navy);display:block;font-size:1.05rem;}
+.cover-contact{position:absolute;bottom:6vh;left:8vw;font-size:.95rem;color:var(--accent2);}
+.slide-divider{align-items:center;text-align:center;background:linear-gradient(135deg, var(--bg) 0%, #E7F3F2 100%);}
+.section-tag{font-size:1rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2);margin-bottom:1rem;}
+.section-title{font-size:2.7rem;font-weight:800;max-width:84%;line-height:1.2;margin-bottom:1rem;color:var(--navy);}
+.section-sub{font-size:1.1rem;color:var(--text2);max-width:70%;}
+.section-num{font-size:5.2rem;font-weight:800;color:var(--border);position:absolute;top:6vh;right:8vw;}
+.slide-question{background:linear-gradient(135deg,#FFF8ED 0%, var(--bg) 100%);border-top:6px solid var(--warn);}
+.q-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--warn);font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+.q-question{font-size:1.55rem;font-weight:700;margin-bottom:1.2rem;max-width:90%;color:var(--navy);line-height:1.35;}
+.q-hint{font-size:1.02rem;color:var(--text2);max-width:86%;line-height:1.5;}
+.q-footer{margin-top:1.2rem;font-size:.92rem;color:var(--text2);font-style:italic;}
+.slide-anecdote{background:linear-gradient(135deg,#F0F8F7 0%, var(--bg) 100%);border-top:6px solid var(--accent);}
+.an-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+.an-title{font-size:1.6rem;font-weight:700;margin-bottom:.9rem;max-width:90%;color:var(--navy);}
+.an-body{font-size:1.05rem;color:var(--text2);max-width:88%;line-height:1.55;}
+.an-body b{color:var(--text);}
+.slide-quote{align-items:center;text-align:center;background:linear-gradient(135deg,var(--navy) 0%, var(--navy2) 100%);color:#fff;}
+.slide-quote .mini-relance{color:#B9D6D3;border-top-color:#2A4C63;}
+.q-mark{font-size:3.6rem;color:var(--accent);line-height:1;margin-bottom:.5rem;font-family:Georgia,serif;}
+.quote-text{font-size:1.8rem;font-weight:600;max-width:80%;line-height:1.4;margin-bottom:1.2rem;}
+.quote-author{font-size:1.05rem;color:#B9D6D3;}
+.quote-author b{color:#fff;}
+.slide-demo{background:linear-gradient(135deg,#EAF4FE 0%, var(--bg) 100%);border-top:6px solid #2E7DD1;}
+.demo-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:#2E7DD1;font-weight:700;margin-bottom:1rem;}
+.demo-title{font-size:1.6rem;font-weight:700;margin-bottom:.7rem;color:var(--navy);}
+.demo-link{display:inline-block;margin-top:.5rem;background:#2E7DD1;color:#fff;padding:.55rem 1.1rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.98rem;}
+.slide-exercice{background:linear-gradient(135deg,#F0F8F7 0%, var(--bg) 100%);border-top:6px solid var(--accent);}
+.exo-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;}
+.exo-title{font-size:1.8rem;font-weight:700;margin-bottom:.5rem;color:var(--navy);}
+.exo-duree{font-size:.98rem;color:var(--text2);margin-bottom:1.1rem;}
+.exo-steps{max-width:88%;padding-left:1.3rem;}
+.exo-steps li{font-size:1.05rem;color:var(--text2);margin-bottom:.55rem;line-height:1.45;}
+.exo-livrable{margin-top:1.2rem;padding:.85rem 1.1rem;background:var(--card);border-radius:8px;font-size:1rem;border-left:4px solid var(--good);}
+.slide-cta{align-items:center;text-align:center;background:radial-gradient(circle at 50% 30%, #E3F2F1 0%, var(--bg) 70%);}
+.slide-cta h2{font-size:2.4rem;font-weight:800;margin-bottom:1rem;color:var(--navy);}
+.slide-cta p{font-size:1.2rem;color:var(--text2);margin-bottom:1.6rem;}
+.cta-links{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem;}
+.cta-links a{color:var(--accent2);text-decoration:none;font-size:1.05rem;font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px;}
+table.cmp{border-collapse:collapse;max-width:96%;margin-top:.9rem;}
+table.cmp th, table.cmp td{border:1px solid var(--border);padding:.55rem .85rem;font-size:.95rem;text-align:left;}
+table.cmp th{background:var(--card);color:var(--accent2);}
+table.cmp td{color:var(--text2);}
+table.cmp td b{color:var(--text);}
+.two-col{display:flex;gap:2.2rem;max-width:96%;}
+.two-col .col{flex:1;}
+.two-col h4{color:var(--accent2);font-size:1.02rem;margin-bottom:.5rem;}
+.three-col{display:flex;gap:1.6rem;max-width:96%;}
+.three-col .col{flex:1;background:var(--card);border-radius:8px;padding:1rem 1.1rem;}
+.three-col h4{color:var(--accent2);font-size:1rem;margin-bottom:.45rem;}
+.three-col p{font-size:.93rem;color:var(--text2);line-height:1.45;}
+.schema-box{margin-top:1.1rem;max-width:94%;}
+.schema-box svg{max-width:100%;height:auto;}
+.slide-code{background:linear-gradient(135deg,#F4F8F8 0%, var(--bg) 100%);border-top:6px solid var(--navy);}
+.code-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:.8rem;}
+pre.code{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1.1rem 1.3rem;font-family:'JetBrains Mono',Consolas,monospace;font-size:.86rem;line-height:1.55;overflow-x:auto;max-width:96%;white-space:pre;}
+pre.code .cm{color:#7FB3AE;}
+pre.code .kw{color:#7FC7FF;font-weight:600;}
+pre.code .st{color:#F2C57C;}
+pre.code .fn{color:#9FE3D0;}
+.file-path{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent2);margin-bottom:.5rem;}
+code.inline{font-family:'JetBrains Mono',monospace;background:var(--card);color:var(--accent2);padding:.1rem .35rem;border-radius:4px;font-size:.9em;}
+.progress-wrap{position:fixed;top:0;left:0;width:100%;height:4px;background:var(--border);z-index:50;}
+#progress{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--navy));transition:width .2s ease;}
+#counter{position:fixed;bottom:1.3vh;right:2vw;font-size:.78rem;color:var(--text2);z-index:50;letter-spacing:.05em;}
+.navbtn{position:fixed;top:50%;transform:translateY(-50%);z-index:50;background:var(--card);border:1px solid var(--border);color:var(--navy);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.15rem;display:flex;align-items:center;justify-content:center;opacity:.6;transition:opacity .2s;}
+.navbtn:hover{opacity:1;}
+#prevBtn{left:1.2vw;} #nextBtn{right:1.2vw;}
+.brand-mark{position:fixed;bottom:1.3vh;left:2vw;font-size:.7rem;color:#9FBDBA;letter-spacing:.1em;z-index:50;}
+.pdf-btn{position:fixed;top:1.3vh;right:2vw;z-index:60;background:var(--accent);color:#FFFFFF;border:none;border-radius:8px;padding:.5rem 1rem;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem;box-shadow:0 2px 8px rgba(11,45,72,.25);transition:background .2s;}
+.pdf-btn:hover{background:var(--accent2);}
+.amorce{margin-top:1.1rem;padding-top:.7rem;border-top:1px dashed var(--border);font-size:.93rem;color:var(--accent2);font-style:italic;max-width:88%;}
+.mini-relance{margin-top:1.1rem;padding-top:.7rem;border-top:1px dashed var(--border);font-size:.9rem;color:var(--accent2);font-style:italic;max-width:88%;}
+@media print{
+  .navbtn,#counter,.progress-wrap,.brand-mark,.pdf-btn{display:none !important;}
+  body{overflow:visible;}
+  .slide{position:relative;display:flex !important;opacity:1 !important;page-break-after:always;height:100vh;}
+}
+@media (max-width:900px){
+  .slide{padding:4vh 5vw 12vh;justify-content:flex-start;}
+  .cover-title{font-size:2rem;}
+  .slide-title{font-size:1.45rem;}
+  .section-title{font-size:1.7rem;}
+  .section-num{font-size:3rem;top:3vh;right:5vw;}
+  .two-col,.three-col{flex-direction:column;gap:1rem;}
+  ul.points,.note,.warn,.src,.amorce,.mini-relance,.exo-steps{max-width:100%;}
+  ul.points li{font-size:1rem;}
+  .q-question{font-size:1.25rem;}
+  .quote-text{font-size:1.35rem;max-width:100%;}
+  pre.code{font-size:.68rem;padding:.8rem .9rem;}
+  table.cmp{display:block;overflow-x:auto;max-width:100%;}
+  .pdf-btn,.navbtn{display:none;}
+  .brand-mark{max-width:60%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  .cover-contact{position:static;margin-top:1.5rem;}
+}
+</style>
+</head>
+<body>
+<div class="progress-wrap"><div id="progress"></div></div>
+<button class="navbtn" id="prevBtn">&lsaquo;</button>
+<button class="navbtn" id="nextBtn">&rsaquo;</button>
+<button class="pdf-btn" id="pdfBtn" title="Raccourci clavier : P">&#11015; Exporter en PDF</button>
+<div id="counter">1 / 1</div>
+<div class="brand-mark">IA POUR LES DÉVELOPPEURS · JOUR 1 · DIGITAL HOUSE COMPANY</div>
+
+<div class="deck">
+<!-- SLIDES_START -->
+<section class="slide slide-cover active">
+  <div class="cover-org">Formation professionnelle · 3 jours · 21 heures</div>
+  <div class="cover-title">L'intelligence artificielle pour les développeurs</div>
+  <div class="cover-sub">Jour 1 — Comprendre l'IA et équiper son poste de travail</div>
+  <div class="cover-meta">
+    <span><b>Public</b>Développeurs, débutants en IA</span>
+    <span><b>Prérequis</b>Savoir lire du code</span>
+    <span><b>Langage</b>Python (niveau débutant)</span>
+    <span><b>Durée</b>7 heures</span>
+  </div>
+  <div class="cover-contact">Kuate Joël Parfait — Digital House Company — hello@dhcompany.pro</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Bienvenue</div>
+  <h2 class="slide-title">Trois jours pour passer de « j'ai entendu parler de l'IA » à « je code avec »</h2>
+  <ul class="points">
+    <li>Vous êtes <b>développeurs</b> : on ne va pas vous expliquer ce qu'est une boucle.</li>
+    <li>Vous êtes <b>débutants en IA</b> : on ne va pas vous noyer sous les mathématiques.</li>
+    <li>Tout le code de la formation est en <b>Python</b>, commenté ligne par ligne.</li>
+    <li>Chaque chapitre se termine par un <b>exercice sur une vraie code base</b>.</li>
+    <li>À la fin, vous repartez avec un dépôt de code qui tourne sur votre machine.</li>
+  </ul>
+  <div class="note">Règle de la salle : <b>toute question est légitime</b>. Le vocabulaire de l'IA est plein de mots compliqués qui cachent des idées simples. Notre travail des trois jours est de les démonter.</div>
+  <div class="amorce">💬 Pour commencer : en un mot chacun, qu'attendez-vous de ces trois jours ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Objectifs</div>
+  <h2 class="slide-title">Ce que vous saurez faire jeudi soir</h2>
+  <ul class="points">
+    <li><b>Expliquer</b> à un collègue ce qu'est un LLM, un token, un embedding, sans jargon.</li>
+    <li><b>Utiliser un assistant de code</b> (Copilot ou équivalent) sans lui faire aveuglément confiance.</li>
+    <li><b>Écrire des prompts</b> qui produisent un résultat exploitable dans du code.</li>
+    <li><b>Appeler une API de LLM</b> depuis Python, et gérer les erreurs et les coûts.</li>
+    <li><b>Installer un modèle en local</b> et l'interroger sans que vos données sortent.</li>
+    <li><b>Construire un RAG</b> : un assistant qui répond à partir de vos documents.</li>
+  </ul>
+  <div class="amorce">💬 Lequel de ces six objectifs est le plus urgent pour votre projet actuel ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Déroulé</div>
+  <h2 class="slide-title">Le programme des trois jours</h2>
+  <table class="cmp">
+    <tr><th>Jour</th><th>Modules</th><th>Ce qu'on construit</th></tr>
+    <tr><td><b>Jour 1</b></td><td>1. Introduction à l'IA<br>2. VSCode et GitHub Copilot</td><td>Un assistant à règles en HTML/CSS<br>Une page web générée par prompt</td></tr>
+    <tr><td><b>Jour 2</b></td><td>3. La programmation par prompt<br>4. Les outils du cloud</td><td>Une spécification d'application<br>Une application web déployée</td></tr>
+    <tr><td><b>Jour 3</b></td><td>5. Les LLM<br>6. Les outils pour développer avec l'IA</td><td>Des embeddings faits main<br>Un « ChatGPT » local sur vos documents</td></tr>
+  </table>
+  <div class="note">Les six exercices s'enchaînent : celui du jour 3 réutilise le code écrit le jour 1. À la fin, ce n'est pas six bouts de code, c'est <b>une application complète</b>.</div>
+  <div class="amorce">💬 Qui, dans la salle, a déjà un projet en tête où l'un de ces six exercices s'appliquerait directement ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Journée 1</div>
+  <h2 class="slide-title">Au programme aujourd'hui</h2>
+  <div class="two-col">
+    <div class="col">
+      <h4>Matin — Comprendre (3h30)</h4>
+      <ul class="points">
+        <li>IA, machine learning, deep learning</li>
+        <li>Symbolique contre statistique</li>
+        <li>NLP, tokens, transformers</li>
+        <li>Embeddings, bases vectorielles, GGUF</li>
+        <li>Premiers prompts</li>
+        <li><b>Exercice 1</b> : l'assistant à règles, en HTML/CSS</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Après-midi — Équiper (3h30)</h4>
+      <ul class="points">
+        <li>VSCode et son écosystème IA</li>
+        <li>GitHub Copilot : les quatre usages</li>
+        <li>Définir une fonction par sa docstring</li>
+        <li>Vérifier ce que l'assistant produit</li>
+        <li>Les alternatives et la confidentialité</li>
+        <li><b>Exercice 2</b> : générer des pages web</li>
+      </ul>
+    </div>
+  </div>
+  <div class="amorce">💬 Avant de commencer : qui utilise déjà un assistant de code au quotidien ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Mise en route</div>
+<h2 class="slide-title">Préparer son poste avant de commencer</h2>
+<ul class="points"><li>Un <b>navigateur récent</b> — Chrome, Firefox ou Edge. C'est tout ce qu'il faut aujourd'hui.</li><li><b>VSCode</b> installé, avec l'extension <b>GitHub Copilot</b>.</li><li>L'extension <b>Live Preview</b> de Microsoft : la page se recharge toute seule à chaque enregistrement.</li><li>Le dossier de la formation, décompressé sur votre bureau.</li><li>Le test de bon fonctionnement, en deux clics :<ul><li>ouvrez <code class="inline">Jour1.../codebase/index.html</code> ;</li><li>cliquez sur la première carte : l'assistant doit répondre quand vous cliquez une question.</li></ul></li><li><b>Python 3.10+</b> — uniquement pour la journée 3. On l'installera ensemble demain soir.</li></ul>
+<div class="note"><b>Aujourd'hui et demain : ni terminal, ni installation, ni clé d'API, et pas une ligne de JavaScript.</b> Vous double-cliquez un fichier, il s'ouvre dans le navigateur, ça marche. Le wifi de la salle ne bloquera personne.</div>
+<div class="amorce">&#128172; Levez la main quand l'assistant vous répond — on avance ensemble.</div>
+</section>
+<section class="slide">
+<div class="slide-tag">La code base</div>
+<h2 class="slide-title">Ce qu'il y a dans le dossier de la formation</h2>
+<h3 class="subtitle">Un dossier par journée. Chacun contient le support, les exercices guidés, votre fiche à remplir, et la code base du jour.</h3>
+<div class="file-path">le dossier de la formation</div><pre class="code">AI 4 dev/
+├── Jour1_Introduction_IA_et_Copilot/     ← aujourd'hui
+│   ├── Jour1_....html                    ← ce support
+│   ├── Exercices_guides_Jour1.html       ← les pas à pas
+│   ├── Fiche_participant_Jour1.html      ← à remplir, exportable en PDF
+│   └── codebase/                         ← HTML et CSS, zéro installation
+├── Jour2_Prompt_et_Cloud/                ← HTML et CSS également
+├── Jour3_LLM_et_RAG_local/               ← Python : RAG et MCP
+├── Outils/
+│   ├── Claude_Code/                      ← formation dédiée + 50 commandes
+│   ├── GitHub_Copilot/                   ← formation dédiée + 50 commandes
+│   └── Codex/                            ← formation dédiée + 50 commandes
+└── Bonus/                                ← open source et bonnes pratiques</pre>
+<div class="note">Les jours 1 et 2 sont en <b>HTML et CSS</b>, sans une ligne de JavaScript : rien à installer, et deux langages qu'on peut lire à voix haute. Le jour 3 passe à <b>Python</b>, parce qu'un RAG lit des fichiers sur le disque et qu'un serveur MCP parle par l'entrée standard — deux choses qu'un navigateur ne sait pas faire.</div>
+<div class="amorce">&#128172; Ouvrez le dossier maintenant. Tout le monde voit-il les quatre sous-dossiers ?</div>
+</section>
+<section class="slide slide-question">
+  <div class="q-tag">💬 Question de relance · ouverture</div>
+  <div class="q-question">Selon vous, qu'est-ce qu'un développeur perd, et qu'est-ce qu'il gagne, en travaillant avec une IA ?</div>
+  <div class="q-hint">Pistes à faire émerger : gain de vitesse sur le code répétitif, perte de mémorisation de la syntaxe, difficulté à relire du code qu'on n'a pas écrit, montée en compétence accélérée sur un langage inconnu, risque de dépendance.</div>
+  <div class="q-footer">On reviendra sur vos réponses jeudi soir, pour voir ce qui a changé.</div>
+</section>
+<section class="slide slide-divider">
+  <div class="section-num">01</div>
+  <div class="section-tag">Module 1</div>
+  <h1 class="section-title">Introduction à l'intelligence artificielle</h1>
+  <p class="section-sub">De quoi parle-t-on exactement, et pourquoi maintenant ?</p>
+  <div class="schema-box" style="max-width:180px;margin-left:auto;margin-right:auto;">
+    <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="60" cy="60" r="52" fill="none" stroke="#0B2D48" stroke-width="2"/>
+      <circle cx="60" cy="60" r="34" fill="none" stroke="#0E8C86" stroke-width="2"/>
+      <circle cx="60" cy="60" r="16" fill="#0E8C86" opacity="0.85"/>
+    </svg>
+  </div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Définition</div>
+  <h2 class="slide-title">L'intelligence artificielle, en une phrase</h2>
+  <ul class="points">
+    <li>Un programme est dit « intelligent » quand il accomplit une tâche qui, faite par un humain, demanderait de la réflexion.</li>
+    <li>Cette définition est <b>volontairement floue</b> : elle bouge avec le temps.</li>
+    <li>En 1970, une calculatrice était de l'IA. Aujourd'hui, plus personne ne le dirait.</li>
+    <li>C'est ce qu'on appelle <b>l'effet IA</b> : dès qu'une tâche est résolue, on cesse de la considérer comme intelligente.</li>
+  </ul>
+  <div class="note">Retenez surtout ceci : <b>« IA » n'est pas une technologie</b>, c'est une famille de techniques très différentes les unes des autres. Notre travail aujourd'hui est de savoir laquelle sert à quoi.</div>
+  <div class="amorce">💬 Quelle fonctionnalité de vos applications actuelles auriez-vous appelée « IA » il y a dix ans ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Repères historiques</div>
+  <h2 class="slide-title">Soixante-dix ans en six dates</h2>
+  <ul class="points">
+    <li><b>1956</b> — Conférence de Dartmouth : le terme « artificial intelligence » est inventé.</li>
+    <li><b>1970-1990</b> — L'ère des <b>systèmes experts</b> : des règles écrites à la main. Puis deux « hivers de l'IA », faute de résultats.</li>
+    <li><b>2012</b> — AlexNet gagne le concours ImageNet. Le <b>deep learning</b> devient crédible.</li>
+    <li><b>2017</b> — L'article <i>Attention Is All You Need</i> invente le <b>transformer</b>.</li>
+    <li><b>2022</b> — ChatGPT rend la technologie accessible au grand public.</li>
+    <li><b>2023-2026</b> — Les modèles deviennent multimodaux, agentiques, et tournent sur un ordinateur portable.</li>
+  </ul>
+  <div class="src">Source : <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">Vaswani et al., Attention Is All You Need (2017)</a></div>
+  <div class="amorce">💬 Deux hivers de l'IA ont déjà eu lieu. Qu'est-ce qui vous ferait dire qu'un troisième arrive ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Vocabulaire</div>
+  <h2 class="slide-title">IA, machine learning, deep learning : trois poupées russes</h2>
+  <div class="schema-box">
+    <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="15" width="620" height="170" rx="12" fill="none" stroke="#0B2D48" stroke-width="2"/>
+      <text x="26" y="40" font-family="Inter,sans-serif" font-size="15" font-weight="700" fill="#0B2D48">INTELLIGENCE ARTIFICIELLE — tout programme qui imite un raisonnement</text>
+      <rect x="34" y="55" width="572" height="115" rx="10" fill="#EAF4F3" stroke="#0E8C86" stroke-width="2"/>
+      <text x="50" y="78" font-family="Inter,sans-serif" font-size="14" font-weight="700" fill="#0B6E68">MACHINE LEARNING — le programme apprend à partir d'exemples</text>
+      <rect x="58" y="92" width="524" height="62" rx="8" fill="#0E8C86" opacity="0.9"/>
+      <text x="74" y="115" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">DEEP LEARNING — apprentissage par réseaux de neurones profonds</text>
+      <text x="74" y="138" font-family="Inter,sans-serif" font-size="12" fill="#E3F2F1">C'est ici que vivent les LLM : ChatGPT, Claude, Mistral, Llama…</text>
+    </svg>
+  </div>
+  <div class="note">Tout deep learning est du machine learning. Tout machine learning est de l'IA. <b>L'inverse est faux</b> : un système de règles est de l'IA sans être du machine learning.</div>
+  <div class="amorce">💬 Dans quelle case rangeriez-vous un filtre anti-spam ? Et un moteur de règles métier ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Machine learning</div>
+  <h2 class="slide-title">Apprendre à partir d'exemples, pas de règles</h2>
+  <div class="two-col">
+    <div class="col">
+      <h4>Programmation classique</h4>
+      <ul class="points">
+        <li>L'humain écrit <b>les règles</b>.</li>
+        <li>Le programme applique les règles aux données.</li>
+        <li>On obtient un <b>résultat</b>.</li>
+        <li>Exemple : « si le montant &gt; 10 000, alerter ».</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Machine learning</h4>
+      <ul class="points">
+        <li>L'humain fournit <b>des données et des résultats</b>.</li>
+        <li>L'algorithme en déduit les règles tout seul.</li>
+        <li>On obtient un <b>modèle</b>.</li>
+        <li>Exemple : 100 000 transactions étiquetées « fraude / normale ».</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">Le renversement est là : <b>on ne programme plus le comportement, on l'entraîne</b>. Conséquence directe pour un développeur : on ne débogue plus une règle, on corrige un jeu de données.</div>
+  <div class="amorce">💬 Quel problème de votre métier serait plus simple à décrire par des exemples que par des règles ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Deep learning</div>
+  <h2 class="slide-title">Le réseau de neurones, sans les mathématiques</h2>
+  <ul class="points">
+    <li>Un <b>neurone artificiel</b> est une simple fonction : il reçoit des nombres, les multiplie par des poids, les additionne, et sort un nombre.</li>
+    <li>Un <b>réseau</b> empile des milliers de ces neurones en couches successives.</li>
+    <li><b>Entraîner</b> le réseau, c'est ajuster les poids pour que la sortie se rapproche du résultat attendu.</li>
+    <li>« Profond » (deep) signifie simplement : <b>beaucoup de couches</b>.</li>
+    <li>GPT-3 comptait 175 milliards de poids. Les modèles récents, davantage.</li>
+  </ul>
+  <div class="warn"><b>Conséquence importante</b> : un modèle entraîné, c'est un gros fichier de nombres. Aucun humain ne peut lire ces nombres et expliquer une décision précise. C'est ce qu'on appelle la <b>boîte noire</b>.</div>
+  <div class="amorce">💬 Dans quels contextes cette non-explicabilité serait-elle rédhibitoire chez vous ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Les deux familles</div>
+  <h2 class="slide-title">IA symbolique contre IA statistique</h2>
+  <table class="cmp">
+    <tr><th></th><th>Symbolique (règles)</th><th>Statistique (apprentissage)</th></tr>
+    <tr><td><b>Principe</b></td><td>L'humain écrit la logique</td><td>La machine apprend des régularités</td></tr>
+    <tr><td><b>Exemples</b></td><td>Moteur de règles, Prolog, système expert, planificateur</td><td>LLM, reconnaissance d'image, recommandation</td></tr>
+    <tr><td><b>Résultat</b></td><td>Toujours le même, prouvable</td><td>Probabiliste, peut varier</td></tr>
+    <tr><td><b>Explicable ?</b></td><td>Oui, ligne par ligne</td><td>Non, boîte noire</td></tr>
+    <tr><td><b>Données requises</b></td><td>Aucune</td><td>Beaucoup</td></tr>
+    <tr><td><b>Point faible</b></td><td>Ne gère pas l'imprévu</td><td>Se trompe avec assurance</td></tr>
+  </table>
+  <div class="note">Les systèmes qui marchent le mieux en production sont <b>hybrides</b> : un LLM pour comprendre la demande, des règles déterministes pour exécuter l'action sensible.</div>
+  <div class="amorce">💬 Pour un calcul de prime salariale, laquelle des deux approches choisiriez-vous ? Pourquoi ?</div>
+</section>
+<section class="slide slide-anecdote">
+  <div class="an-tag">📖 Anecdote</div>
+  <div class="an-title">Deep Blue et AlphaGo : deux victoires, deux IA opposées</div>
+  <div class="an-body">En 1997, <b>Deep Blue</b> bat Kasparov aux échecs. C'est de l'IA symbolique pure : des règles écrites par des grands maîtres et une force de calcul brute, 200 millions de positions par seconde. En 2016, <b>AlphaGo</b> bat Lee Sedol au go. Cette fois, aucune règle de stratégie n'a été écrite : le programme a appris en jouant contre lui-même. Son coup 37 de la deuxième partie, jugé absurde par les commentateurs, s'est révélé gagnant — <b>et personne, pas même ses concepteurs, ne pouvait expliquer pourquoi</b>.<br><br><b>Pour un développeur</b> : c'est exactement le dilemme que vous rencontrerez. L'approche symbolique vous donne un code que vous pouvez déboguer. L'approche statistique vous donne des performances que vous ne pouvez pas justifier ligne par ligne.</div>
+  <div class="src">Source : <a href="https://deepmind.google/research/breakthroughs/alphago/" target="_blank" rel="noopener">Google DeepMind — AlphaGo</a></div>
+</section>
+<section class="slide slide-question">
+  <div class="q-tag">💬 Question de relance · module 1</div>
+  <div class="q-question">Si votre application doit refuser un dossier client, préférez-vous un système qui a raison 95 % du temps sans pouvoir se justifier, ou un système qui a raison 85 % du temps mais peut citer la règle appliquée ?</div>
+  <div class="q-hint">À faire émerger : le taux de réussite n'est pas le seul critère. Il y a l'obligation légale de motivation, la capacité à corriger une erreur, la confiance des utilisateurs, et la charge de preuve en cas de litige. Le règlement européen sur l'IA impose d'ailleurs l'explicabilité pour certains usages à haut risque.</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">NLP</div>
+  <h2 class="slide-title">Le traitement du langage naturel</h2>
+  <ul class="points">
+    <li><b>NLP</b> (Natural Language Processing) : faire manipuler du langage humain par une machine.</li>
+    <li>Tâches classiques : traduire, résumer, classer, extraire des informations, répondre à une question.</li>
+    <li>Avant 2017 : chaque tâche demandait <b>un modèle spécifique</b>, entraîné à la main.</li>
+    <li>Depuis les LLM : <b>un seul modèle</b> fait toutes ces tâches, en changeant simplement la consigne.</li>
+    <li>C'est ce qui change tout pour vous : vous ne développez plus un modèle, vous <b>rédigez une instruction</b>.</li>
+  </ul>
+  <div class="note">Cette bascule a un nom : on passe du <b>machine learning</b> (entraîner) au <b>prompt engineering</b> (instruire). C'est tout le sujet du jour 2.</div>
+  <div class="amorce">💬 Quelle tâche de traitement de texte vous fait aujourd'hui perdre le plus de temps ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Tokens</div>
+  <h2 class="slide-title">Un modèle ne voit pas des mots, il voit des tokens</h2>
+  <ul class="points">
+    <li>Un <b>token</b> est un morceau de texte : un mot court, un bout de mot long, un signe de ponctuation.</li>
+    <li>Le texte est découpé par un <b>tokeniseur</b>, avant même d'arriver au modèle.</li>
+    <li>Exemple : « anticonstitutionnellement » peut devenir 7 tokens ; « chat » n'en fait qu'un.</li>
+    <li>Ordre de grandeur : <b>1 token ≈ 4 caractères en anglais, ≈ 3 caractères en français</b>.</li>
+    <li>Tout est facturé, limité et compté <b>en tokens</b> : le prix, la fenêtre de contexte, la vitesse.</li>
+  </ul>
+  <div class="warn"><b>Conséquence budgétaire directe</b> : à texte égal, le français coûte environ <b>20 à 30 % plus cher</b> que l'anglais. Sur un service à fort volume, cela se voit sur la facture.</div>
+  <div class="amorce">💬 Devinez : combien de tokens dans la phrase « Bonjour, comment allez-vous aujourd'hui ? » Nous vérifierons dans une minute.</div>
+</section>
+<section class="slide slide-demo">
+  <div class="demo-tag">🖥️ Démonstration en ligne</div>
+  <div class="demo-title">Tiktokenizer — voir la tokenisation en direct</div>
+  <p style="font-size:1.02rem;color:#4B5C63;max-width:82%;">On colle une phrase en français, puis la même en anglais. L'outil colore chaque token et affiche le compte exact. La différence de coût devient visible en trois secondes.</p>
+  <a class="demo-link" href="https://tiktokenizer.vercel.app/" target="_blank" rel="noopener">tiktokenizer.vercel.app</a>
+  <div class="note">À tester aussi : un nom propre africain, un identifiant technique comme <code class="inline">user_id_4471</code>, une adresse e-mail. Vous verrez que le tokeniseur découpe très mal ce qui ne ressemble pas à de l'anglais courant.</div>
+  <div class="amorce">💬 Testez un mot de votre domaine métier. Combien de tokens ? Qu'est-ce que cela dit du coût de vos prompts ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Mécanique</div>
+  <h2 class="slide-title">Comment un LLM produit du texte</h2>
+  <ul class="points">
+    <li>Le modèle reçoit une suite de tokens et calcule <b>la probabilité de chaque token suivant possible</b>.</li>
+    <li>Il en choisit un, l'ajoute à la suite, et <b>recommence</b>. Token après token.</li>
+    <li>C'est tout. Il n'y a ni plan, ni intention, ni vérification.</li>
+    <li>« Le chat boit du... » → <i>lait</i> (68 %), <i>eau</i> (21 %), <i>vin</i> (0,3 %)...</li>
+    <li>Le mot <b>« générative »</b> vient de là : le modèle génère, il ne récupère pas.</li>
+  </ul>
+  <div class="note">Retenez cette phrase pour toute la formation : <b>un LLM ne cherche pas la bonne réponse, il cherche la suite la plus vraisemblable.</b> Presque tous les pièges de l'IA générative découlent de ce seul fait.</div>
+  <div class="amorce">💬 Si le modèle choisit la suite la plus vraisemblable, que se passe-t-il quand la vérité est peu vraisemblable ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Transformers</div>
+  <h2 class="slide-title">Le transformer et le mécanisme d'attention</h2>
+  <div class="schema-box">
+    <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg">
+      <text x="20" y="28" font-family="Inter,sans-serif" font-size="13" fill="#4B5C63">« La banque était fermée, alors elle a marché le long de la rive »</text>
+      <rect x="20" y="45" width="86" height="34" rx="6" fill="#EAF4F3" stroke="#0E8C86" stroke-width="2"/>
+      <text x="63" y="67" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#0B6E68">banque</text>
+      <rect x="330" y="45" width="80" height="34" rx="6" fill="#EAF4F3" stroke="#0E8C86" stroke-width="2"/>
+      <text x="370" y="67" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#0B6E68">rive</text>
+      <rect x="150" y="45" width="90" height="34" rx="6" fill="#FFFFFF" stroke="#D7E6E4" stroke-width="1.5"/>
+      <text x="195" y="67" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" fill="#4B5C63">fermée</text>
+      <path d="M63 79 C 63 120, 370 120, 370 79" fill="none" stroke="#0B2D48" stroke-width="2.5"/>
+      <path d="M63 79 C 100 105, 160 105, 195 79" fill="none" stroke="#D7E6E4" stroke-width="1.5"/>
+      <text x="216" y="140" font-family="Inter,sans-serif" font-size="12" fill="#0B2D48">l'attention relie « banque » à « rive » : le sens est fixé par le contexte</text>
+    </svg>
+  </div>
+  <ul class="points">
+    <li>Le <b>transformer</b> traite tous les mots d'une phrase <b>en même temps</b>, pas l'un après l'autre.</li>
+    <li>Le mécanisme d'<b>attention</b> calcule, pour chaque mot, quels autres mots comptent pour comprendre son sens.</li>
+    <li>C'est ce qui a rendu possible l'entraînement sur des milliards de textes.</li>
+  </ul>
+  <div class="src">Source : <a href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">Attention Is All You Need — Google (2017)</a></div>
+  <div class="amorce">💬 « Il a déposé son argent à la banque avant de s'asseoir sur le banc. » Comment un modèle sans attention se tromperait-il ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Limites structurelles</div>
+  <h2 class="slide-title">Quatre choses qu'un LLM ne sait pas faire</h2>
+  <ul class="points">
+    <li><b>Il ne sait pas calculer.</b> Il prédit les chiffres les plus probables. 17 × 234 peut tomber juste par habitude, pas par calcul.</li>
+    <li><b>Il n'a pas de base de données.</b> Rien n'est stocké ni consultable : tout est reconstruit à chaque génération.</li>
+    <li><b>Il ne sait pas ce qu'il ignore.</b> Il produit une réponse fausse avec exactement la même assurance qu'une réponse juste.</li>
+    <li><b>Il n'a aucune mémoire entre deux conversations</b>, sauf si vous la construisez vous-même.</li>
+  </ul>
+  <div class="note">La bonne nouvelle : <b>ces quatre limites se contournent par l'architecture</b>. Une calculatrice branchée en outil, une base documentaire en RAG, une validation humaine, une base de données pour la mémoire. C'est votre métier de développeur qui règle cela — pas le modèle.</div>
+  <div class="amorce">💬 Laquelle de ces quatre limites poserait le plus de problèmes dans votre contexte professionnel ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Hallucinations</div>
+  <h2 class="slide-title">Pourquoi les modèles inventent</h2>
+  <ul class="points">
+    <li>Une <b>hallucination</b>, c'est une affirmation fausse produite avec assurance.</li>
+    <li>Ce n'est <b>pas un bug</b> : c'est la conséquence directe de la génération token par token.</li>
+    <li>Le modèle est entraîné à produire un texte <b>plausible</b>, pas un texte vrai. La plausibilité et la vérité coïncident souvent — mais pas toujours.</li>
+    <li>Les zones à risque : chiffres précis, dates, noms propres, références bibliographiques, articles de loi, URL.</li>
+    <li>Un modèle qui répond « je ne sais pas » a été spécifiquement entraîné à le faire. Ce n'est pas naturel pour lui.</li>
+  </ul>
+  <div class="warn"><b>Règle professionnelle</b> : tout élément factuel produit par un LLM et destiné à sortir de chez vous doit être <b>vérifié par un humain ou par un outil</b>. Sans exception.</div>
+  <div class="amorce">💬 Avez-vous déjà repéré une hallucination ? Comment vous en êtes-vous aperçu ?</div>
+</section>
+<section class="slide slide-anecdote">
+  <div class="an-tag">📖 Anecdote</div>
+  <div class="an-title">L'avocat qui a cité six arrêts inexistants</div>
+  <div class="an-body">En 2023, devant un tribunal fédéral de New York, un avocat dépose un mémoire citant six décisions de justice à l'appui de sa thèse. Le juge ne les trouve nulle part. Et pour cause : <b>ChatGPT les avait inventées</b>, avec numéros de rôle, noms de parties et citations plausibles. Interrogé par l'avocat, l'outil avait même confirmé que ces arrêts étaient authentiques. Sanction financière et affaire mondialement commentée.<br><br><b>Pour un développeur</b> : remplacez « arrêt de justice » par « fonction de bibliothèque ». Un LLM vous proposera avec le même aplomb une méthode qui n'existe pas dans l'API que vous utilisez. C'est pour cela que l'on ne livre jamais du code assisté sans l'avoir exécuté.</div>
+  <div class="src">Source : <a href="https://www.reuters.com/legal/new-york-lawyers-sanctioned-using-fake-chatgpt-cases-legal-brief-2023-06-22/" target="_blank" rel="noopener">Reuters — New York lawyers sanctioned (2023)</a></div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Fenêtre de contexte</div>
+  <h2 class="slide-title">La mémoire de travail du modèle</h2>
+  <ul class="points">
+    <li>La <b>fenêtre de contexte</b> est la quantité de tokens que le modèle peut prendre en compte d'un coup.</li>
+    <li>Elle contient <b>tout</b> : votre instruction système, l'historique de la conversation, les documents joints, et la réponse en cours.</li>
+    <li>Les modèles de 2026 vont de quelques dizaines de milliers à plusieurs millions de tokens.</li>
+    <li>Une fenêtre pleine, c'est un début de conversation <b>oublié</b> ou un appel refusé.</li>
+    <li>Attention au piège : grande fenêtre ne veut pas dire bonne utilisation. Les informations placées <b>au milieu</b> d'un très long contexte sont souvent moins bien exploitées.</li>
+  </ul>
+  <div class="note">Conséquence pratique pour le RAG du jour 3 : mieux vaut envoyer <b>trois extraits parfaitement ciblés</b> que cinquante pages entières. Plus court, moins cher, plus juste.</div>
+  <div class="amorce">💬 Quelle taille de document manipulez-vous couramment ? Tiendrait-il dans une fenêtre de contexte ?</div>
+</section>
+<section class="slide slide-question">
+  <div class="q-tag">💬 Question de relance · les limites</div>
+  <div class="q-question">Un LLM produit une réponse fausse avec la même assurance qu'une réponse juste. Comment organiseriez-vous concrètement la vérification dans une application que vous livreriez à des utilisateurs ?</div>
+  <div class="q-hint">Pistes : ne jamais laisser le modèle écrire directement en base ; exiger un format structuré vérifiable par le code ; imposer la citation de la source ; faire valider par un humain les cas à faible confiance ; conserver une trace de chaque réponse ; prévoir un chemin de recours pour l'utilisateur final.</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Embeddings</div>
+  <h2 class="slide-title">Transformer du sens en nombres</h2>
+  <ul class="points">
+    <li>Un <b>embedding</b> (ou plongement lexical) est une liste de nombres qui représente un texte.</li>
+    <li>Typiquement 384, 768 ou 1 536 nombres. Un texte de trois mots comme un texte de trois pages.</li>
+    <li>La propriété clé : <b>deux textes de sens proche donnent deux listes de nombres proches</b>.</li>
+    <li>« Comment poser un congé ? » et « procédure de demande de vacances » sont très proches, sans partager un seul mot.</li>
+    <li>C'est ce qui permet la <b>recherche par le sens</b>, là où <code class="inline">Ctrl+F</code> ne trouve que les mots exacts.</li>
+  </ul>
+  <div class="note">On fabriquera nos propres embeddings <b>à la main, en Python</b>, le jour 3. Vous verrez qu'il n'y a aucune magie : des mots, des cases, une addition et une division.</div>
+  <div class="amorce">💬 Quelle recherche de votre application échoue aujourd'hui parce que l'utilisateur n'emploie pas les mots du document ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Similarité</div>
+  <h2 class="slide-title">Mesurer la proximité : la similarité cosinus</h2>
+  <div class="schema-box">
+    <svg viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg">
+      <line x1="60" y1="150" x2="260" y2="150" stroke="#D7E6E4" stroke-width="1.5"/>
+      <line x1="60" y1="150" x2="60" y2="30" stroke="#D7E6E4" stroke-width="1.5"/>
+      <line x1="60" y1="150" x2="200" y2="60" stroke="#0E8C86" stroke-width="3"/>
+      <line x1="60" y1="150" x2="215" y2="75" stroke="#0B2D48" stroke-width="3"/>
+      <line x1="60" y1="150" x2="100" y2="45" stroke="#C1443B" stroke-width="2.5" stroke-dasharray="5 4"/>
+      <text x="205" y="55" font-family="Inter,sans-serif" font-size="12" fill="#0B6E68">« congé parental »</text>
+      <text x="222" y="88" font-family="Inter,sans-serif" font-size="12" fill="#0B2D48">« demande de vacances »</text>
+      <text x="105" y="40" font-family="Inter,sans-serif" font-size="12" fill="#C1443B">« imprimante laser »</text>
+      <path d="M110 122 A 55 55 0 0 1 122 112" fill="none" stroke="#4B5C63" stroke-width="1.5"/>
+      <text x="126" y="126" font-family="Inter,sans-serif" font-size="12" fill="#4B5C63">petit angle = sens proche</text>
+      <text x="330" y="150" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#0B2D48">score = cos(angle)</text>
+      <text x="330" y="170" font-family="Inter,sans-serif" font-size="12" fill="#4B5C63">1 = identique · 0 = sans rapport</text>
+    </svg>
+  </div>
+  <ul class="points">
+    <li>On compare <b>la direction</b> des vecteurs, pas leur longueur : un texte long n'est pas avantagé.</li>
+    <li>Le résultat va de <b>1</b> (même sens) à <b>0</b> (aucun rapport).</li>
+    <li>C'est une formule de géométrie de lycée, calculée en trois lignes de Python.</li>
+  </ul>
+  <div class="amorce">💬 Pourquoi comparer la direction plutôt que la distance ? Que se passerait-il pour un document de 400 pages ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Bases vectorielles</div>
+  <h2 class="slide-title">Le vector database, ou base vectorielle</h2>
+  <ul class="points">
+    <li>Une base classique répond à : « donne-moi les lignes où <code class="inline">statut = 'actif'</code> ».</li>
+    <li>Une base vectorielle répond à : « donne-moi les cinq documents <b>dont le sens ressemble le plus</b> à cette question ».</li>
+    <li>Elle stocke, pour chaque morceau de texte : le texte, son embedding, et ses <b>métadonnées</b> (source, date, service, droits).</li>
+    <li>Les métadonnées sont capitales : sans elles, impossible de citer la source ni de filtrer par droit d'accès.</li>
+    <li>Solutions courantes : <b>Chroma</b> (simple, local), <b>Qdrant</b>, <b>pgvector</b> (extension PostgreSQL), <b>FAISS</b> (bibliothèque).</li>
+  </ul>
+  <div class="note">Vous n'êtes pas obligés d'installer un produit : pour quelques milliers de documents, <b>une liste Python et une boucle suffisent</b>. C'est exactement ce que nous coderons.</div>
+  <div class="amorce">💬 Si votre entreprise utilise déjà PostgreSQL, quel argument plaide pour pgvector plutôt qu'un nouvel outil ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Formats de modèles</div>
+  <h2 class="slide-title">GGUF : le format des modèles qui tournent chez vous</h2>
+  <ul class="points">
+    <li><b>GGUF</b> (GPT-Generated Unified Format) est un format de fichier binaire créé pour <code class="inline">llama.cpp</code>.</li>
+    <li>Un seul fichier contient <b>les poids du modèle ET ses métadonnées</b> : architecture, tokeniseur, gabarit de conversation.</li>
+    <li>Objectif : charger vite, et faire tourner un modèle <b>sur un processeur ordinaire</b>, sans carte graphique coûteuse.</li>
+    <li>C'est le format lu par <b>LM Studio</b>, <b>Ollama</b>, <b>GPT4All</b>, <code class="inline">llama.cpp</code>.</li>
+    <li>Sur Hugging Face, des milliers de modèles sont déjà convertis en GGUF, prêts à télécharger.</li>
+  </ul>
+  <div class="src">Source : <a href="https://huggingface.co/docs/hub/gguf" target="_blank" rel="noopener">Hugging Face — documentation GGUF</a></div>
+  <div class="amorce">💬 Qu'est-ce que change, juridiquement, le fait qu'un modèle tourne sur votre machine plutôt que chez un fournisseur ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Quantification</div>
+  <h2 class="slide-title">Q4_K_M et compagnie : comprendre les suffixes</h2>
+  <ul class="points">
+    <li>Un poids de modèle est un nombre à virgule, stocké à l'origine sur 16 ou 32 bits.</li>
+    <li>La <b>quantification</b> réduit cette précision : 8 bits, 5 bits, 4 bits, parfois moins.</li>
+    <li>Résultat : un modèle 4 à 8 fois plus léger, qui tient en mémoire vive et répond plus vite.</li>
+    <li>Prix à payer : une légère perte de qualité, souvent imperceptible jusqu'à Q4.</li>
+    <li>Le bon compromis en 2026, pour la plupart des usages : <b>Q4_K_M</b> ou <b>Q5_K_M</b>.</li>
+  </ul>
+  <table class="cmp">
+    <tr><th>Variante</th><th>Taille d'un modèle 7B</th><th>Qualité</th><th>Usage conseillé</th></tr>
+    <tr><td>F16</td><td>~14 Go</td><td>maximale</td><td>serveur avec GPU</td></tr>
+    <tr><td>Q8_0</td><td>~7,5 Go</td><td>quasi identique</td><td>poste puissant</td></tr>
+    <tr><td><b>Q4_K_M</b></td><td><b>~4,4 Go</b></td><td><b>très bonne</b></td><td><b>portable, 16 Go de RAM</b></td></tr>
+    <tr><td>Q2_K</td><td>~2,8 Go</td><td>dégradée</td><td>machine très limitée</td></tr>
+  </table>
+  <div class="amorce">💬 Regardez la RAM de votre machine : quelle taille de modèle pouvez-vous raisonnablement faire tourner ?</div>
+</section>
+<section class="slide slide-demo">
+  <div class="demo-tag">🖥️ Démonstration en ligne</div>
+  <div class="demo-title">Hugging Face — le GitHub de l'IA</div>
+  <p style="font-size:1.02rem;color:#4B5C63;max-width:82%;">On y trouve des modèles, des jeux de données et des démonstrations exécutables. On filtre par bibliothèque « GGUF » pour ne voir que les modèles utilisables en local, et on lit la fiche d'un modèle : licence, langue, taille, usage prévu.</p>
+  <a class="demo-link" href="https://huggingface.co/models?library=gguf" target="_blank" rel="noopener">huggingface.co/models?library=gguf</a>
+  <div class="note">Réflexe à prendre : <b>toujours lire la licence</b>. Certains modèles interdisent l'usage commercial ou imposent des conditions. Un modèle gratuit n'est pas un modèle libre.</div>
+  <div class="amorce">💬 Cherchez un modèle qui parle français. Quels critères regardez-vous en premier sur sa fiche ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Panorama</div>
+  <h2 class="slide-title">Les principaux outils d'IA en mode SaaS</h2>
+  <table class="cmp">
+    <tr><th>Catégorie</th><th>Outils</th><th>Ce qu'un développeur en fait</th></tr>
+    <tr><td><b>Assistants généralistes</b></td><td>ChatGPT, Claude, Gemini, Mistral Le Chat</td><td>Comprendre, rédiger, déboguer, explorer</td></tr>
+    <tr><td><b>Assistants de code</b></td><td>GitHub Copilot, Cursor, Windsurf, Claude Code</td><td>Écrire et modifier du code dans l'éditeur</td></tr>
+    <tr><td><b>Générateurs d'applications</b></td><td>Lovable, Bolt, v0, Replit</td><td>Prototyper une application en quelques minutes</td></tr>
+    <tr><td><b>API brutes</b></td><td>OpenAI, Anthropic, Mistral, Google</td><td>Intégrer un modèle dans son propre produit</td></tr>
+    <tr><td><b>Plateformes de modèles</b></td><td>Hugging Face, Replicate, Together</td><td>Trouver, tester, héberger un modèle</td></tr>
+    <tr><td><b>Exécution locale</b></td><td>LM Studio, Ollama, llama.cpp</td><td>Faire tourner un modèle sans rien envoyer</td></tr>
+  </table>
+  <div class="note">Ce paysage change tous les trimestres. Ce qui ne change pas, ce sont <b>les six besoins</b> de cette colonne de gauche. Choisissez toujours par le besoin, jamais par la mode.</div>
+  <div class="amorce">💬 Parmi ces six catégories, laquelle est déjà utilisée dans votre équipe ? Laquelle manque le plus ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Prompt engineering</div>
+  <h2 class="slide-title">Requêter un LLM : les cinq règles de départ</h2>
+  <ul class="points">
+    <li><b>Donner un rôle</b> — « Tu es un développeur Python senior » oriente tout le vocabulaire de la réponse.</li>
+    <li><b>Donner le contexte</b> — le modèle ne connaît ni votre projet, ni vos contraintes, ni votre version de Python.</li>
+    <li><b>Dire précisément ce qu'on veut</b> — « améliore ce code » ne veut rien dire. « Réduis le temps d'exécution sans changer la signature », si.</li>
+    <li><b>Imposer le format de sortie</b> — JSON, tableau, liste numérotée. C'est ce qui rend la réponse utilisable par du code.</li>
+    <li><b>Montrer un exemple</b> — deux exemples valent mieux qu'un paragraphe d'explications.</li>
+  </ul>
+  <div class="note">Le jour 2 entier est consacré à ce sujet. Aujourd'hui, retenez seulement ceci : <b>un prompt vague donne une réponse vague, et ce n'est pas la faute du modèle</b>.</div>
+  <div class="amorce">💬 Repensez à votre dernier prompt. Combien de ces cinq règles respectait-il ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Structure</div>
+  <h2 class="slide-title">Les trois rôles d'une conversation</h2>
+  <div class="three-col">
+    <div class="col">
+      <h4>system</h4>
+      <p>Qui est le modèle, quelles sont les règles. Écrit une fois, valable pour toute la conversation. Invisible pour l'utilisateur final.</p>
+    </div>
+    <div class="col">
+      <h4>user</h4>
+      <p>La demande. C'est ce que tape l'utilisateur, éventuellement enrichi par votre code (contexte, documents, historique).</p>
+    </div>
+    <div class="col">
+      <h4>assistant</h4>
+      <p>Les réponses précédentes du modèle. On les renvoie pour qu'il « se souvienne » de la conversation.</p>
+    </div>
+  </div>
+  <div class="note">Une API de LLM est <b>sans mémoire</b>. À chaque appel, vous renvoyez toute la conversation. Si vous n'envoyez rien, le modèle ne se souvient de rien — d'où la fenêtre de contexte qui se remplit vite.</div>
+  <div class="amorce">💬 Si chaque appel renvoie tout l'historique, que se passe-t-il au bout de cinquante échanges, en coût et en qualité ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Architecture</div>
+  <h2 class="slide-title">Où se place le LLM dans une application web ?</h2>
+  <div class="schema-box">
+    <svg viewBox="0 0 660 190" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="60" width="130" height="60" rx="8" fill="#EAF4F3" stroke="#0E8C86" stroke-width="2"/>
+      <text x="75" y="86" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#0B2D48">Navigateur</text>
+      <text x="75" y="105" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#4B5C63">aucune clé ici</text>
+      <rect x="200" y="45" width="150" height="90" rx="8" fill="#0B2D48"/>
+      <text x="275" y="72" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#FFFFFF">Votre serveur</text>
+      <text x="275" y="92" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#B9D6D3">clé d'API</text>
+      <text x="275" y="108" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#B9D6D3">quotas · journal · cache</text>
+      <rect x="415" y="20" width="230" height="52" rx="8" fill="#FFFFFF" stroke="#0E8C86" stroke-width="2"/>
+      <text x="530" y="42" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#0B6E68">API du fournisseur</text>
+      <text x="530" y="60" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#4B5C63">OpenAI · Anthropic · Mistral</text>
+      <rect x="415" y="105" width="230" height="52" rx="8" fill="#FFFFFF" stroke="#0B2D48" stroke-width="2"/>
+      <text x="530" y="127" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#0B2D48">Modèle local</text>
+      <text x="530" y="145" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#4B5C63">LM Studio · Ollama · GGUF</text>
+      <line x1="140" y1="90" x2="200" y2="90" stroke="#4B5C63" stroke-width="2" marker-end="url(#fl)"/>
+      <line x1="350" y1="70" x2="415" y2="48" stroke="#4B5C63" stroke-width="2" marker-end="url(#fl)"/>
+      <line x1="350" y1="110" x2="415" y2="130" stroke="#4B5C63" stroke-width="2" marker-end="url(#fl)"/>
+      <defs><marker id="fl" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#4B5C63"/></marker></defs>
+    </svg>
+  </div>
+  <div class="warn"><b>La règle qui n'a aucune exception</b> : la clé d'API ne descend jamais dans le navigateur. Ni dans le JavaScript, ni dans une variable « privée », ni dans un fichier de configuration servi au client. Tout appel passe par votre serveur.</div>
+  <div class="amorce">💬 Que peut faire un utilisateur malveillant qui récupère votre clé d'API dans le code de la page ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Architecture</div>
+  <h2 class="slide-title">Cinq décisions à prendre avant d'écrire la première ligne</h2>
+  <ul class="points">
+    <li><b>Synchrone ou asynchrone ?</b> Un appel LLM prend 2 à 30 secondes. Une requête HTTP classique n'attend pas si longtemps.</li>
+    <li><b>Streaming ou pas ?</b> Afficher la réponse mot à mot change complètement la perception d'attente de l'utilisateur.</li>
+    <li><b>Que fait-on si le modèle est indisponible ?</b> Il faut toujours un chemin dégradé.</li>
+    <li><b>Combien d'appels par utilisateur et par jour ?</b> Sans quota, une boucle mal écrite peut coûter très cher en une nuit.</li>
+    <li><b>Que journalise-t-on ?</b> Les prompts contiennent souvent des données personnelles. Attention au RGPD.</li>
+  </ul>
+  <div class="note">Ces cinq questions se posent <b>avant</b> le choix du modèle. Un projet IA qui échoue en production échoue presque toujours sur l'une d'elles, jamais sur la qualité du modèle.</div>
+  <div class="amorce">💬 Laquelle de ces cinq questions n'aviez-vous jamais envisagée ?</div>
+</section>
+<section class="slide slide-quote">
+  <div class="q-mark">"</div>
+  <div class="quote-text">Ce n'est pas parce que le modèle est intelligent que votre application le sera. L'intelligence d'un système, c'est l'architecture qu'on met autour.</div>
+  <div class="quote-author"><b>Principe de travail</b> — à garder en tête pendant les trois jours</div>
+</section>
+<section class="slide slide-question">
+  <div class="q-tag">💬 Question de relance · fin de module 1</div>
+  <div class="q-question">Vous devez proposer à votre direction un premier cas d'usage IA, à livrer en un mois. Lequel choisissez-vous, et pourquoi celui-là plutôt qu'un autre ?</div>
+  <div class="q-hint">Critères à faire émerger : la tâche est-elle répétitive et coûteuse en temps ? L'erreur est-elle tolérable ? Peut-on mesurer le gain ? Les données nécessaires sont-elles déjà disponibles et autorisées ? Y a-t-il un utilisateur volontaire pour tester ? Le meilleur premier cas d'usage est rarement le plus impressionnant : c'est le plus mesurable.</div>
+</section>
+<section class="slide slide-exercice">
+<div class="exo-tag">&#128295; Travaux pratiques</div>
+<h2 class="exo-title">Un assistant qui ne contient aucune IA — et aucun JavaScript</h2>
+<div class="exo-duree">40 minutes · en binôme · dossier &lt;code class="inline"&gt;exercice_1_assistant_regles/&lt;/code&gt;</div>
+<ol class="exo-steps"><li>Double-cliquez <code class="inline">exercice_1_assistant_regles/index.html</code> et cliquez sur les neuf questions.</li><li>Sous chaque réponse, lisez la mention <b>« règle appliquée »</b> : le programme dit toujours <b>pourquoi</b> il a répondu ça.</li><li>Essayez d'écrire dans le champ de saisie. <b>Il ne marche pas, et c'est voulu :</b> un système à règles ne sait pas lire une phrase libre.</li><li>Descendez : quatre questions qu'un vrai visiteur poserait n'ont <b>aucune règle</b>.</li><li>Ouvrez <code class="inline">assistant.css</code> et allez à la <b>section 4</b>. Tout le moteur tient en deux lignes.</li><li><b>Ajoutez une dixième règle :</b> un lien dans <code class="inline">.questions</code>, un bloc <code class="inline">.reponse</code> avec le même identifiant. C'est tout.</li><li>Rechargez la page (F5) et testez votre règle.</li><li>Demandez à Copilot d'écrire la onzième — pour « je veux annuler mon inscription » — puis <b>relisez-la</b> avant de l'accepter.</li></ol>
+<div class="exo-livrable"><b>Livrable :</b> deux règles ajoutées, dont une écrite par Copilot et relue, et une phrase écrite répondant à « combien de règles faudrait-il pour comprendre 95 % des questions ? »</div>
+
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · exercice 1</div>
+<h2 class="slide-title code-title">Une règle : un lien, et un bloc</h2>
+<div class="file-path">exercice_1_assistant_regles/index.html</div>
+<pre class="code">&amp;lt;!-- Les questions prévues. Chacune est un LIEN vers une ancre. --&amp;gt;
+&amp;lt;div class="questions"&amp;gt;
+  &amp;lt;a href="#regle-horaires"&amp;gt;Quels sont vos horaires ?&amp;lt;/a&amp;gt;
+  &amp;lt;a href="#regle-tarifs"&amp;gt;Combien ça coûte ?&amp;lt;/a&amp;gt;
+  &amp;lt;a href="#regle-adresse"&amp;gt;Où êtes-vous situés ?&amp;lt;/a&amp;gt;
+&amp;lt;/div&amp;gt;
+
+&amp;lt;!-- Les réponses. Chacune porte l'identifiant visé par son lien. --&amp;gt;
+&amp;lt;div class="zone-reponse"&amp;gt;
+
+  &amp;lt;div class="reponse" id="regle-horaires"&amp;gt;
+    &amp;lt;p&amp;gt;Du lundi au vendredi, de 9 h à 18 h. Fermé le week-end.&amp;lt;/p&amp;gt;
+    &amp;lt;span class="regle-appliquee"&amp;gt;règle appliquée : &amp;lt;b&amp;gt;horaires&amp;lt;/b&amp;gt;&amp;lt;/span&amp;gt;
+  &amp;lt;/div&amp;gt;
+
+  &amp;lt;div class="reponse" id="regle-tarifs"&amp;gt;
+    &amp;lt;p&amp;gt;Une journée de formation coûte 450 € hors taxes.&amp;lt;/p&amp;gt;
+    &amp;lt;span class="regle-appliquee"&amp;gt;règle appliquée : &amp;lt;b&amp;gt;tarifs&amp;lt;/b&amp;gt;&amp;lt;/span&amp;gt;
+  &amp;lt;/div&amp;gt;
+
+&amp;lt;/div&amp;gt;</pre>
+<div class="note">Zéro donnée d'entraînement. Zéro apprentissage. Zéro JavaScript. Neuf règles, écrites par un humain, une par une. Pendant vingt ans, les « assistants » des sites web ont fonctionné exactement comme ça.</div>
+<div class="amorce">&#128172; Diriez-vous que ce programme est « intelligent » ? Où placez-vous la limite ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · exercice 1</div>
+<h2 class="slide-title code-title">Tout le moteur tient en deux lignes de CSS</h2>
+<div class="file-path">exercice_1_assistant_regles/assistant.css</div>
+<pre class="code">/* Par défaut, TOUTES les réponses sont cachées. */
+.reponse         { display: none; }
+
+/* « :target » désigne l'élément dont l'identifiant se trouve dans
+   l'adresse de la page.
+
+   Quand vous cliquez sur le lien « #regle-horaires », l'adresse devient
+   .../index.html#regle-horaires — et le bloc qui porte cet identifiant
+   devient, lui seul, le « target ». */
+.reponse:target  { display: block; }
+
+
+/* C'est un « SI... ALORS... » :
+     SI l'adresse contient cet identifiant,
+     ALORS affiche ce bloc.
+
+   Une règle. Écrite à la main. Répétée neuf fois.
+   Il n'y a rien d'autre dans ce programme. */</pre>
+<div class="note">Le programme est <b>prévisible</b> : la même question donne toujours la même réponse. Et il est <b>explicable</b> : il affiche toujours quelle règle a été appliquée. Un LLM n'a ni l'une ni l'autre de ces propriétés.</div>
+<div class="amorce">&#128172; Deux lignes de CSS. Qu'est-ce que cela vous dit sur ce qu'on appelle « intelligence artificielle » dans le commerce ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · exercice 1</div>
+<h2 class="slide-title code-title">Ce qu'il ne saura jamais faire</h2>
+<div class="file-path">exercice_1_assistant_regles/index.html</div>
+<pre class="code">&amp;lt;!-- Le champ de saisie est volontairement INACTIF (readonly).
+     Un système à règles ne peut pas lire une phrase libre :
+     il ne connaît que les neuf questions prévues à l'avance. --&amp;gt;
+
+&amp;lt;div class="saisie"&amp;gt;
+  &amp;lt;input type="text" placeholder="Écrivez votre question ici…" readonly&amp;gt;
+  &amp;lt;button type="button" disabled&amp;gt;Envoyer&amp;lt;/button&amp;gt;
+&amp;lt;/div&amp;gt;
+
+
+&amp;lt;!-- Quatre questions qu'un vrai visiteur poserait.
+     Aucune n'a de règle. L'assistant ne répondrait rien. --&amp;gt;
+
+&amp;lt;ul class="ratees"&amp;gt;
+  &amp;lt;li&amp;gt;Est-ce que je peux payer en plusieurs fois ?&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;Y a-t-il un certificat à la fin ?&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;Auriez-vous une session en soirée ?&amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;Mon employeur peut-il financer ma participation ?&amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;
+
+&amp;lt;!-- Chacune demanderait un lien de plus, et un bloc de plus.
+     Et il en faudrait des CENTAINES pour couvrir les formulations
+     réelles des visiteurs. --&amp;gt;</pre>
+<div class="warn">C'est exactement le mur qu'a rencontré l'IA symbolique dans les années 1990. Chaque point de pourcentage supplémentaire coûte du travail humain, et le coût augmente à mesure qu'on avance.</div>
+<div class="amorce">&#128172; Combien de règles faudrait-il pour atteindre 95 % ? Et qui les écrirait ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Débrief exercice 1</div>
+  <h2 class="slide-title">Ce que cet exercice démontre</h2>
+  <ul class="points">
+    <li>Un programme de <b>150 lignes sans aucune IA statistique</b> résout parfaitement un problème que beaucoup d'humains trouvent difficile.</li>
+    <li>Le résultat est <b>toujours correct</b>, et on peut prouver pourquoi. Aucun LLM ne peut en dire autant.</li>
+    <li>Le LLM a été <b>très utile pour expliquer</b> le code, et bien moins fiable pour le modifier sans casse.</li>
+    <li>Les tests ont attrapé les régressions. <b>C'est le test qui autorise à faire confiance à l'assistant</b>, pas l'inverse.</li>
+  </ul>
+  <div class="note">Retenez cette hiérarchie : <b>si une règle claire existe, écrivez la règle</b>. Le LLM sert quand la règle est impossible à écrire — comprendre une phrase, résumer, classer du texte ambigu.</div>
+  <div class="amorce">💬 Dans votre code actuel, où avez-vous mis de l'IA là où une simple règle aurait suffi ? Et l'inverse ?</div>
+</section>
+<section class="slide slide-divider">
+  <div class="section-num">02</div>
+  <div class="section-tag">Module 2</div>
+  <h1 class="section-title">Visual Studio Code et GitHub Copilot</h1>
+  <p class="section-sub">Mettre l'assistant dans l'éditeur, et garder la main</p>
+  <div class="schema-box" style="max-width:200px;margin-left:auto;margin-right:auto;">
+    <svg viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8" y="12" width="124" height="76" rx="8" fill="none" stroke="#0B2D48" stroke-width="2"/>
+      <line x1="8" y1="30" x2="132" y2="30" stroke="#0B2D48" stroke-width="2"/>
+      <circle cx="20" cy="21" r="3" fill="#0E8C86"/><circle cx="31" cy="21" r="3" fill="#D7E6E4"/><circle cx="42" cy="21" r="3" fill="#D7E6E4"/>
+      <rect x="18" y="42" width="52" height="5" rx="2" fill="#0B2D48"/>
+      <rect x="18" y="54" width="76" height="5" rx="2" fill="#D7E6E4"/>
+      <rect x="18" y="66" width="64" height="5" rx="2" fill="#0E8C86"/>
+      <rect x="88" y="64" width="34" height="9" rx="4" fill="#EAF4F3" stroke="#0E8C86"/>
+    </svg>
+  </div>
+</section>
+<section class="slide">
+  <div class="slide-tag">L'éditeur</div>
+  <h2 class="slide-title">Pourquoi VSCode s'est imposé pour travailler avec l'IA</h2>
+  <ul class="points">
+    <li>C'est l'éditeur le plus utilisé au monde : <b>tous les assistants s'y branchent en premier</b>.</li>
+    <li>Il est gratuit, multiplateforme, et léger comparé à un IDE complet.</li>
+    <li>Son système d'extensions permet d'avoir <b>plusieurs assistants côte à côte</b> et de les comparer.</li>
+    <li>Il intègre nativement le terminal, Git et le débogueur : l'assistant voit donc votre vrai environnement.</li>
+    <li>Les extensions indispensables pour nous : <b>Python</b> (Microsoft), <b>Pylance</b>, <b>GitHub Copilot</b>.</li>
+  </ul>
+  <div class="note">Si vous travaillez sous PyCharm, IntelliJ ou Neovim, tout ce que nous voyons aujourd'hui existe aussi chez vous. <b>Les concepts se transposent</b>, seuls les raccourcis changent.</div>
+  <div class="amorce">💬 Quel éditeur utilisez-vous ? Un assistant y est-il déjà installé ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Mise en place</div>
+  <h2 class="slide-title">GitHub Copilot : prérequis et installation</h2>
+  <ul class="points">
+    <li>Un <b>compte GitHub</b>, et une offre Copilot active : Free (limitée), Pro, Pro+, Business ou Enterprise.</li>
+    <li>Installation depuis l'onglet Extensions de VSCode : <b>GitHub Copilot</b> et <b>GitHub Copilot Chat</b>.</li>
+    <li>Connexion au compte GitHub depuis VSCode, puis l'icône Copilot apparaît en bas à droite.</li>
+    <li>En entreprise : l'administrateur peut <b>désactiver l'entraînement sur vos données</b> et bloquer les suggestions correspondant à du code public.</li>
+    <li>Vérification : ouvrez un fichier <code class="inline">.py</code>, écrivez un commentaire, attendez deux secondes.</li>
+  </ul>
+  <div class="src">Source : <a href="https://docs.github.com/en/copilot/get-started/what-is-github-copilot" target="_blank" rel="noopener">GitHub Docs — What is GitHub Copilot</a></div>
+  <div class="amorce">💬 Qui, dans votre organisation, décide de l'activation d'un tel outil ? La question a-t-elle déjà été posée ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Usages</div>
+  <h2 class="slide-title">Les quatre façons d'utiliser Copilot</h2>
+  <table class="cmp">
+    <tr><th>Mode</th><th>Comment</th><th>Bon pour</th><th>Mauvais pour</th></tr>
+    <tr><td><b>Complétion</b></td><td>On tape, il propose en gris. <code class="inline">Tab</code> accepte.</td><td>Code répétitif, boucles, tests, docstrings</td><td>Décisions d'architecture</td></tr>
+    <tr><td><b>Chat</b></td><td>Panneau latéral, conversation</td><td>Comprendre du code, explorer une piste</td><td>Modifier vingt fichiers</td></tr>
+    <tr><td><b>Chat en ligne</b></td><td><code class="inline">Ctrl+I</code> dans le fichier</td><td>Refactoriser un bloc sélectionné</td><td>Créer un module entier</td></tr>
+    <tr><td><b>Mode agent</b></td><td>Il planifie, modifie plusieurs fichiers, lance les tests</td><td>Tâche cadrée avec des tests existants</td><td>Code que vous ne relirez pas</td></tr>
+  </table>
+  <div class="note">Le mode agent est le plus impressionnant et <b>le plus risqué</b>. Il ne s'utilise sérieusement que sur un dépôt versionné, avec des tests, et une relecture de chaque diff.</div>
+  <div class="amorce">💬 Lequel de ces quatre modes correspond le mieux à votre façon de travailler aujourd'hui ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Complétion</div>
+  <h2 class="slide-title">Ce que voit vraiment la complétion</h2>
+  <ul class="points">
+    <li>Le fichier en cours, <b>avant et après</b> le curseur.</li>
+    <li>Les autres <b>onglets ouverts</b> — d'où l'astuce : ouvrez le fichier de modèle avant de coder.</li>
+    <li>Le nom du fichier et son extension, qui donnent le langage et souvent l'intention.</li>
+    <li>Vos <b>commentaires</b> et vos <b>noms de variables</b> : ce sont les instructions les plus efficaces.</li>
+    <li>Il ne voit <b>pas</b> l'ensemble de votre dépôt, ni votre base de données, ni votre documentation interne.</li>
+  </ul>
+  <div class="note">Astuce de terrain : pour obtenir une bonne suggestion, <b>ouvrez dans un onglet voisin un fichier qui ressemble à ce que vous voulez écrire</b>. Le gain de pertinence est immédiat.</div>
+  <div class="amorce">💬 Cela veut dire que le nommage de vos variables influence la qualité des suggestions. Bonne ou mauvaise nouvelle ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Méthode</div>
+  <h2 class="slide-title">Définir une fonction par son contrat, pas par son code</h2>
+  <ul class="points">
+    <li>La bonne méthode avec un assistant : écrire <b>la signature et la docstring</b>, puis laisser l'implémentation venir.</li>
+    <li>La docstring dit : ce que fait la fonction, ses paramètres, ce qu'elle retourne, et les cas limites.</li>
+    <li>Un nom de fonction précis vaut trois lignes d'explication : <code class="inline">calculer_tva()</code> et non <code class="inline">process()</code>.</li>
+    <li>Cette méthode a un avantage caché : <b>elle vous force à réfléchir au contrat avant d'écrire</b>. C'est de la bonne conception, IA ou pas.</li>
+    <li>Si la suggestion est mauvaise, ce n'est presque jamais le modèle : c'est la docstring qui est ambiguë.</li>
+  </ul>
+  <div class="amorce">💬 Écrire le contrat avant le code : est-ce une contrainte de plus, ou une discipline que vous auriez dû avoir de toute façon ?</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · méthode</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">Une docstring précise donne une implémentation juste</h2>
+  <div class="file-path">démonstration en direct — à taper avec les stagiaires</div>
+<pre class="code"><span class="cm"># ÉTAPE 1 : on écrit SEULEMENT ceci, puis on attend la suggestion</span>
+
+<span class="kw">def</span> <span class="fn">valider_numero_tva_belge</span>(numero):
+    <span class="st">"""Vérifie qu'un numéro de TVA belge est valide.</span>
+
+<span class="st">    Format attendu : BE suivi de 10 chiffres, le premier étant un 0 ou un 1.</span>
+<span class="st">    Les espaces et les points sont ignorés.</span>
+
+<span class="st">    Règle de contrôle : les deux derniers chiffres doivent être égaux à</span>
+<span class="st">    97 moins le reste de la division des huit premiers chiffres par 97.</span>
+
+<span class="st">    Retourne True si valide, False sinon.</span>
+<span class="st">    Un numéro vide ou None retourne False, sans lever d'exception.</span>
+<span class="st">    """</span>
+
+<span class="cm"># ÉTAPE 2 : Copilot propose l'implémentation complète.</span>
+<span class="cm"># ÉTAPE 3 : ON NE L'ACCEPTE PAS AVANT DE L'AVOIR LUE.</span>
+<span class="cm"># ÉTAPE 4 : on lui demande les tests, avec au moins un numéro valide réel,</span>
+<span class="cm">#           un numéro faux d'un chiffre, une chaîne vide et None.</span></pre>
+  <div class="amorce">💬 Sans la ligne « un numéro vide retourne False », qu'aurait probablement produit l'assistant ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Chat</div>
+  <h2 class="slide-title">Le chat de Copilot : les commandes qui font gagner du temps</h2>
+  <table class="cmp">
+    <tr><th>Commande</th><th>Effet</th><th>Quand l'utiliser</th></tr>
+    <tr><td><code class="inline">/explain</code></td><td>Explique le code sélectionné</td><td>Reprise d'un code inconnu, montée en compétence</td></tr>
+    <tr><td><code class="inline">/fix</code></td><td>Propose une correction de l'erreur</td><td>Message d'erreur incompréhensible</td></tr>
+    <tr><td><code class="inline">/tests</code></td><td>Génère des tests unitaires</td><td>Presque toujours — c'est son meilleur usage</td></tr>
+    <tr><td><code class="inline">/doc</code></td><td>Rédige la documentation</td><td>Fonction ancienne, jamais documentée</td></tr>
+    <tr><td><code class="inline">@workspace</code></td><td>Donne accès au projet entier</td><td>« Où est gérée l'authentification ? »</td></tr>
+    <tr><td><code class="inline">#file</code></td><td>Ajoute un fichier précis au contexte</td><td>Quand la réponse dépend d'un autre fichier</td></tr>
+  </table>
+  <div class="note">La commande la plus rentable est <code class="inline">/tests</code>. Écrire des tests est fastidieux, l'assistant y est bon, et le test produit est <b>immédiatement vérifiable</b> : il passe ou il ne passe pas.</div>
+  <div class="amorce">💬 Sur quel fichier de votre projet aimeriez-vous lancer <code class="inline">/explain</code> dès ce soir ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Chat en ligne</div>
+  <h2 class="slide-title">Modifier un bloc sans quitter le fichier</h2>
+  <ul class="points">
+    <li>On sélectionne un bloc de code, puis <code class="inline">Ctrl+I</code> (ou <code class="inline">Cmd+I</code>).</li>
+    <li>On décrit le changement en une phrase : « extrais cette partie dans une fonction nommée <code class="inline">charger_configuration</code> ».</li>
+    <li>La proposition s'affiche <b>en diff</b>, directement dans le fichier : vert pour l'ajout, rouge pour la suppression.</li>
+    <li>On accepte, on rejette, ou on reformule. Rien n'est écrit sans votre accord.</li>
+    <li>C'est le mode <b>le plus sûr</b> : petit périmètre, diff visible, résultat immédiatement testable.</li>
+  </ul>
+  <div class="note">Le bon réflexe professionnel : <b>lire le diff, pas le résultat</b>. Un code qui fonctionne mais que vous ne comprenez pas est une dette technique que vous venez de contracter sans le savoir.</div>
+  <div class="amorce">💬 Combien de temps consacrez-vous à relire une suggestion avant de l'accepter ? Est-ce suffisant ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Mode agent</div>
+  <h2 class="slide-title">Quand l'assistant travaille tout seul</h2>
+  <ul class="points">
+    <li>Le mode agent <b>planifie</b>, modifie plusieurs fichiers, lance les commandes et corrige ses erreurs en boucle.</li>
+    <li>Il peut créer une branche, écrire du code, exécuter les tests, et proposer une pull request.</li>
+    <li>Conditions pour que ce soit raisonnable : <b>un dépôt Git propre, des tests qui passent, une tâche bien délimitée</b>.</li>
+    <li>Le vrai risque n'est pas le code cassé — les tests le détectent. C'est le code <b>subtilement faux</b> qui passe les tests.</li>
+    <li>Règle simple : le nombre de lignes que vous laissez l'agent écrire ne doit jamais dépasser ce que vous êtes prêt à relire.</li>
+  </ul>
+  <div class="warn">Ne lancez jamais un agent sur un dépôt <b>non versionné</b>. Sans Git, vous n'avez aucun moyen de revenir en arrière.</div>
+  <div class="amorce">💬 Confieriez-vous une tâche à un agent sur votre dépôt de production ? Quelles garanties exigeriez-vous d'abord ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Utiliser le résultat</div>
+  <h2 class="slide-title">Trois questions avant d'accepter une suggestion</h2>
+  <ul class="points">
+    <li><b>Est-ce que je comprends chaque ligne ?</b> Si non, demandez une explication avant d'accepter. Toujours.</li>
+    <li><b>Est-ce que la bibliothèque et la méthode existent vraiment ?</b> Les LLM inventent des fonctions plausibles. Vérifiez dans la doc.</li>
+    <li><b>Est-ce que les cas limites sont traités ?</b> Entrée vide, valeur nulle, liste vide, division par zéro, encodage.</li>
+  </ul>
+  <div class="note">Un chiffre à garder en tête : la plupart des suggestions acceptées le sont en <b>moins de trois secondes</b>. C'est très peu pour répondre à ces trois questions. La vitesse est le premier danger.</div>
+  <div class="amorce">💬 Que se passe-t-il, au bout d'un an, dans une base de code dont 40 % a été acceptée sans être vraiment lue ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Forces et faiblesses</div>
+  <h2 class="slide-title">Ce que l'assistant fait bien, et ce qu'il fait mal</h2>
+  <div class="two-col">
+    <div class="col">
+      <h4>Très bon</h4>
+      <ul class="points">
+        <li>Code répétitif et passe-plats</li>
+        <li>Tests unitaires à partir d'une fonction</li>
+        <li>Expliquer du code inconnu</li>
+        <li>Traduire d'un langage à un autre</li>
+        <li>Expressions régulières et requêtes SQL</li>
+        <li>Documentation et messages de commit</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Faible ou dangereux</h4>
+      <ul class="points">
+        <li>Décisions d'architecture</li>
+        <li>Code exact sur une API récente ou interne</li>
+        <li>Sécurité : il reproduit les failles vues à l'entraînement</li>
+        <li>Performance sur de gros volumes</li>
+        <li>Respect de vos conventions maison</li>
+        <li>Dire « je ne sais pas »</li>
+      </ul>
+    </div>
+  </div>
+  <div class="amorce">💬 Sur laquelle de ces douze lignes avez-vous déjà été surpris, en bien ou en mal ?</div>
+</section>
+<section class="slide slide-anecdote">
+  <div class="an-tag">📖 Anecdote</div>
+  <div class="an-title">Plus vite, mais pas forcément mieux</div>
+  <div class="an-body">Les premières études sur les assistants de code ont mesuré un gain de vitesse net sur des tâches cadrées — de l'ordre de plusieurs dizaines de pourcents sur des exercices isolés. Mais les travaux suivants ont pointé un effet moins confortable : une <b>augmentation du code dupliqué</b> et une <b>baisse du refactoring</b>. Le développeur assisté produit plus de code, plus vite, et le réorganise moins souvent.<br><br><b>Pour un développeur</b> : la productivité ne se mesure pas en lignes écrites, mais en <b>fonctionnalités livrées et maintenables</b>. Un assistant qui vous fait écrire trois fois la même fonction dans trois fichiers vous a fait perdre du temps, pas en gagner.</div>
+  <div class="src">Source : <a href="https://github.blog/news-insights/research/research-quantifying-github-copilots-impact-on-developer-productivity-and-happiness/" target="_blank" rel="noopener">GitHub Research — Copilot et productivité</a></div>
+</section>
+<section class="slide slide-quote">
+  <div class="q-mark">"</div>
+  <div class="quote-text">Un assistant de code ne remplace pas un développeur. Il remplace la partie du travail d'un développeur qui consistait à retaper ce qu'il savait déjà.</div>
+  <div class="quote-author"><b>À discuter en salle</b> — êtes-vous d'accord avec cette formulation ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Alternatives</div>
+  <h2 class="slide-title">Les concurrents de Copilot en 2026</h2>
+  <table class="cmp">
+    <tr><th>Outil</th><th>Nature</th><th>Point fort</th></tr>
+    <tr><td><b>Cursor</b></td><td>Fork de VSCode</td><td>Compréhension du dépôt entier, édition multi-fichiers fluide</td></tr>
+    <tr><td><b>Windsurf</b></td><td>Éditeur dédié</td><td>Mode agent très intégré</td></tr>
+    <tr><td><b>Continue.dev</b></td><td>Extension <b>open source</b></td><td>Vous choisissez le modèle, y compris un modèle local</td></tr>
+    <tr><td><b>Claude Code</b></td><td>Ligne de commande</td><td>Travail agentique dans le terminal, hors éditeur</td></tr>
+    <tr><td><b>Codeium / Qodo</b></td><td>Extension</td><td>Offre gratuite généreuse, tests automatisés</td></tr>
+  </table>
+  <div class="note"><b>Continue.dev</b> mérite votre attention : c'est la seule solution de cette liste qui vous permet de brancher un modèle <b>tournant sur votre machine</b>. Pour un code source confidentiel, c'est souvent la seule option acceptable.</div>
+  <div class="amorce">💬 Votre code source peut-il légalement sortir de votre réseau ? Avez-vous vérifié, ou supposé ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Confidentialité</div>
+  <h2 class="slide-title">Ce que votre assistant envoie réellement</h2>
+  <ul class="points">
+    <li>À chaque suggestion : <b>le contenu du fichier en cours</b>, souvent les onglets voisins, parfois des extraits du dépôt.</li>
+    <li>Cela inclut ce que vous avez oublié : clés en dur, chaînes de connexion, commentaires internes, noms de clients.</li>
+    <li>Les offres <b>Business et Enterprise</b> garantissent contractuellement l'absence de réutilisation pour l'entraînement.</li>
+    <li>Les offres individuelles gratuites offrent des garanties plus faibles : <b>lisez les conditions</b>.</li>
+    <li>Un fichier <code class="inline">.copilotignore</code> ou l'équivalent permet d'exclure des dossiers sensibles.</li>
+  </ul>
+  <div class="warn">Trois réflexes : <b>jamais de secret dans le code</b> (fichier <code class="inline">.env</code> et <code class="inline">.gitignore</code>), <b>jamais de données personnelles réelles</b> en jeu de test, et <b>vérifier l'offre souscrite</b> avant d'ouvrir un projet client.</div>
+  <div class="amorce">💬 Ouvrez un fichier de configuration de votre projet. Seriez-vous à l'aise de le voir transiter chez un tiers ?</div>
+</section>
+<section class="slide slide-question">
+  <div class="q-tag">💬 Question de relance · module 2</div>
+  <div class="q-question">Un développeur junior de votre équipe livre une fonctionnalité en deux heures au lieu de deux jours, avec un assistant. Il ne sait pas expliquer un tiers du code livré. Que faites-vous ?</div>
+  <div class="q-hint">Il n'y a pas de bonne réponse unique. Pistes : exiger que tout code livré soit explicable en revue ; imposer les tests écrits par le développeur, pas par l'assistant ; distinguer prototype et production ; accepter que la montée en compétence passe aussi par la lecture de code produit par d'autres — c'est déjà le cas avec les bibliothèques open source. La vraie question est celle de la responsabilité en cas d'incident.</div>
+</section>
+<section class="slide slide-exercice">
+<div class="exo-tag">&#128295; Travaux pratiques</div>
+<h2 class="exo-title">Générer une page web à partir d'un prompt</h2>
+<div class="exo-duree">1 heure · en binôme · dossier &lt;code class="inline"&gt;exercice_2_page_generee/&lt;/code&gt;</div>
+<ol class="exo-steps"><li>Ouvrez <code class="inline">exercice_2_page_generee/index.html</code> et lisez le prompt de départ. <b>Comptez ses lignes.</b></li><li>Copiez-le dans Copilot Chat (<code class="inline">Ctrl+Alt+I</code>) ou dans l'assistant de votre choix.</li><li>Collez le résultat dans <code class="inline">gabarit.html</code>, enregistrez sous <code class="inline">ma-page.html</code>, ouvrez-la.</li><li>Affichez le code source (<code class="inline">Ctrl+U</code>) et passez la <b>grille de contrôle sur 7</b>. Notez votre score.</li><li>Comparez avec <code class="inline">exemple_reussi.html</code> : chaque contrôle y est signalé par un commentaire dans le code.</li><li>Ajoutez <b>une contrainte de votre choix</b> au prompt, relancez, recomptez.</li><li><b>Votre contrainte est-elle respectée ? Et les sept contrôles tiennent-ils toujours ?</b></li><li>Sans assistant sous la main : faites la grille sur <code class="inline">exemple_reussi.html</code>. La relecture est l'essentiel.</li></ol>
+<div class="exo-livrable"><b>Livrable :</b> deux pages générées avec des contraintes différentes, deux scores sur 7 notés, et la liste écrite des contraintes que le modèle a ignorées.</div>
+
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · exercice 2</div>
+<h2 class="slide-title code-title">Le prompt : vingt lignes pour une demande d'une phrase</h2>
+<div class="file-path">exercice_2_page_generee/index.html — le texte à copier</div>
+<pre class="code">Tu es un intégrateur web expérimenté.
+
+Produis UNE page HTML complète et autonome pour :
+un club de sport de quartier, avec ses horaires et un formulaire de contact.
+
+CONTRAINTES DE FORME
+- un seul fichier, du &amp;lt;!DOCTYPE html&amp;gt; à la balise &amp;lt;/html&amp;gt; ;
+- le CSS dans une balise &amp;lt;style&amp;gt; à l'intérieur du &amp;lt;head&amp;gt; ;
+- aucune dépendance externe : pas de CDN, pas de police distante, pas d'image ;
+- aucun JavaScript.
+
+CONTRAINTES DE CONTENU
+- le texte est en français, l'attribut lang vaut "fr" ;
+- l'encodage est déclaré : &amp;lt;meta charset="utf-8"&amp;gt; ;
+- la page s'adapte au mobile : une seule colonne sous 700 pixels ;
+- un titre &amp;lt;h1&amp;gt; unique, des &amp;lt;h2&amp;gt; pour chaque section ;
+- couleur dominante : vert profond. Ton : chaleureux et familial.
+
+Réponds UNIQUEMENT par le code de la page.
+Aucune phrase avant, aucune phrase après.</pre>
+<div class="note">Votre demande tient en une phrase ; le prompt en fait vingt. <b>C'est là que se joue la qualité du résultat</b> — pas dans le modèle que vous avez choisi.</div>
+<div class="amorce">&#128172; Laquelle de ces vingt lignes supprimeriez-vous en premier ? Et que se passerait-il ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · exercice 2</div>
+<h2 class="slide-title code-title">Ce que le modèle renvoie, et ce qu'il faut y chercher</h2>
+<div class="file-path">exercice_2_page_generee/exemple_reussi.html</div>
+<pre class="code">&amp;lt;!DOCTYPE html&amp;gt;
+&amp;lt;!-- CONTRÔLE 1 : la déclaration est bien la première ligne. --&amp;gt;
+
+&amp;lt;!-- CONTRÔLE 2 : lang="fr" permet à un lecteur d'écran de prononcer
+     correctement, et au navigateur de proposer la bonne traduction. --&amp;gt;
+&amp;lt;html lang="fr"&amp;gt;
+&amp;lt;head&amp;gt;
+  &amp;lt;!-- CONTRÔLE 3 : sans cette ligne, les accents deviennent illisibles. --&amp;gt;
+  &amp;lt;meta charset="utf-8"&amp;gt;
+
+  &amp;lt;!-- CONTRÔLE 4 : sans cette ligne, la page s'affiche en miniature
+       sur un téléphone, et l'utilisateur doit zoomer pour lire. --&amp;gt;
+  &amp;lt;meta name="viewport" content="width=device-width, initial-scale=1"&amp;gt;
+
+  &amp;lt;title&amp;gt;Le Cercle — club de sport de quartier&amp;lt;/title&amp;gt;
+
+  &amp;lt;!-- CONTRÔLE 5 : le CSS est ici, dans la page.
+       CONTRÔLE 6 : cherchez « http » dans ce fichier. Rien. --&amp;gt;
+  &amp;lt;style&amp;gt; ... &amp;lt;/style&amp;gt;
+&amp;lt;/head&amp;gt;
+&amp;lt;body&amp;gt; ... &amp;lt;/body&amp;gt;
+&amp;lt;!-- CONTRÔLE 7 : la page n'est pas tronquée. --&amp;gt;
+&amp;lt;/html&amp;gt;</pre>
+<div class="note">Les sept contrôles portent tous sur le <code class="inline">&lt;head&gt;</code> et sur la dernière ligne. Ce sont les endroits où un modèle « oublie » le plus souvent, parce qu'ils ne se voient pas à l'écran.</div>
+<div class="amorce">&#128172; Sur les sept, lequel auriez-vous oublié en écrivant la page vous-même ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · exercice 2</div>
+<h2 class="slide-title code-title">La grille de contrôle : sept cases, du HTML pur</h2>
+<div class="file-path">exercice_2_page_generee/index.html</div>
+<pre class="code">&amp;lt;!-- Une case à cocher, c'est du HTML. Aucun JavaScript nécessaire.
+     L'attribut « for » du label pointe vers l'« id » de la case :
+     c'est ce qui permet de cliquer sur le TEXTE pour cocher. --&amp;gt;
+
+&amp;lt;ul class="grille"&amp;gt;
+  &amp;lt;li&amp;gt;
+    &amp;lt;input type="checkbox" id="c1"&amp;gt;
+    &amp;lt;label for="c1"&amp;gt;
+      &amp;lt;b&amp;gt;1 · La déclaration.&amp;lt;/b&amp;gt; La première ligne est &amp;lt;!DOCTYPE html&amp;gt;.
+    &amp;lt;/label&amp;gt;
+  &amp;lt;/li&amp;gt;
+  &amp;lt;li&amp;gt;
+    &amp;lt;input type="checkbox" id="c6"&amp;gt;
+    &amp;lt;label for="c6"&amp;gt;
+      &amp;lt;b&amp;gt;6 · Aucune ressource distante.&amp;lt;/b&amp;gt; Cherchez « http » dans
+      le code source : vous ne devez rien trouver.
+    &amp;lt;/label&amp;gt;
+  &amp;lt;/li&amp;gt;
+&amp;lt;/ul&amp;gt;</pre>
+<div class="warn"><b>Ce score sur 7 est le vrai livrable de l'exercice.</b> Il ne mesure pas la qualité du modèle : il mesure l'écart entre ce que vous avez demandé et ce que vous avez reçu. C'est la seule façon de savoir si un prompt s'améliore ou se dégrade.</div>
+<div class="amorce">&#128172; « C'est mieux » est-il une évaluation ? Et « 6/7 au lieu de 4/7 » ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Débrief exercice 2</div>
+  <h2 class="slide-title">Ce que cet exercice démontre</h2>
+  <ul class="points">
+    <li>Appeler un LLM, c'est <b>une requête HTTP</b> : rien de plus mystérieux qu'appeler n'importe quelle API.</li>
+    <li>Le vrai travail n'est pas l'appel : c'est <b>ce qu'on met avant</b> (le prompt) et <b>ce qu'on fait après</b> (nettoyer, vérifier).</li>
+    <li>Une sortie non déterministe s'apprivoise en <b>contraignant le format</b> et en <b>validant systématiquement</b>.</li>
+    <li>Le mode hors ligne du client montre une bonne pratique d'architecture : <b>toujours prévoir le cas où le modèle ne répond pas</b>.</li>
+  </ul>
+  <div class="amorce">💬 Quelle part de votre code d'aujourd'hui appelait le modèle, et quelle part le cadrait ? Le rapport vous surprend-il ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Bilan</div>
+<h2 class="slide-title">Ce que vous avez appris aujourd'hui</h2>
+<div class="two-col"><div class="col"><h4>Concepts</h4><ul class="points"><li>IA, machine learning, deep learning</li><li>Symbolique contre statistique</li><li>Tokens, transformers, attention</li><li>Embeddings et similarité</li><li>Bases vectorielles, GGUF, quantification</li><li>Hallucinations et fenêtre de contexte</li></ul></div><div class="col"><h4>Pratique</h4><ul class="points"><li>Un assistant à règles, et sa limite mesurée</li><li>Un prompt de vingt lignes, et pourquoi</li><li>Une page web produite par une IA</li><li>Une grille de contrôle sur 7, appliquée deux fois</li><li>VSCode, Copilot et Live Preview configurés</li><li>Les réflexes de confidentialité</li></ul></div></div>
+<div class="note">Vous n'avez pas écrit une ligne de JavaScript, et vous avez pourtant produit et relu deux pages web. <b>La compétence du jour n'est pas de coder : c'est de relire.</b></div>
+<div class="amorce">&#128172; Une chose que vous appliquerez dès demain matin dans votre travail : laquelle ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Pour aller plus loin</div>
+<h2 class="slide-title">Trois formations outils vous attendent dans le dossier</h2>
+<h3 class="subtitle">Ce que vous avez vu de Copilot aujourd'hui est le strict nécessaire. Trois supports complets, de trente à quarante slides chacun, vous attendent dans <code class="inline">Outils/</code>.</h3>
+<div class="three-col"><div class="col"><h4>Claude Code</h4><p>L'assistant en terminal : plan mode, sous-agents, hooks, CLAUDE.md, MCP. 50 commandes à retenir et une code base dédiée.</p></div><div class="col"><h4>GitHub Copilot</h4><p>L'assistant dans l'éditeur : complétion, chat, edits, mode agent, instructions personnalisées. 50 commandes et raccourcis.</p></div><div class="col"><h4>Codex</h4><p>L'agent d'OpenAI : sandbox, modes d'approbation, AGENTS.md, délégation dans le cloud. 50 commandes et une code base dédiée.</p></div></div>
+<div class="note">Chaque dossier contient : le support, un récapitulatif des <b>50 commandes</b>, un fichier d'exercices guidés, une fiche participant à remplir, et sa propre variante de la code base <b>MiniCRM</b>.</div>
+<div class="amorce">&#128172; Lequel des trois utiliserez-vous en priorité, et pourquoi celui-là ?</div>
+</section>
+<section class="slide slide-cta">
+  <h2>À demain pour le jour 2</h2>
+  <p>La programmation par prompt, et les outils du cloud.<br>On passe de « faire marcher » à « faire marcher de façon fiable et au bon prix ».</p>
+  <div class="cta-links">
+    <a href="mailto:hello@dhcompany.pro">hello@dhcompany.pro</a>
+    <a href="https://ia4africa.org" target="_blank" rel="noopener">ia4africa.org</a>
+  </div>
+  <p style="font-size:.95rem;">Ce soir, si vous avez dix minutes : installez <b>LM Studio</b> et téléchargez un modèle en Q4_K_M.<br>Nous nous en servirons le jour 3.</p>
+</section>
+<!-- SLIDES_END -->
+</div>
+
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const progressBar = document.getElementById('progress');
+
+// Chaque slide de contenu porte déjà sa propre question d'amorce (.amorce),
+// écrite pour le sujet traité. Le mécanisme ci-dessous ne s'applique donc
+// qu'aux slides qui n'en auraient pas : il garantit qu'aucune slide
+// ne reste sans question à poser au groupe.
+const relanceTemplates = [
+  t => `\u{1F4AC} À demander au groupe : qu'est-ce que « ${t} » change dans votre façon de coder ?`,
+  t => `\u{1F4AC} Tour de table éclair : qui a déjà rencontré ce cas dans un projet ?`,
+  t => `\u{1F4AC} Une minute de réflexion : sur une échelle de 1 à 5, ce point est-il maîtrisé chez vous ?`,
+  t => `\u{1F4AC} Question flash : quel est le principal risque si l'on ignore ce point ?`,
+  t => `\u{1F4AC} Discussion : sur quel projet en cours pourriez-vous appliquer cela dès demain ?`,
+  t => `\u{1F4AC} À chaud : qu'est-ce qui vous surprend le plus dans « ${t} » ?`,
+];
+slides.forEach((s, i) => {
+  if (s.classList.contains('slide-question') || s.classList.contains('slide-cover')) return;
+  if (s.querySelector('.amorce')) return;
+  const titleEl = s.querySelector('.slide-title, .section-title, .an-title, .demo-title, .exo-title, .code-title, .quote-text');
+  const title = titleEl ? titleEl.textContent.trim() : '';
+  const div = document.createElement('div');
+  div.className = 'mini-relance';
+  div.textContent = relanceTemplates[i % relanceTemplates.length](title);
+  s.appendChild(div);
+});
+
+function goTo(n){
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, slides.length - 1));
+  slides[current].classList.add('active');
+  progressBar.style.width = ((current + 1) / slides.length * 100) + '%';
+  document.getElementById('counter').textContent = (current + 1) + ' / ' + slides.length;
+  slides[current].scrollTop = 0;
+  try { location.hash = 's' + (current + 1); } catch (e) {}
+}
+document.getElementById('prevBtn').addEventListener('click', ()=>goTo(current-1));
+document.getElementById('nextBtn').addEventListener('click', ()=>goTo(current+1));
+document.getElementById('pdfBtn').addEventListener('click', ()=>window.print());
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') goTo(current + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  if (e.key === 'Home') goTo(0);
+  if (e.key === 'End') goTo(slides.length - 1);
+  if (e.key === 'p' || e.key === 'P') window.print();
+});
+let xStart = null;
+document.addEventListener('touchstart', e => { xStart = e.changedTouches[0].screenX; });
+document.addEventListener('touchend', e => {
+  const diff = xStart - e.changedTouches[0].screenX;
+  if (Math.abs(diff) > 50) diff > 0 ? goTo(current + 1) : goTo(current - 1);
+});
+const depart = parseInt((location.hash || '').replace('#s', ''), 10);
+goTo(Number.isFinite(depart) && depart > 0 ? depart - 1 : 0);
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tests — Journee 1</title>
+<style>
+  :root{--accent:#0E8C86;--accent2:#0B6E68;--navy:#0B2D48;--text:#16212B;
+        --text2:#4B5C63;--card:#EAF4F3;--border:#D7E6E4;--good:#1F9D67;--bad:#C1443B;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#F2F7F7;color:var(--text);padding:2rem 1.2rem 4rem;}
+  .wrap{max-width:860px;margin:0 auto;}
+  h1{font-size:1.55rem;color:var(--navy);margin-bottom:.3rem;}
+  .sub{color:var(--text2);font-size:.95rem;margin-bottom:1.4rem;}
+  button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.6rem 1.2rem;
+         font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit;}
+  button:hover{background:var(--accent2);}
+  .bilan{margin:1.3rem 0;padding:.9rem 1.2rem;border-radius:9px;font-size:1rem;font-weight:600;}
+  .bilan.ok{background:#EEF9F3;border-left:5px solid var(--good);color:#14603F;}
+  .bilan.ko{background:#FDEDEC;border-left:5px solid var(--bad);color:#8A2F28;}
+  pre{background:#0F2733;color:#E8F1F0;border-radius:10px;padding:1.1rem 1.3rem;font-size:.8rem;
+      line-height:1.6;overflow:auto;font-family:'JetBrains Mono',Consolas,monospace;white-space:pre-wrap;}
+  pre .ok{color:#7FE3B8;} pre .ko{color:#FF9E93;} pre .grp{color:#7FC7FF;font-weight:600;}
+  .aide{margin-top:1.6rem;font-size:.9rem;color:var(--text2);line-height:1.6;}
+  .aide code{background:var(--card);color:var(--accent2);padding:.1rem .35rem;border-radius:4px;
+             font-family:'JetBrains Mono',Consolas,monospace;font-size:.86em;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Tests — Journee 1</h1>
+  <p class="sub">
+    Les tests tournent directement dans le navigateur. Aucune installation,
+    aucun terminal. Ce sont exactement les mêmes fichiers que ceux qu'exécute
+    <code>node run-tests.js</code>.
+  </p>
+
+  <button id="btnLancer">Relancer les tests</button>
+  <div class="bilan" id="bilan" style="display:none"></div>
+  <pre id="sortie">Chargement…</pre>
+
+  <div class="aide">
+    <b>À quoi servent ces tests ?</b> À vous dire, en deux secondes, si une
+    modification — la vôtre ou celle d'un assistant IA — a cassé quelque chose.
+    C'est le seul garde-fou fiable quand on laisse une IA écrire du code.
+  </div>
+</div>
+
+<script src="../../_commun/test-runner.js"></script>
+<script src="../../_commun/llm-client.js"></script>
+<script src="exercice_1_chatbot_regles/chatbot.js"></script>
+<script src="exercice_2_generateur_pages/generateur-pages.js"></script>
+<script src="exercice_1_chatbot_regles/chatbot.test.js"></script>
+<script src="exercice_2_generateur_pages/generateur-pages.test.js"></script>
+
+<script>
+/* Lance les tests et écrit le résultat dans la page. */
+async function lancer() {
+  // Les fichiers .test.js chargés par les balises <script> ci-dessus se sont
+  // déjà « enregistrés » auprès du runner. Il ne reste qu'à les exécuter.
+  const sortie = document.getElementById('sortie');
+  const lignes = [];
+
+  const bilan = await TestRunner.lancerLesTests(function (ligne) { lignes.push(ligne); });
+
+  // Petite coloration : vert pour OK, rouge pour ECHEC, bleu pour les groupes.
+  sortie.innerHTML = lignes.map(function (l) {
+    const e = l.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    if (e.indexOf('  OK   ') === 0) return '<span class="ok">' + e + '</span>';
+    if (e.indexOf('  ECHEC') === 0) return '<span class="ko">' + e + '</span>';
+    if (e.trim() && e.indexOf('  ') !== 0) return '<span class="grp">' + e + '</span>';
+    return e;
+  }).join('\n');
+
+  const zone = document.getElementById('bilan');
+  zone.style.display = 'block';
+  zone.className = 'bilan ' + (bilan.echoues === 0 ? 'ok' : 'ko');
+  zone.textContent = bilan.echoues === 0
+    ? 'Tout est au vert : ' + bilan.reussis + ' test(s) réussi(s).'
+    : bilan.echoues + ' test(s) en échec sur ' + bilan.total + '.';
+}
+
+document.getElementById('btnLancer').addEventListener('click', function () {
+  // Recharger la page est la façon la plus simple de ré-enregistrer les tests.
+  location.reload();
+});
+
+lancer();
+</script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code base — Journee 2</title>
+<style>
+  :root{--accent:#0E8C86;--accent2:#0B6E68;--navy:#0B2D48;--text:#16212B;
+        --text2:#4B5C63;--card:#EAF4F3;--border:#D7E6E4;--good:#1F9D67;--warn:#B9740A;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#F2F7F7;color:var(--text);
+       padding:2.4rem 1.2rem 5rem;line-height:1.55;}
+  .wrap{max-width:880px;margin:0 auto;}
+  .org{font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+  h1{font-size:2rem;color:var(--navy);margin:.5rem 0 .4rem;line-height:1.2;}
+  .sub{color:var(--text2);font-size:1rem;margin-bottom:2rem;max-width:68ch;}
+  h2{font-size:1.15rem;color:var(--navy);margin:2rem 0 .8rem;padding-left:.7rem;border-left:4px solid var(--accent);}
+  .cartes{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;}
+  a.carte{display:block;background:#fff;border:1px solid var(--border);border-radius:11px;padding:1.1rem 1.2rem;
+          text-decoration:none;color:inherit;transition:border-color .15s,transform .15s;}
+  a.carte:hover{border-color:var(--accent);transform:translateY(-2px);}
+  a.carte .tag{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+  a.carte h3{font-size:1.02rem;color:var(--navy);margin:.35rem 0 .35rem;}
+  a.carte p{font-size:.86rem;color:var(--text2);}
+  .note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;padding:.85rem 1.1rem;
+        font-size:.92rem;color:var(--text2);margin:1.2rem 0;}
+  .note code, p code, li code{font-family:'JetBrains Mono',Consolas,monospace;background:#fff;color:var(--accent2);
+        padding:.08rem .34rem;border-radius:4px;font-size:.88em;border:1px solid var(--border);}
+  ol,ul{margin:.5rem 0 1rem 1.3rem;color:var(--text2);font-size:.93rem;}
+  li{margin-bottom:.3rem;}
+  footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="org">Digital House Company · L'IA pour les developpeurs</div>
+  <h1>Code base de la journée 2</h1>
+  <p class="sub">La programmation par prompt · Les outils du cloud. <b>Toujours aucun JavaScript.</b> Six modèles de prompt à copier, deux grilles de contrôle, et une page web à construire puis à mettre en ligne.</p>
+<div class="cartes"><a class="carte" href="exercice_3_prompts/index.html"><span class="tag">Exercice 3 · Module 3</span><h3>Les six techniques de prompt</h3><p>Rôle, few-shot, chain-of-thought, format imposé, self-consistency, prompt de modification. Chacune avec son modèle prêt à copier.</p></a><a class="carte" href="exercice_3_prompts/grille_de_controle.html"><span class="tag">Exercice 3 · TP</span><h3>La grille de contrôle sur 10</h3><p>Le TP du programme : rédiger un prompt de spécification, puis vérifier dix points sur ce qui revient.</p></a><a class="carte" href="exercice_4_page_web/index.html"><span class="tag">Exercice 4 · Module 4</span><h3>Construire et déployer une page</h3><p>De l'idée à l'adresse en ligne, en trois tours, sans écrire une ligne de code vous-même. Plus le tableau des coûts.</p></a><a class="carte" href="README.md"><span class="tag">Documentation</span><h3>Lire le README</h3><p>Ce qu'il y a dans le dossier, et où va la clé d'API.</p></a></div><h2>Dans quel ordre travailler</h2><ol><li>Parcourez les six techniques. Pour chacune, copiez le modèle et essayez-le une fois.</li><li>Faites la self-consistency <b>pour de vrai</b> : trois conversations séparées, pas trois messages à la suite.</li><li>Rédigez votre prompt de spécification, puis passez la grille sur 10.</li><li>Corrigez <b>votre prompt</b> — pas la réponse — et recomptez.</li><li>Construisez la page « Bonnes Nouvelles », puis mettez-la en ligne.</li></ol><div class="note"><b>Le chiffre de la journée :</b> entre le modèle le plus cher et le moins cher, il y a un facteur 46 pour un travail identique. Classer un titre est une tâche fermée : le surcoût n'achète rien.</div><div class="attention"><b>La règle de la journée :</b> un prompt ne s'écrit pas, il se <b>corrige</b>. La première version n'est jamais la bonne, et ce n'est pas un problème — c'est la méthode.</div>
+  <footer>
+    Formation animee par <b>Kuate Joel Parfait</b> — hello@dhcompany.pro
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercice 4 · Construire et déployer une page web</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="page">
+
+  <header>
+    <div class="surtitre">Exercice 4 · Module 4</div>
+    <h1>Construire et déployer une page, sans écrire de code</h1>
+    <p class="intro">
+      Énoncé du programme : <i>« développer et déployer une application web
+      uniquement à l'aide d'un assistant IA de développement »</i>.
+      Vous produirez du HTML et du CSS par prompt, vous les relirez,
+      et vous mettrez le résultat <b>en ligne</b> — sans compte, sans carte
+      bancaire, en trois minutes.
+    </p>
+  </header>
+
+
+  <!-- ===================================================================== -->
+  <h2>1 · Le cahier des charges</h2>
+
+  <p>
+    Une page unique, « Bonnes Nouvelles », qui présente trois nouvelles
+    positives du jour. Rien de plus.
+  </p>
+
+  <table>
+    <tr><th>Élément</th><th>Ce qui est attendu</th></tr>
+    <tr><td>En-tête</td><td>Un titre <code>&lt;h1&gt;</code> et une phrase d'accroche</td></tr>
+    <tr><td>Trois nouvelles</td><td>Chacune : un titre, deux lignes de résumé, la source</td></tr>
+    <tr><td>Une section « Pourquoi »</td><td>Trois lignes expliquant la démarche</td></tr>
+    <tr><td>Un pied de page</td><td>La date, et une adresse de contact</td></tr>
+    <tr><td>Sur mobile</td><td>Une seule colonne sous 700 pixels</td></tr>
+    <tr><td>Techniquement</td><td>Un seul fichier, aucun JavaScript, aucune ressource distante</td></tr>
+  </table>
+
+
+  <!-- ===================================================================== -->
+  <h2>2 · Le prompt de départ</h2>
+
+<pre><code>Tu es un intégrateur web expérimenté.
+
+Produis UNE page HTML complète et autonome : « Bonnes Nouvelles »,
+une page qui présente trois nouvelles positives du jour.
+
+STRUCTURE
+- un en-tête avec un titre h1 et une phrase d'accroche ;
+- trois blocs « nouvelle », chacun avec un titre h2, deux lignes de résumé
+  et le nom de la source ;
+- une section « Pourquoi cette page » de trois lignes ;
+- un pied de page avec la date et une adresse de contact.
+
+CONTRAINTES DE FORME
+- un seul fichier, du &lt;!DOCTYPE html&gt; à &lt;/html&gt; ;
+- le CSS dans une balise &lt;style&gt; dans le &lt;head&gt; ;
+- AUCUN JavaScript ;
+- aucune dépendance externe : pas de CDN, pas de police distante, pas d'image ;
+- lang="fr", meta charset, meta viewport ;
+- une seule colonne sous 700 pixels ;
+- contraste suffisant, taille de texte d'au moins 16 pixels.
+
+CONTENU
+Invente trois nouvelles plausibles, et écris explicitement
+« exemple fictif » à côté de chaque source.
+
+Réponds UNIQUEMENT par le code de la page.</code></pre>
+
+  <div class="attention">
+    <b>Notez la dernière consigne de contenu.</b> On demande au modèle
+    d'<b>étiqueter ce qu'il invente</b>. Une page qui présente des nouvelles
+    fabriquées comme si elles étaient réelles, même en exercice, est une
+    fausse information. Prenez l'habitude maintenant.
+  </div>
+
+
+  <!-- ===================================================================== -->
+  <h2>3 · Les trois tours</h2>
+
+  <div class="etape">
+    <div class="etape-titre"><span class="numero">Tour 1</span><span>Obtenir une page qui s'affiche</span></div>
+    <p>
+      Collez le prompt, récupérez le code, enregistrez-le sous
+      <code>bonnes-nouvelles.html</code> dans ce dossier, ouvrez-le.
+      Passez la grille de contrôle du jour 1 (les sept points) : combien sur 7 ?
+    </p>
+  </div>
+
+  <div class="etape">
+    <div class="etape-titre"><span class="numero">Tour 2</span><span>Faire une modification cadrée</span></div>
+    <p>
+      Utilisez le <b>prompt de modification</b> vu à l'exercice 3 : collez
+      votre page, demandez <b>un</b> changement, et listez ce qui ne doit pas
+      bouger. Par exemple : « ajoute une quatrième nouvelle » ou « passe le
+      fond en sombre ».
+    </p>
+    <p>
+      Puis lisez la liste des changements que le modèle annonce, et
+      <b>vérifiez-la</b> : a-t-il touché à autre chose ?
+    </p>
+  </div>
+
+  <div class="etape">
+    <div class="etape-titre"><span class="numero">Tour 3</span><span>Mettre en ligne</span></div>
+    <p>Trois options, toutes gratuites, sans carte bancaire.</p>
+  </div>
+
+  <table>
+    <tr><th>Service</th><th>Comment</th><th>Ce qu'il faut savoir</th></tr>
+    <tr>
+      <td><b>Netlify Drop</b></td>
+      <td>Glissez le dossier sur <code>app.netlify.com/drop</code>.
+          L'adresse s'affiche en trente secondes.</td>
+      <td>Le plus rapide. Aucun compte nécessaire pour un essai.</td>
+    </tr>
+    <tr>
+      <td><b>GitHub Pages</b></td>
+      <td>Un dépôt, un fichier <code>index.html</code>, puis
+          <i>Settings → Pages</i>.</td>
+      <td>Demande un compte GitHub, mais votre page est versionnée.</td>
+    </tr>
+    <tr>
+      <td><b>Cloudflare Pages</b></td>
+      <td>Même principe, depuis un dépôt Git.</td>
+      <td>Rapide partout dans le monde, y compris depuis l'Afrique.</td>
+    </tr>
+  </table>
+
+  <div class="bien">
+    <b>Ce que vous venez de faire</b> est exactement ce que fait une agence
+    pour une page vitrine : rédiger, relire, publier. La différence est que
+    vous n'avez pas écrit le HTML — vous l'avez <b>commandé et vérifié</b>.
+  </div>
+
+
+  <!-- ===================================================================== -->
+  <h2>4 · Ce que ça coûterait, si l'IA tournait dans la page</h2>
+
+  <p>
+    Votre page est <b>statique</b> : elle ne coûte rien à l'usage. Mais si
+    l'application classait automatiquement des titres d'actualité, il y aurait
+    un appel de modèle par titre, et une facture.
+  </p>
+
+  <p>
+    Le scénario : <b>200 titres classés par jour</b>. Chaque appel envoie
+    environ 600 tokens (le message système compte à chaque fois) et en
+    reçoit 20.
+  </p>
+
+  <table>
+    <tr><th>Modèle</th><th>Usage typique</th><th>Coût mensuel</th><th>Décision</th></tr>
+    <tr><td>Modèle local (LM Studio)</td><td>Confidentiel, volume illimité</td><td><b>0,00 $</b></td><td>Gratuit au token, mais il faut une machine</td></tr>
+    <tr><td>Petit modèle rapide</td><td>Classer, extraire, router</td><td><b>≈ 1,30 $</b></td><td><b>Le bon choix pour cette tâche</b></td></tr>
+    <tr><td>Modèle économique</td><td>Volume élevé</td><td>≈ 6,00 $</td><td>Acceptable</td></tr>
+    <tr><td>Modèle généraliste</td><td>Usage général</td><td>≈ 12,00 $</td><td>Sur-dimensionné</td></tr>
+    <tr><td>Modèle de rédaction</td><td>Rédaction exigeante</td><td>≈ 24,00 $</td><td>Injustifiable ici</td></tr>
+    <tr><td>Modèle de raisonnement</td><td>Raisonnement complexe</td><td>≈ 60,00 $</td><td>Quarante-six fois le nécessaire</td></tr>
+  </table>
+
+  <div class="note">
+    <b>La formule tient en une ligne :</b>
+    <code>coût = (tokens ÷ 1 000 000) × prix du million</code>.
+    Tout le reste n'est que de la mise en forme. Le tableau de calcul à
+    remplir avec <b>vos</b> chiffres est dans votre fiche participant.
+  </div>
+
+  <div class="attention">
+    <b>Le piège que tout le monde oublie :</b> le message système est envoyé
+    à <b>chaque</b> appel. Sur une tâche courte, c'est lui qui pèse le plus
+    lourd dans la facture — trois phrases de plus multiplient le coût.
+  </div>
+
+  <p>
+    Classer un titre en trois catégories est une <b>tâche fermée</b>. Un petit
+    modèle avec quatre bons exemples la réussit aussi bien qu'un grand.
+    <b>Le surcoût n'achète rien.</b>
+  </p>
+
+
+  <!-- ===================================================================== -->
+  <h2>5 · Et la clé d'API, alors ?</h2>
+
+  <p>
+    Question du module 4, et elle se pose dès qu'on met quelque chose en
+    ligne. Trois architectures, trois réponses.
+  </p>
+
+  <table>
+    <tr><th>Architecture</th><th>Où vit la clé</th><th>Verdict</th></tr>
+    <tr>
+      <td>Page statique qui appellerait le modèle elle-même</td>
+      <td>Dans le code de la page, <b>visible par tous</b> (clic droit → code source)</td>
+      <td><b>Jamais.</b> Une clé publiée est une clé compromise, et les robots scannent en continu.</td>
+    </tr>
+    <tr>
+      <td>Page statique + modèle local (LM Studio)</td>
+      <td>Nulle part : le modèle tourne chez l'utilisateur</td>
+      <td>Convient à un usage interne ou à une démonstration.</td>
+    </tr>
+    <tr>
+      <td>Page statique + votre serveur + le modèle</td>
+      <td>Sur <b>votre</b> serveur, jamais dans le navigateur</td>
+      <td><b>La seule architecture acceptable en production.</b></td>
+    </tr>
+  </table>
+
+  <div class="bien">
+    L'architecture tient en une ligne :
+    <b>navigateur → votre serveur → le modèle</b>. La clé s'arrête au milieu.
+    Une couche de plus, et le problème disparaît.
+    <br><br>
+    On construira ce serveur demain, en Python, autour du RAG.
+  </div>
+
+
+  <h2>Livrable de l'exercice</h2>
+  <ul class="grille">
+    <li><input type="checkbox" id="l1"><label for="l1">Ma page <code>bonnes-nouvelles.html</code> s'ouvre et s'affiche correctement</label></li>
+    <li><input type="checkbox" id="l2"><label for="l2">Elle passe les sept contrôles du jour 1</label></li>
+    <li><input type="checkbox" id="l3"><label for="l3">Elle est lisible sur un téléphone (réduisez la fenêtre pour vérifier)</label></li>
+    <li><input type="checkbox" id="l4"><label for="l4">J'ai fait une modification cadrée, et vérifié ce que le modèle a réellement changé</label></li>
+    <li><input type="checkbox" id="l5"><label for="l5">Elle est <b>en ligne</b>, et j'ai noté son adresse dans ma fiche</label></li>
+    <li><input type="checkbox" id="l6"><label for="l6">J'ai rempli le tableau de coût avec les chiffres de <b>mon</b> projet</label></li>
+    <li><input type="checkbox" id="l7"><label for="l7">Je sais expliquer en une phrase pourquoi une clé d'API ne va pas dans le navigateur</label></li>
+  </ul>
+
+  <footer>
+    Formation animée par <b>Kuate Joël Parfait</b> — Digital House Company ·
+    hello@dhcompany.pro
+  </footer>
+
+</div>
+
+</body>
+</html>

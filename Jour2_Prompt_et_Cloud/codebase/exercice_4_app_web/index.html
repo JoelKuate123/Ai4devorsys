@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bonnes Nouvelles · Exercice 4</title>
+<style>
+  :root{--accent:#0E8C86;--accent2:#0B6E68;--navy:#0B2D48;--text:#16212B;
+        --text2:#4B5C63;--card:#EAF4F3;--border:#D7E6E4;--good:#1F9D67;--warn:#B9740A;--bad:#C1443B;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#F2F7F7;color:var(--text);
+       padding:1.6rem 1.2rem 4rem;}
+  .wrap{max-width:960px;margin:0 auto;}
+  h1{font-size:1.6rem;color:var(--navy);}
+  .sub{color:var(--text2);font-size:.95rem;margin:.3rem 0 1.3rem;}
+  .bloc{background:#fff;border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.1rem;}
+  .bloc h2{font-size:.85rem;color:var(--accent2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.7rem;}
+  .rangee{display:flex;gap:.8rem;flex-wrap:wrap;align-items:flex-end;}
+  .champ{display:flex;flex-direction:column;gap:.25rem;flex:1;min-width:170px;}
+  label{font-size:.78rem;color:var(--text2);font-weight:600;}
+  input,select,textarea{padding:.5rem .65rem;border:1px solid var(--border);border-radius:7px;
+                        font-family:inherit;font-size:.9rem;background:#fff;color:var(--text);}
+  textarea{min-height:8rem;resize:vertical;line-height:1.55;font-size:.88rem;}
+  button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.6rem 1.2rem;
+         font-size:.9rem;font-weight:600;cursor:pointer;font-family:inherit;}
+  button:hover{background:var(--accent2);} button:disabled{opacity:.5;cursor:wait;}
+  .nouvelle{padding:.7rem .9rem;border-left:4px solid var(--good);background:#F7FDFA;
+            border-radius:0 7px 7px 0;margin-bottom:.5rem;}
+  .nouvelle .score{font-size:.75rem;color:var(--text2);display:block;margin-top:.2rem;}
+  .rejete{border-left-color:var(--border);background:#FAFCFC;color:var(--text2);opacity:.75;}
+  .kpi{display:flex;gap:.8rem;flex-wrap:wrap;}
+  .kpi div{flex:1;min-width:130px;background:var(--card);border-radius:9px;padding:.7rem .9rem;}
+  .kpi b{display:block;font-size:1.35rem;color:var(--navy);}
+  .kpi span{font-size:.75rem;color:var(--text2);}
+  .progres{font-size:.85rem;color:var(--text2);margin-left:.7rem;}
+  details{margin-top:.8rem;} summary{cursor:pointer;font-size:.85rem;color:var(--accent2);font-weight:600;}
+  pre{background:#0F2733;color:#E8F1F0;border-radius:8px;padding:.8rem 1rem;font-size:.75rem;
+      overflow:auto;margin-top:.5rem;white-space:pre-wrap;font-family:'JetBrains Mono',Consolas,monospace;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Bonnes Nouvelles</h1>
+  <p class="sub">
+    Exercice 4 · l'application classe des titres et n'affiche que les positifs.
+    Sans clé d'API, le mode hors ligne prend le relais.
+  </p>
+
+  <div class="bloc">
+    <h2>Connexion et modèle</h2>
+    <div class="rangee">
+      <div class="champ">
+        <label for="baseUrl">Adresse du serveur</label>
+        <input id="baseUrl" type="text" value="http://localhost:1234/v1">
+      </div>
+      <div class="champ">
+        <label for="apiKey">Clé d'API (vide = LM Studio ou hors ligne)</label>
+        <input id="apiKey" type="password" placeholder="sk-...">
+      </div>
+      <div class="champ" style="max-width:200px">
+        <label for="modeleTarif">Modèle pour le calcul de coût</label>
+        <select id="modeleTarif"></select>
+      </div>
+    </div>
+  </div>
+
+  <div class="bloc">
+    <h2>Les titres à classer (un par ligne)</h2>
+    <textarea id="titres"></textarea>
+    <div class="rangee" style="margin-top:.8rem">
+      <button id="btnClasser">Classer les titres</button>
+      <span class="progres" id="progres"></span>
+    </div>
+  </div>
+
+  <div class="bloc" id="blocResultats" style="display:none">
+    <h2>Les bonnes nouvelles du jour</h2>
+    <div id="positifs"></div>
+    <details>
+      <summary>Voir aussi les titres écartés</summary>
+      <div id="ecartes" style="margin-top:.6rem"></div>
+    </details>
+  </div>
+
+  <div class="bloc" id="blocStats" style="display:none">
+    <h2>Ce que cette exécution a coûté</h2>
+    <div class="kpi" id="stats"></div>
+    <details>
+      <summary>Voir le message système envoyé à chaque appel</summary>
+      <pre id="systeme"></pre>
+    </details>
+  </div>
+</div>
+
+<script src="../../../_commun/llm-client.js"></script>
+<script src="calcul-couts.js"></script>
+<script src="app.js"></script>
+<script>
+const el = function (id) { return document.getElementById(id); };
+
+// On remplit la liste des modèles à partir du tarif : une seule source de vérité.
+Object.keys(CalculCouts.TARIFS).forEach(function (m) {
+  const o = document.createElement('option');
+  o.value = m;
+  o.textContent = m + ' — ' + CalculCouts.TARIFS[m].usage;
+  if (m === 'gpt-5.6-luna') o.selected = true;
+  el('modeleTarif').appendChild(o);
+});
+
+// On pré-remplit la zone de saisie avec le jeu d'exemple.
+el('titres').value = AppBonnesNouvelles.TITRES_EXEMPLE.join('\n');
+el('systeme').textContent = AppBonnesNouvelles.MESSAGE_SYSTEME;
+
+el('btnClasser').addEventListener('click', async function () {
+  LLM.configurer({
+    baseUrl: el('baseUrl').value.trim(),
+    apiKey: el('apiKey').value.trim()
+  });
+
+  // On découpe la zone de texte en lignes non vides.
+  const titres = el('titres').value.split('\n')
+    .map(function (t) { return t.trim(); })
+    .filter(function (t) { return t.length > 0; });
+
+  if (titres.length === 0) return;
+
+  el('btnClasser').disabled = true;
+  el('progres').textContent = '0 / ' + titres.length;
+
+  const resultats = await AppBonnesNouvelles.classerPlusieursTitres(titres, 5,
+    function (fait, total) { el('progres').textContent = fait + ' / ' + total; });
+
+  el('btnClasser').disabled = false;
+  el('progres').textContent = 'Terminé.';
+
+  // --- Affichage des positifs ---
+  const positifs = AppBonnesNouvelles.filtrerPositifs(resultats);
+  el('blocResultats').style.display = 'block';
+  el('positifs').innerHTML = positifs.length
+    ? positifs.map(function (r) {
+        return '<div class="nouvelle">' + echapper(r.titre) +
+               '<span class="score">confiance ' + (r.confiance * 100).toFixed(0) + ' %</span></div>';
+      }).join('')
+    : '<p style="color:#4B5C63;font-size:.9rem">Aucune nouvelle positive dans ce lot.</p>';
+
+  // --- Affichage des écartés : la transparence fait partie du produit ---
+  const ecartes = resultats.filter(function (r) { return positifs.indexOf(r) === -1; });
+  el('ecartes').innerHTML = ecartes.map(function (r) {
+    return '<div class="nouvelle rejete">' + echapper(r.titre) +
+           '<span class="score">' + r.categorie +
+           (r.erreur ? ' — ' + echapper(r.erreur) : '') + '</span></div>';
+  }).join('');
+
+  // --- Statistiques et coût ---
+  const s = AppBonnesNouvelles.statistiques(resultats, el('modeleTarif').value);
+  el('blocStats').style.display = 'block';
+  el('stats').innerHTML = [
+    ['<b>' + s.total + '</b><span>titres traités</span>'],
+    ['<b>' + s.parCategorie.positif + '</b><span>positifs retenus</span>'],
+    ['<b>' + s.coutLisible + '</b><span>coût de cette exécution</span>'],
+    ['<b>' + s.coutMensuelSiQuotidien + '</b><span>par mois si quotidien</span>'],
+    ['<b>' + s.erreurs + '</b><span>erreurs</span>']
+  ].map(function (c) { return '<div>' + c + '</div>'; }).join('');
+});
+
+/** Échappe le HTML : un titre venu de l'extérieur ne doit jamais être injecté brut. */
+function echapper(texte) {
+  const d = document.createElement('div');
+  d.textContent = texte;
+  return d.innerHTML;
+}
+</script>
+</body>
+</html>

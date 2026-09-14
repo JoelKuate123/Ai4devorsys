@@ -1,0 +1,312 @@
+/* =========================================================================
+   style.css — la feuille de style des pages de consigne.
+   =========================================================================
+   Lisez ce fichier : c'est déjà un cours de CSS.
+   Chaque bloc est commenté, et les commentaires expliquent POURQUOI
+   on écrit la règle, pas ce qu'elle fait — ça, le code le dit tout seul.
+
+   Un fichier CSS se lit de haut en bas. Quand deux règles se contredisent,
+   c'est la DERNIÈRE qui gagne. C'est la seule chose à retenir pour aujourd'hui.
+   ========================================================================= */
+
+
+/* -------------------------------------------------------------------------
+   1. LES VARIABLES DE COULEUR
+   -------------------------------------------------------------------------
+   On déclare les couleurs UNE fois, ici, et on les réutilise partout.
+   Changer la charte de toute la formation, c'est modifier ces sept lignes.
+
+   « :root » désigne la racine du document. Une variable CSS commence
+   toujours par deux tirets.
+   ------------------------------------------------------------------------- */
+:root {
+  --accent:  #0E8C86;   /* le vert-bleu de la formation */
+  --accent2: #0B6E68;   /* le même, en plus foncé, pour le survol */
+  --navy:    #0B2D48;   /* le bleu nuit des titres */
+  --text:    #16212B;   /* le texte principal */
+  --text2:   #4B5C63;   /* le texte secondaire, plus clair */
+  --card:    #EAF4F3;   /* le fond des encadrés */
+  --border:  #D7E6E4;   /* les traits de séparation */
+  --fond:    #F2F7F7;   /* le fond de la page */
+  --good:    #1F9D67;   /* vert : tout va bien */
+  --warn:    #B9740A;   /* orange : attention */
+  --bad:     #C1443B;   /* rouge : problème */
+}
+
+
+/* -------------------------------------------------------------------------
+   2. LA REMISE À ZÉRO
+   -------------------------------------------------------------------------
+   Les navigateurs appliquent leurs propres marges par défaut, et elles ne
+   sont pas les mêmes partout. On les efface pour partir d'une base identique.
+
+   « * » veut dire « tous les éléments ».
+   ------------------------------------------------------------------------- */
+* {
+  box-sizing: border-box;   /* la largeur inclut les marges intérieures */
+  margin: 0;
+  padding: 0;
+}
+
+
+/* -------------------------------------------------------------------------
+   3. LA PAGE
+   ------------------------------------------------------------------------- */
+body {
+  /* system-ui prend la police du système : rapide, et lisible partout.
+     Les polices suivantes sont des solutions de repli, dans l'ordre. */
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  background: var(--fond);
+  color: var(--text);
+
+  /* 1.6 veut dire « une fois et demie la taille du texte » entre les lignes.
+     C'est le réglage qui change le plus la lisibilité d'une page. */
+  line-height: 1.6;
+
+  padding: 2rem 1.2rem 4rem;
+}
+
+/* Un conteneur centré, jamais plus large que 860 pixels.
+   Au-delà, l'œil perd la ligne en revenant à gauche. */
+.page {
+  max-width: 860px;
+  margin: 0 auto;   /* « auto » à gauche et à droite = centré */
+}
+
+
+/* -------------------------------------------------------------------------
+   4. LES TITRES
+   ------------------------------------------------------------------------- */
+.surtitre {
+  font-size: .75rem;
+  letter-spacing: .16em;      /* les lettres espacées : ça fait « étiquette » */
+  text-transform: uppercase;
+  color: var(--accent2);
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 1.9rem;
+  color: var(--navy);
+  margin: .5rem 0 .6rem;
+  line-height: 1.2;           /* les gros titres ont besoin de moins d'espace */
+}
+
+h2 {
+  font-size: 1.2rem;
+  color: var(--navy);
+  margin: 2.2rem 0 .8rem;
+  padding-left: .8rem;
+  border-left: 4px solid var(--accent);   /* le petit trait vert à gauche */
+}
+
+h3 {
+  font-size: 1rem;
+  color: var(--accent2);
+  margin: 1.4rem 0 .5rem;
+}
+
+.intro {
+  color: var(--text2);
+  font-size: 1rem;
+  max-width: 68ch;            /* « ch » = la largeur du caractère zéro.
+                                 68 caractères par ligne : le confort optimal. */
+  margin-bottom: 1.6rem;
+}
+
+
+/* -------------------------------------------------------------------------
+   5. LE TEXTE COURANT
+   ------------------------------------------------------------------------- */
+p  { margin-bottom: .8rem; color: var(--text2); max-width: 72ch; }
+ul, ol { margin: 0 0 1rem 1.4rem; color: var(--text2); }
+li { margin-bottom: .35rem; }
+b, strong { color: var(--text); }
+a { color: var(--accent2); }
+
+/* Le style du code écrit au milieu d'une phrase. */
+code {
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  background: var(--card);
+  color: var(--accent2);
+  padding: .08rem .35rem;
+  border-radius: 4px;
+  font-size: .9em;            /* « em » = relatif au texte autour */
+}
+
+/* Le style d'un bloc de code entier. */
+pre {
+  background: #0F2733;
+  color: #E8F1F0;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  font-family: 'JetBrains Mono', Consolas, monospace;
+  font-size: .82rem;
+  line-height: 1.6;
+  margin: .8rem 0 1.2rem;
+
+  /* Un bloc de code ne doit jamais élargir la page :
+     s'il est trop long, c'est LUI qui défile, pas la page. */
+  overflow-x: auto;
+}
+pre code { background: none; color: inherit; padding: 0; }
+
+
+/* -------------------------------------------------------------------------
+   6. LES ENCADRÉS
+   -------------------------------------------------------------------------
+   Trois variantes, un seul modèle. On change juste la couleur du trait
+   et du fond : c'est ce qu'on appelle une « variante » en CSS.
+   ------------------------------------------------------------------------- */
+.note, .attention, .bien {
+  border-left: 4px solid var(--accent);
+  border-radius: 6px;
+  padding: .85rem 1.1rem;
+  margin: 1rem 0;
+  font-size: .95rem;
+  color: var(--text2);
+  background: var(--card);
+}
+.attention { border-left-color: var(--warn); background: #FFF6E8; }
+.bien      { border-left-color: var(--good); background: #EEF9F3; }
+
+
+/* -------------------------------------------------------------------------
+   7. LES ÉTAPES NUMÉROTÉES
+   ------------------------------------------------------------------------- */
+.etape {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.1rem 1.3rem;
+  margin: 1rem 0;
+}
+.etape-titre {
+  display: flex;              /* met le numéro et le titre côte à côte */
+  align-items: baseline;      /* aligne sur la ligne de base du texte */
+  gap: .7rem;
+  margin-bottom: .5rem;
+}
+.numero {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 800;
+  font-size: .78rem;
+  border-radius: 20px;
+  padding: .18rem .7rem;
+  white-space: nowrap;        /* le numéro ne se coupe jamais en deux */
+}
+.etape-titre span:last-child { font-size: 1.02rem; font-weight: 700; color: var(--navy); }
+
+
+/* -------------------------------------------------------------------------
+   8. LES CASES À COCHER
+   -------------------------------------------------------------------------
+   Une case à cocher, c'est du HTML pur : <input type="checkbox">.
+   Aucun JavaScript n'est nécessaire pour qu'elle fonctionne.
+   ------------------------------------------------------------------------- */
+.grille { list-style: none; margin-left: 0; }
+
+.grille li {
+  display: flex;
+  gap: .7rem;
+  align-items: flex-start;
+  padding: .5rem 0;
+  border-bottom: 1px dotted var(--border);
+}
+
+.grille input[type="checkbox"] {
+  margin-top: .35rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  accent-color: var(--accent);   /* colorie la case dans notre vert */
+  flex: none;                    /* la case ne rétrécit jamais */
+}
+
+.grille label { font-size: .95rem; color: var(--text2); cursor: pointer; }
+.grille label b { color: var(--text); }
+
+
+/* -------------------------------------------------------------------------
+   9. LES TABLEAUX
+   ------------------------------------------------------------------------- */
+table {
+  border-collapse: collapse;   /* sans ça, chaque cellule a sa propre bordure */
+  width: 100%;
+  margin: .8rem 0 1.4rem;
+  font-size: .9rem;
+}
+th, td {
+  border: 1px solid var(--border);
+  padding: .5rem .7rem;
+  text-align: left;
+  vertical-align: top;
+}
+th { background: var(--card); color: var(--accent2); font-weight: 700; }
+td { color: var(--text2); }
+td b { color: var(--text); }
+
+
+/* -------------------------------------------------------------------------
+   10. LES CARTES DU SOMMAIRE
+   ------------------------------------------------------------------------- */
+.cartes {
+  display: grid;
+  /* « auto-fill » range autant de cartes que la largeur le permet,
+     chacune faisant au minimum 250 pixels. Une seule ligne de CSS
+     remplace tout ce qu'on écrivait avant pour être « responsive ». */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+a.carte {
+  display: block;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 1.1rem 1.2rem;
+  text-decoration: none;       /* on enlève le soulignement du lien */
+  color: inherit;              /* et sa couleur bleue par défaut */
+  transition: border-color .15s, transform .15s;   /* l'effet au survol */
+}
+a.carte:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);  /* la carte monte de 2 pixels */
+}
+a.carte .tag  { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+                color: var(--accent2); font-weight: 700; }
+a.carte h3    { font-size: 1rem; color: var(--navy); margin: .35rem 0; }
+a.carte p     { font-size: .86rem; color: var(--text2); margin: 0; }
+
+
+/* -------------------------------------------------------------------------
+   11. LE PIED DE PAGE
+   ------------------------------------------------------------------------- */
+footer {
+  margin-top: 3rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--border);
+  font-size: .85rem;
+  color: var(--text2);
+}
+
+
+/* -------------------------------------------------------------------------
+   12. LE TÉLÉPHONE
+   -------------------------------------------------------------------------
+   « @media » veut dire : « à partir d'ici, ces règles ne s'appliquent que
+   si la condition est vraie ». Ici : un écran de 820 pixels ou moins.
+
+   On écrit toujours ce bloc EN DERNIER : rappelez-vous, c'est la dernière
+   règle qui gagne.
+   ------------------------------------------------------------------------- */
+@media (max-width: 820px) {
+  body { padding: 1.2rem .9rem 3rem; }
+  h1 { font-size: 1.45rem; }
+  h2 { font-size: 1.05rem; }
+
+  /* Un tableau ne se réduit pas : on le laisse défiler tout seul,
+     pour que la PAGE, elle, ne défile jamais de côté. */
+  table { display: block; overflow-x: auto; }
+}

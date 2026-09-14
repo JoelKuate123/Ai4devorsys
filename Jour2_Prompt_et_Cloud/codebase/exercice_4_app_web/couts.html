@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculateur de budget IA · Exercice 4</title>
+<style>
+  :root{--accent:#0E8C86;--accent2:#0B6E68;--navy:#0B2D48;--text:#16212B;
+        --text2:#4B5C63;--card:#EAF4F3;--border:#D7E6E4;--good:#1F9D67;--warn:#B9740A;--bad:#C1443B;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#F2F7F7;color:var(--text);
+       padding:1.8rem 1.2rem 5rem;line-height:1.55;}
+  .wrap{max-width:920px;margin:0 auto;}
+  h1{font-size:1.6rem;color:var(--navy);}
+  .sub{color:var(--text2);font-size:.95rem;margin:.3rem 0 1.4rem;max-width:70ch;}
+  .bloc{background:#fff;border:1px solid var(--border);border-radius:11px;padding:1.1rem 1.2rem;margin-bottom:1.2rem;}
+  .bloc h2{font-size:.85rem;color:var(--accent2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:.8rem;}
+  .rangee{display:flex;gap:.8rem;flex-wrap:wrap;}
+  .champ{display:flex;flex-direction:column;gap:.25rem;flex:1;min-width:150px;}
+  label{font-size:.78rem;color:var(--text2);font-weight:600;}
+  input,textarea{padding:.5rem .65rem;border:1px solid var(--border);border-radius:7px;
+                 font-family:inherit;font-size:.9rem;background:#fff;color:var(--text);}
+  table{border-collapse:collapse;width:100%;font-size:.9rem;}
+  th,td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left;}
+  th{background:var(--card);color:var(--accent2);font-weight:700;}
+  td{color:var(--text2);} td.num{text-align:right;font-family:'JetBrains Mono',Consolas,monospace;}
+  tr.retenu td{background:#EEF9F3;color:var(--text);font-weight:600;}
+  tr.cher td.num{color:var(--bad);}
+  .verdict{margin-top:1rem;padding:.9rem 1.1rem;background:var(--card);border-left:4px solid var(--accent);
+           border-radius:6px;font-size:.93rem;color:var(--text2);}
+  .verdict b{color:var(--navy);}
+  .note{background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;padding:.8rem 1rem;
+        font-size:.9rem;color:var(--text2);margin-top:1.2rem;}
+  code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--card);color:var(--accent2);
+       padding:.08rem .34rem;border-radius:4px;font-size:.88em;}
+  .compteur{font-size:.82rem;color:var(--text2);margin-top:.3rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Combien va coûter votre application ?</h1>
+  <p class="sub">
+    Dix lignes de calcul évitent des mois de mauvaise surprise.
+    La formule est toujours la même : <code>coût = (tokens ÷ 1 000 000) × prix du million</code>.
+    Tout le reste n'est que mise en forme.
+  </p>
+
+  <div class="bloc">
+    <h2>1 · Votre appel type</h2>
+    <div class="rangee">
+      <div class="champ" style="flex:2">
+        <label for="promptSysteme">Le message système (envoyé à CHAQUE appel — on l'oublie toujours dans les budgets)</label>
+        <textarea id="promptSysteme" rows="4">Tu classes des titres de presse en trois catégories : positif, neutre, negatif.
+Un titre est positif s'il annonce une amélioration concrète et vérifiable.
+Un titre d'annonce, d'agenda ou de procédure est neutre.
+Réponds uniquement par : {"categorie": "...", "confiance": 0.0}</textarea>
+        <div class="compteur" id="compteurSysteme"></div>
+      </div>
+      <div class="champ">
+        <label for="promptUtilisateur">La partie variable</label>
+        <textarea id="promptUtilisateur" rows="4">Titre : "Une commune wallonne inaugure sa première cantine 100 % locale"</textarea>
+        <div class="compteur" id="compteurUtilisateur"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bloc">
+    <h2>2 · Votre volume</h2>
+    <div class="rangee">
+      <div class="champ"><label for="appelsParJour">Appels par jour</label>
+        <input id="appelsParJour" type="number" value="200"></div>
+      <div class="champ"><label for="tokensSortie">Tokens en sortie (par appel)</label>
+        <input id="tokensSortie" type="number" value="20"></div>
+      <div class="champ"><label for="jours">Jours par mois</label>
+        <input id="jours" type="number" value="30"></div>
+    </div>
+  </div>
+
+  <div class="bloc">
+    <h2>3 · La facture</h2>
+    <table id="tableau"></table>
+    <div class="verdict" id="verdict"></div>
+  </div>
+
+  <div class="note">
+    <b>Ces chiffres seront périmés dans six mois.</b> Ce qui ne périmera pas :
+    le rapport entre le plus cher et le moins cher, et la méthode.
+    Les tarifs sont dans la constante <code>TARIFS</code> de
+    <code>calcul-couts.js</code> — mettez-la à jour, pas le reste du fichier.
+  </div>
+</div>
+
+<script src="calcul-couts.js"></script>
+<script>
+const el = function (id) { return document.getElementById(id); };
+
+/** Recalcule tout et redessine le tableau. */
+function recalculer() {
+  // Le message système compte dans CHAQUE appel : c'est le piège numéro un.
+  const tokensSysteme = CalculCouts.estimerTokens(el('promptSysteme').value);
+  const tokensUtilisateur = CalculCouts.estimerTokens(el('promptUtilisateur').value);
+  const tokensEntree = tokensSysteme + tokensUtilisateur;
+
+  el('compteurSysteme').textContent = '≈ ' + tokensSysteme + ' tokens, à chaque appel';
+  el('compteurUtilisateur').textContent = '≈ ' + tokensUtilisateur + ' tokens';
+
+  const scenario = {
+    appelsParJour: Number(el('appelsParJour').value) || 0,
+    tokensEntree: tokensEntree,
+    tokensSortie: Number(el('tokensSortie').value) || 0,
+    jours: Number(el('jours').value) || 30
+  };
+
+  const resultats = CalculCouts.comparerTousLesModeles(scenario);
+
+  // --- le tableau ---
+  let html = '<thead><tr><th>Modèle</th><th>Usage typique</th>'
+           + '<th style="text-align:right">Par appel</th>'
+           + '<th style="text-align:right">Par mois</th></tr></thead><tbody>';
+
+  // Le « bon choix » : le moins cher parmi ceux qui coûtent quelque chose.
+  // C'est presque toujours le bon réflexe sur une tâche fermée.
+  const payants = resultats.filter(function (r) { return r.coutParMois > 0; });
+  const retenu = payants.length ? payants[0].modele : resultats[0].modele;
+  const plusCher = resultats[resultats.length - 1];
+
+  resultats.forEach(function (r) {
+    const classe = r.modele === retenu ? 'retenu' : (r === plusCher ? 'cher' : '');
+    html += '<tr class="' + classe + '"><td>' + r.modele + '</td><td>' + r.usage + '</td>'
+          + '<td class="num">' + r.coutParAppel.toFixed(6) + ' $</td>'
+          + '<td class="num">' + r.coutParMois.toFixed(2) + ' $</td></tr>';
+  });
+  html += '</tbody>';
+  el('tableau').innerHTML = html;
+
+  // --- le verdict ---
+  const moinsCherPayant = payants.length ? payants[0] : null;
+  if (moinsCherPayant && plusCher.coutParMois > 0) {
+    const facteur = (plusCher.coutParMois / moinsCherPayant.coutParMois).toFixed(0);
+    const ecart = (plusCher.coutParMois - moinsCherPayant.coutParMois).toFixed(2);
+    el('verdict').innerHTML =
+      'Pour un travail identique, <b>' + plusCher.modele + '</b> coûte <b>' + facteur
+      + ' fois</b> plus que <b>' + moinsCherPayant.modele + '</b> : '
+      + ecart + ' $ de plus par mois, soit ' + (ecart * 12).toFixed(0) + ' $ par an.<br>'
+      + 'Classer un titre est une <b>tâche fermée</b> : un petit modèle avec quatre bons '
+      + 'exemples la réussit aussi bien qu\'un grand. <b>Le surcoût n\'achète rien.</b><br>'
+      + 'Multipliez le volume par 100 : la question change-t-elle de nature ?';
+  } else {
+    el('verdict').textContent = 'Renseignez un volume pour voir la comparaison.';
+  }
+}
+
+// On recalcule à chaque frappe : voir le chiffre bouger en direct est
+// ce qui fait comprendre le poids du message système.
+['promptSysteme', 'promptUtilisateur', 'appelsParJour', 'tokensSortie', 'jours']
+  .forEach(function (id) { el(id).addEventListener('input', recalculer); });
+
+recalculer();
+</script>
+</body>
+</html>

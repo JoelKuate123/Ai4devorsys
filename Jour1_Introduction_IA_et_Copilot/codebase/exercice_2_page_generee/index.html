@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercice 2 · Générer une page web par prompt</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="page">
+
+  <header>
+    <div class="surtitre">Exercice 2 · Module 2</div>
+    <h1>Générer une page web à partir d'un prompt</h1>
+    <p class="intro">
+      Vous n'écrirez pas de JavaScript. Vous écrirez un <b>prompt</b>, vous le
+      donnerez à Copilot ou à un assistant de chat, et vous récupérerez du
+      <b>HTML et du CSS</b>. Puis vous ferez le seul travail qui compte
+      vraiment : <b>relire ce qui revient</b>.
+    </p>
+  </header>
+
+
+  <!-- ===================================================================== -->
+  <h2>1 · Le prompt de départ</h2>
+
+  <p>
+    Copiez ce texte tel quel. Il est volontairement complet : c'est ce qui le
+    distingue d'un « fais-moi une page pour un club de sport ».
+  </p>
+
+<pre><code>Tu es un intégrateur web expérimenté.
+
+Produis UNE page HTML complète et autonome pour :
+un club de sport de quartier, avec ses horaires et un formulaire de contact.
+
+CONTRAINTES DE FORME
+- un seul fichier, du &lt;!DOCTYPE html&gt; à la balise &lt;/html&gt; ;
+- le CSS dans une balise &lt;style&gt; à l'intérieur du &lt;head&gt; ;
+- aucune dépendance externe : pas de CDN, pas de police distante, pas d'image distante ;
+- aucun JavaScript.
+
+CONTRAINTES DE CONTENU
+- le texte est en français, l'attribut lang vaut "fr" ;
+- l'encodage est déclaré : &lt;meta charset="utf-8"&gt; ;
+- la page s'adapte au mobile : &lt;meta name="viewport"…&gt; et une seule colonne sous 700 pixels ;
+- un titre &lt;h1&gt; unique, et des sous-titres &lt;h2&gt; pour chaque section ;
+- couleur dominante : vert profond. Ton : chaleureux et familial.
+
+Réponds UNIQUEMENT par le code de la page.
+Aucune phrase avant, aucune phrase après.</code></pre>
+
+  <div class="note">
+    <b>Comptez les lignes.</b> Votre demande tient en une phrase ; le prompt
+    en fait vingt. C'est là que se joue la qualité du résultat — pas dans le
+    modèle que vous avez choisi.
+  </div>
+
+
+  <!-- ===================================================================== -->
+  <h2>2 · Où le coller</h2>
+
+  <table>
+    <tr><th>Outil</th><th>Comment faire</th></tr>
+    <tr>
+      <td><b>Copilot Chat</b><br>dans VS Code</td>
+      <td>
+        <code>Ctrl</code>+<code>Alt</code>+<code>I</code> ouvre le chat.
+        Collez, envoyez. Le bouton <i>Insert into new file</i> crée
+        directement le fichier.
+      </td>
+    </tr>
+    <tr>
+      <td><b>Un assistant de chat</b><br>ChatGPT, Claude, Le Chat…</td>
+      <td>
+        Collez, envoyez, puis copiez le bloc de code obtenu.
+      </td>
+    </tr>
+    <tr>
+      <td><b>Aucun des deux</b><br>pas de connexion</td>
+      <td>
+        Ouvrez <code>exemple_reussi.html</code> : c'est une page qui obtient
+        7/7 à la grille ci-dessous. Vous ferez l'exercice dessus.
+      </td>
+    </tr>
+  </table>
+
+  <div class="attention">
+    <b>Ne collez jamais de code d'entreprise dans un chat public.</b>
+    Cette page d'exercice ne contient rien de confidentiel, mais prenez
+    l'habitude dès aujourd'hui : la question se pose avant de coller,
+    jamais après.
+  </div>
+
+
+  <!-- ===================================================================== -->
+  <h2>3 · Où l'enregistrer</h2>
+
+  <ol>
+    <li>Ouvrez <code>gabarit.html</code> dans VS Code.</li>
+    <li>Effacez tout, collez le code obtenu.</li>
+    <li>Enregistrez-le sous le nom <code>ma-page.html</code>, dans ce dossier.</li>
+    <li>Double-cliquez dessus : il s'ouvre dans votre navigateur.</li>
+  </ol>
+
+  <div class="bien">
+    <b>Le raccourci qui fait gagner la journée :</b> dans VS Code, installez
+    l'extension <b>Live Preview</b> de Microsoft. Un clic droit sur le fichier,
+    <i>Show Preview</i>, et la page se recharge toute seule à chaque
+    enregistrement. Plus besoin d'aller cliquer dans le navigateur.
+  </div>
+
+
+  <!-- ===================================================================== -->
+  <h2>4 · La grille de contrôle</h2>
+
+  <p>
+    Sept contrôles. Ouvrez votre page dans le navigateur, puis affichez son
+    code source (<code>Ctrl</code>+<code>U</code>) et cochez ce qui est vrai.
+  </p>
+
+  <ul class="grille">
+    <li>
+      <input type="checkbox" id="c1">
+      <label for="c1">
+        <b>1 · La déclaration.</b> La toute première ligne est
+        <code>&lt;!DOCTYPE html&gt;</code>. Sans elle, les navigateurs
+        basculent dans un mode de compatibilité vieux de vingt ans.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="c2">
+      <label for="c2">
+        <b>2 · La langue.</b> La balise ouvrante est
+        <code>&lt;html lang="fr"&gt;</code>. C'est ce qui permet à un lecteur
+        d'écran de prononcer le texte correctement.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="c3">
+      <label for="c3">
+        <b>3 · L'encodage.</b> Le <code>&lt;head&gt;</code> contient
+        <code>&lt;meta charset="utf-8"&gt;</code>. Sans lui, vos accents
+        deviennent des caractères illisibles.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="c4">
+      <label for="c4">
+        <b>4 · Le mobile.</b> Le <code>&lt;head&gt;</code> contient une balise
+        <code>viewport</code>. Sans elle, la page s'affiche en miniature
+        sur un téléphone.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="c5">
+      <label for="c5">
+        <b>5 · Le style.</b> Il y a une balise <code>&lt;style&gt;</code>
+        dans le <code>&lt;head&gt;</code>, et elle n'est pas vide.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="c6">
+      <label for="c6">
+        <b>6 · Aucune ressource distante.</b> Cherchez <code>http</code> dans
+        le code source : vous ne devez rien trouver. Une police ou une image
+        distante casse la page dès qu'il n'y a plus de réseau.
+      </label>
+    </li>
+    <li>
+      <input type="checkbox" id="c7">
+      <label for="c7">
+        <b>7 · La page est complète.</b> La dernière ligne est
+        <code>&lt;/html&gt;</code>. Une réponse tronquée est le cas le plus
+        fréquent, et le plus facile à rater à l'œil.
+      </label>
+    </li>
+  </ul>
+
+  <p><b>Notez votre score sur 7 dans votre fiche participant.</b></p>
+
+  <div class="attention">
+    <b>Ce score est le vrai livrable de l'exercice.</b> Il ne mesure pas la
+    qualité du modèle : il mesure <b>l'écart entre ce que vous avez demandé
+    et ce que vous avez reçu</b>. C'est la seule façon de savoir si un prompt
+    s'améliore ou se dégrade.
+  </div>
+
+
+  <!-- ===================================================================== -->
+  <h2>5 · Le second tour</h2>
+
+  <p>
+    Reprenez votre prompt et ajoutez <b>une contrainte de votre choix</b>.
+    Par exemple :
+  </p>
+
+  <ul>
+    <li>« le fond est sombre et le texte clair » ;</li>
+    <li>« chaque section a une icône dessinée en CSS, sans image » ;</li>
+    <li>« les horaires sont dans un tableau <code>&lt;table&gt;</code> » ;</li>
+    <li>« le formulaire a des <code>&lt;label&gt;</code> reliés à leurs champs ».</li>
+  </ul>
+
+  <p>
+    Relancez, recomptez. <b>Votre contrainte a-t-elle été respectée ?</b>
+    Et les sept contrôles précédents tiennent-ils toujours ?
+  </p>
+
+  <div class="note">
+    Le piège classique : en ajoutant une contrainte, le modèle en oublie une
+    autre. C'est pour cela qu'on garde une grille — et qu'on la refait à
+    chaque tour.
+  </div>
+
+
+  <!-- ===================================================================== -->
+  <h2>6 · Les deux fichiers de référence</h2>
+
+  <div class="cartes">
+    <a class="carte" href="gabarit.html">
+      <span class="tag">À remplir</span>
+      <h3>gabarit.html</h3>
+      <p>Le squelette commenté. Effacez tout, collez le résultat du modèle,
+         enregistrez sous <code>ma-page.html</code>.</p>
+    </a>
+    <a class="carte" href="exemple_reussi.html">
+      <span class="tag">Référence</span>
+      <h3>exemple_reussi.html</h3>
+      <p>Une page qui obtient 7/7. Comparez-la à la vôtre, contrôle
+         par contrôle.</p>
+    </a>
+  </div>
+
+
+  <h2>Ce que cet exercice démontre</h2>
+  <ul>
+    <li>
+      <b>Le prompt fait le résultat.</b> Vingt lignes de contraintes valent
+      mieux qu'un grand modèle mal instruit.
+    </li>
+    <li>
+      <b>Le modèle oublie.</b> Toujours. Ce n'est pas un défaut à corriger,
+      c'est une propriété à surveiller.
+    </li>
+    <li>
+      <b>Mesurer, pas ressentir.</b> « C'est mieux » n'est pas une évaluation.
+      « 6/7 au lieu de 4/7 » en est une.
+    </li>
+  </ul>
+
+  <footer>
+    Formation animée par <b>Kuate Joël Parfait</b> — Digital House Company ·
+    hello@dhcompany.pro
+  </footer>
+
+</div>
+
+</body>
+</html>

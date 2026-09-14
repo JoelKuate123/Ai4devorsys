@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<!-- CONTRÔLE 1 : la déclaration <!DOCTYPE html> est bien la première ligne. -->
+
+<!-- CONTRÔLE 2 : lang="fr" indique la langue du contenu.
+     C'est ce qui permet à un lecteur d'écran de prononcer correctement,
+     et au navigateur de proposer la bonne traduction. -->
+<html lang="fr">
+
+<head>
+  <!-- CONTRÔLE 3 : sans cette ligne, les accents deviennent illisibles. -->
+  <meta charset="utf-8">
+
+  <!-- CONTRÔLE 4 : sans cette ligne, la page s'affiche en miniature
+       sur un téléphone, et l'utilisateur doit zoomer pour lire. -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Le Cercle — club de sport de quartier</title>
+
+  <!-- CONTRÔLE 5 : le CSS est ici, dans la page. Aucun fichier externe,
+       aucune police distante : la page fonctionne sans réseau.
+       CONTRÔLE 6 : cherchez « http » dans ce fichier. Vous ne trouverez rien. -->
+  <style>
+    /* Les couleurs, déclarées une seule fois. */
+    :root {
+      --vert:   #1B5E4A;
+      --vert2:  #14483A;
+      --creme:  #FAF7F0;
+      --texte:  #22302C;
+      --texte2: #55655F;
+      --bord:   #DDE6E1;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: var(--creme);
+      color: var(--texte);
+      line-height: 1.65;
+    }
+
+    /* --- L'en-tête --- */
+    header {
+      background: var(--vert);
+      color: #fff;
+      padding: 3.5rem 1.5rem 3rem;
+      text-align: center;
+    }
+    header h1 { font-size: 2.4rem; margin-bottom: .6rem; }
+    header p  { color: #C8DED4; max-width: 46ch; margin: 0 auto; }
+
+    /* --- Le corps de la page --- */
+    main { max-width: 780px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+
+    section { margin-bottom: 3rem; }
+
+    h2 {
+      font-size: 1.35rem;
+      color: var(--vert);
+      margin-bottom: .9rem;
+      padding-bottom: .4rem;
+      border-bottom: 2px solid var(--bord);
+    }
+
+    p { color: var(--texte2); margin-bottom: .8rem; }
+
+    /* --- Les horaires, en tableau --- */
+    table { border-collapse: collapse; width: 100%; }
+    th, td { padding: .6rem .8rem; text-align: left; border-bottom: 1px solid var(--bord); }
+    th { color: var(--vert); font-size: .85rem; text-transform: uppercase; letter-spacing: .05em; }
+    td { color: var(--texte2); }
+
+    /* --- Le formulaire --- */
+    form { display: grid; gap: .9rem; max-width: 460px; }
+    label { font-size: .85rem; font-weight: 600; color: var(--texte); display: block; margin-bottom: .25rem; }
+    input, textarea {
+      width: 100%;
+      padding: .6rem .8rem;
+      border: 1px solid var(--bord);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: .95rem;
+      background: #fff;
+    }
+    textarea { min-height: 6rem; resize: vertical; }
+    button {
+      background: var(--vert);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: .7rem 1.4rem;
+      font-family: inherit;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      justify-self: start;   /* le bouton ne s'étire pas sur toute la largeur */
+    }
+    button:hover { background: var(--vert2); }
+
+    footer {
+      background: var(--vert2);
+      color: #C8DED4;
+      text-align: center;
+      padding: 1.6rem 1.5rem;
+      font-size: .88rem;
+    }
+
+    /* --- Le téléphone : une seule colonne sous 700 pixels --- */
+    @media (max-width: 700px) {
+      header { padding: 2.5rem 1.2rem 2rem; }
+      header h1 { font-size: 1.7rem; }
+      main { padding: 1.8rem 1.2rem 3rem; }
+      /* Un tableau ne se réduit pas : on le laisse défiler tout seul. */
+      table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Un seul <h1> par page : c'est le titre du document. -->
+  <header>
+    <h1>Le Cercle</h1>
+    <p>Le club de sport du quartier, ouvert à tous, du débutant au confirmé.
+       Sans abonnement annuel et sans mauvaise conscience.</p>
+  </header>
+
+  <main>
+
+    <section>
+      <h2>Nos activités</h2>
+      <p>
+        Musculation encadrée, cours collectifs, marche nordique le dimanche.
+        Trois coachs, cinquante adhérents, et personne qui vous regarde
+        de travers parce que c'est votre premier jour.
+      </p>
+    </section>
+
+    <section>
+      <h2>Nos horaires</h2>
+      <table>
+        <tr><th>Jour</th><th>Ouverture</th><th>Cours collectifs</th></tr>
+        <tr><td>Lundi au vendredi</td><td>7 h – 21 h</td><td>12 h 30 et 18 h 30</td></tr>
+        <tr><td>Samedi</td><td>9 h – 18 h</td><td>10 h</td></tr>
+        <tr><td>Dimanche</td><td>9 h – 13 h</td><td>Marche nordique, 9 h 30</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>Nous écrire</h2>
+      <p>Une question, une envie d'essayer ? Écrivez-nous, on répond vite.</p>
+
+      <!-- Chaque champ a un <label> relié par « for » à son « id ».
+           C'est ce qui permet de cliquer sur le texte pour activer le champ,
+           et c'est indispensable pour les lecteurs d'écran. -->
+      <form>
+        <div>
+          <label for="nom">Votre nom</label>
+          <input type="text" id="nom" name="nom">
+        </div>
+        <div>
+          <label for="email">Votre adresse e-mail</label>
+          <input type="email" id="email" name="email">
+        </div>
+        <div>
+          <label for="message">Votre message</label>
+          <textarea id="message" name="message"></textarea>
+        </div>
+        <button type="submit">Envoyer</button>
+      </form>
+    </section>
+
+  </main>
+
+  <footer>
+    Le Cercle · Avenue de la Basilique 385, 1081 Koekelberg · hello@dhcompany.pro
+  </footer>
+
+</body>
+<!-- CONTRÔLE 7 : la page se termine bien par </html>. Elle n'est pas tronquée. -->
+</html>

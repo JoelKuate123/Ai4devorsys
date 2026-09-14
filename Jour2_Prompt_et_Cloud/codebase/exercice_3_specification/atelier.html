@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atelier des techniques de prompt · Exercice 3</title>
+<style>
+  :root{--accent:#0E8C86;--accent2:#0B6E68;--navy:#0B2D48;--text:#16212B;
+        --text2:#4B5C63;--card:#EAF4F3;--border:#D7E6E4;--good:#1F9D67;--warn:#B9740A;--bad:#C1443B;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#F2F7F7;color:var(--text);
+       padding:1.6rem 1.2rem 5rem;line-height:1.55;}
+  .wrap{max-width:1000px;margin:0 auto;}
+  h1{font-size:1.6rem;color:var(--navy);}
+  .sub{color:var(--text2);font-size:.95rem;margin:.3rem 0 1.4rem;max-width:70ch;}
+  h2{font-size:1.15rem;color:var(--navy);margin:2.2rem 0 .3rem;padding-left:.7rem;border-left:4px solid var(--accent);}
+  .quand{font-size:.86rem;color:var(--text2);margin:.2rem 0 .8rem .7rem;max-width:72ch;}
+  .bloc{background:#fff;border:1px solid var(--border);border-radius:11px;padding:1.1rem 1.2rem;}
+  .rangee{display:flex;gap:.7rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:.7rem;}
+  .champ{display:flex;flex-direction:column;gap:.25rem;flex:1;min-width:170px;}
+  label{font-size:.78rem;color:var(--text2);font-weight:600;}
+  input,select,textarea{padding:.5rem .65rem;border:1px solid var(--border);border-radius:7px;
+                        font-family:inherit;font-size:.88rem;background:#fff;color:var(--text);}
+  textarea{resize:vertical;line-height:1.5;}
+  button{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:.55rem 1.1rem;
+         font-size:.87rem;font-weight:600;cursor:pointer;font-family:inherit;}
+  button:hover{background:var(--accent2);} button:disabled{opacity:.5;cursor:wait;}
+  button.ghost{background:#fff;color:var(--accent2);border:1px solid var(--border);}
+  pre{background:#0F2733;color:#E8F1F0;border-radius:9px;padding:.9rem 1.1rem;font-size:.78rem;
+      line-height:1.6;overflow:auto;margin-top:.7rem;white-space:pre-wrap;max-height:340px;
+      font-family:'JetBrains Mono',Consolas,monospace;}
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  .duo h4{font-size:.82rem;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem;}
+  .duo .mauvais h4{color:var(--bad);} .duo .bon h4{color:var(--good);}
+  .rapport{margin-top:.9rem;padding:.8rem 1rem;border-radius:8px;font-size:.9rem;}
+  .rapport.ok{background:#EEF9F3;border-left:4px solid var(--good);color:var(--text2);}
+  .rapport.ko{background:#FFF6E8;border-left:4px solid var(--warn);color:var(--text2);}
+  .rapport ul{margin:.4rem 0 0 1.2rem;}
+  .note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;
+        padding:.8rem 1rem;font-size:.9rem;color:var(--text2);margin:1rem 0;}
+  code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--card);color:var(--accent2);
+       padding:.08rem .34rem;border-radius:4px;font-size:.88em;}
+  .config{background:#fff;border:1px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;margin-bottom:1.4rem;}
+  @media(max-width:800px){.duo{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Atelier des techniques de prompt</h1>
+  <p class="sub">
+    Chaque technique est une <b>fonction</b> du fichier <code>techniques-de-prompt.js</code>.
+    Modifiez les champs, regardez le prompt se construire, et envoyez-le au modèle.
+    Sans clé d'API, le mode hors ligne prend le relais.
+  </p>
+
+  <div class="config">
+    <div class="rangee" style="margin:0">
+      <div class="champ">
+        <label for="baseUrl">Adresse du serveur</label>
+        <input id="baseUrl" type="text" value="http://localhost:1234/v1">
+      </div>
+      <div class="champ">
+        <label for="apiKey">Clé d'API (vide = LM Studio ou hors ligne)</label>
+        <input id="apiKey" type="password" placeholder="sk-...">
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Technique 1 ================= -->
+  <h2>1 · Le role prompting</h2>
+  <p class="quand">
+    <b>Quand :</b> presque toujours. <b>Pourquoi ça marche :</b> un modèle produit
+    le texte le plus probable ; en lui donnant un métier, on déplace la zone
+    de probabilité vers le vocabulaire et les réflexes de ce métier.
+  </p>
+  <div class="bloc">
+    <div class="rangee">
+      <div class="champ"><label for="r-metier">Métier</label>
+        <input id="r-metier" value="un développeur JavaScript senior"></div>
+      <div class="champ"><label for="r-spec">Spécialité</label>
+        <input id="r-spec" value="la sécurité des applications web"></div>
+    </div>
+    <div class="champ"><label for="r-reflexes">Ce qu'il vérifie systématiquement (un par ligne)</label>
+      <textarea id="r-reflexes" rows="3">que les entrées utilisateur sont validées
+qu'aucun secret ne se trouve dans le code client
+que les erreurs ne révèlent pas la structure interne</textarea></div>
+    <div class="rangee" style="margin-top:.7rem">
+      <button data-construire="role">Construire le message système</button>
+    </div>
+    <pre id="out-role">(cliquez pour voir le résultat)</pre>
+  </div>
+
+  <!-- ================= Technique 2 ================= -->
+  <h2>2 · Le few-shot prompting</h2>
+  <p class="quand">
+    <b>Quand :</b> dès que le format compte plus que le raisonnement.
+    Deux ou trois exemples valent mieux qu'un paragraphe de consignes,
+    parce qu'un exemple ne laisse aucune place à l'interprétation.
+  </p>
+  <div class="bloc">
+    <div class="champ"><label for="f-consigne">Consigne</label>
+      <input id="f-consigne" value="Classe chaque titre en positif, neutre ou negatif."></div>
+    <div class="champ" style="margin-top:.6rem">
+      <label for="f-exemples">Exemples, un par ligne, au format <code>entrée | sortie</code></label>
+      <textarea id="f-exemples" rows="3">Une commune inaugure sa cantine locale | positif
+Le conseil se réunit jeudi | neutre
+Trois blessés sur la N4 | negatif</textarea></div>
+    <div class="champ" style="margin-top:.6rem"><label for="f-nouveau">Nouvelle entrée</label>
+      <input id="f-nouveau" value="La bibliothèque prolonge ses horaires pendant les examens"></div>
+    <div class="rangee" style="margin-top:.7rem">
+      <button data-construire="fewshot">Construire</button>
+      <button class="ghost" data-envoyer="fewshot">Envoyer au modèle</button>
+    </div>
+    <pre id="out-fewshot">(cliquez pour voir le résultat)</pre>
+  </div>
+
+  <!-- ================= Technique 3 ================= -->
+  <h2>3 · Le chain-of-thought</h2>
+  <p class="quand">
+    <b>Quand :</b> calculs, diagnostics, choix d'architecture.
+    <b>Quand surtout pas :</b> reformulation, traduction, extraction —
+    on paie des tokens de raisonnement pour rien.
+  </p>
+  <div class="bloc">
+    <div class="champ"><label for="c-probleme">Le problème</label>
+      <textarea id="c-probleme" rows="2">Notre API met 4 secondes à répondre depuis que nous avons ajouté un appel à un LLM. Que faire ?</textarea></div>
+    <div class="rangee" style="margin-top:.7rem">
+      <button data-construire="cot">Construire</button>
+      <button class="ghost" data-envoyer="cot">Envoyer au modèle</button>
+    </div>
+    <pre id="out-cot">(cliquez pour voir le résultat)</pre>
+  </div>
+
+  <!-- ================= Technique 4 ================= -->
+  <h2>4 · Imposer le format de sortie</h2>
+  <p class="quand">
+    <b>Quand :</b> dès que la réponse doit être lue par un programme et non par un humain.
+    C'est la technique qui transforme un chatbot en composant logiciel.
+  </p>
+  <div class="bloc">
+    <div class="champ"><label for="j-consigne">Consigne</label>
+      <input id="j-consigne" value="Extrais les informations de cette demande de congé : « Bonjour, je souhaite poser du 12 au 16 mai, merci. Marie D. »"></div>
+    <div class="champ" style="margin-top:.6rem"><label for="j-schema">Schéma attendu (JSON)</label>
+      <textarea id="j-schema" rows="6">{
+  "demandeur": "nom",
+  "date_debut": "AAAA-MM-JJ",
+  "date_fin": "AAAA-MM-JJ",
+  "nombre_de_jours": 0,
+  "type": "conge_annuel | maladie | parental"
+}</textarea></div>
+    <div class="rangee" style="margin-top:.7rem">
+      <button data-construire="json">Construire</button>
+      <button class="ghost" data-envoyer="json">Envoyer au modèle</button>
+    </div>
+    <pre id="out-json">(cliquez pour voir le résultat)</pre>
+  </div>
+
+  <!-- ================= Technique 5 ================= -->
+  <h2>5 · La self-consistency</h2>
+  <p class="quand">
+    <b>Quand :</b> une décision qui compte, et un modèle qui hésite.
+    <b>Le prix :</b> N appels au lieu d'un. Toujours un nombre impair de votes.
+  </p>
+  <div class="bloc">
+    <div class="champ"><label for="v-question">La question posée N fois</label>
+      <input id="v-question" value="Ce titre est-il positif, neutre ou negatif ? « Hausse de 4 % du prix de l'électricité » — réponds par un seul mot."></div>
+    <div class="rangee" style="margin-top:.7rem">
+      <div class="champ" style="max-width:120px"><label for="v-nombre">Votes</label>
+        <select id="v-nombre"><option>3</option><option>5</option></select></div>
+      <button data-envoyer="vote">Lancer le vote</button>
+    </div>
+    <pre id="out-vote">(cliquez pour lancer)</pre>
+  </div>
+
+  <!-- ================= Technique 6 ================= -->
+  <h2>6 · Le prompt de modification</h2>
+  <p class="quand">
+    L'erreur de débutant : « améliore ce code ». Le modèle réécrit tout, renomme,
+    supprime des cas, et vous ne savez plus ce qui a bougé.
+    La bonne façon : dire ce qui change <b>et</b> ce qui ne doit pas changer.
+  </p>
+  <div class="duo">
+    <div class="bloc mauvais">
+      <h4>Ce qu'on écrit d'habitude</h4>
+      <pre style="max-height:150px">Améliore cette fonction.
+
+function calculerTotal(items) {
+  let t = 0;
+  for (const i of items) t += i.prix;
+  return t;
+}</pre>
+    </div>
+    <div class="bloc bon">
+      <h4>Ce qu'il faut écrire</h4>
+      <pre id="out-modif" style="max-height:150px">(cliquez ci-dessous)</pre>
+    </div>
+  </div>
+  <div class="rangee" style="margin-top:.7rem">
+    <button data-construire="modif">Construire le prompt cadré</button>
+  </div>
+
+  <!-- ================= Le TP ================= -->
+  <h2 id="specification">Travaux pratiques · la spécification « bonnes nouvelles »</h2>
+  <p class="quand">
+    Énoncé : « Faire un prompt de spécification d'une application web qui donne
+    les nouvelles positives du jour. » On ne code pas l'application : on écrit le
+    prompt, et on <b>vérifie</b> que la spécification obtenue est utilisable.
+  </p>
+  <div class="bloc">
+    <div class="champ"><label for="s-idee">L'idée d'application</label>
+      <input id="s-idee" value="une application web qui affiche chaque jour trois nouvelles positives vérifiées"></div>
+    <div class="rangee" style="margin-top:.6rem">
+      <div class="champ" style="max-width:150px"><label for="s-budget">Budget €/mois</label>
+        <input id="s-budget" type="number" value="10"></div>
+      <div class="champ"><label for="s-public">Public visé</label>
+        <input id="s-public" value="grand public francophone"></div>
+      <div class="champ"><label for="s-interdits">Interdits (un par ligne)</label>
+        <input id="s-interdits" value="collecter des adresses e-mail"></div>
+    </div>
+    <div class="rangee" style="margin-top:.7rem">
+      <button data-construire="spec">Voir le prompt complet</button>
+      <button class="ghost" data-envoyer="spec">Générer et contrôler la spécification</button>
+    </div>
+    <pre id="out-spec">(cliquez pour voir le résultat)</pre>
+    <div id="rapport-spec"></div>
+  </div>
+
+  <div class="note">
+    <b>Ce que ce TP démontre :</b> on ne demande jamais un document au modèle,
+    on demande une <b>donnée structurée</b> qu'on peut vérifier, puis on la met
+    en forme soi-même. Un JSON se contrôle en onze lignes de code ;
+    un texte libre ne se contrôle pas.
+  </div>
+</div>
+
+<script src="../../../_commun/llm-client.js"></script>
+<script src="techniques-de-prompt.js"></script>
+<script src="specification-bonnes-nouvelles.js"></script>
+<script>
+const el = function (id) { return document.getElementById(id); };
+
+/** Recopie les champs de connexion dans le client LLM. */
+function appliquerConfig() {
+  LLM.configurer({ baseUrl: el('baseUrl').value.trim(), apiKey: el('apiKey').value.trim() });
+}
+
+/** Découpe une zone de texte en lignes non vides. */
+function lignes(id) {
+  return el(id).value.split('\n').map(function (s) { return s.trim(); })
+    .filter(function (s) { return s.length > 0; });
+}
+
+/* --- Construction des prompts (aucun appel réseau) --------------------- */
+const constructeurs = {
+  role: function () {
+    return Techniques.rolePrompting(el('r-metier').value, el('r-spec').value, lignes('r-reflexes'));
+  },
+  fewshot: function () {
+    const exemples = lignes('f-exemples').map(function (l) {
+      const parts = l.split('|');
+      return { entree: (parts[0] || '').trim(), sortie: (parts[1] || '').trim() };
+    });
+    return Techniques.fewShot(el('f-consigne').value, exemples, el('f-nouveau').value);
+  },
+  cot: function () {
+    return Techniques.chainOfThought(el('c-probleme').value);
+  },
+  json: function () {
+    let schema;
+    try { schema = JSON.parse(el('j-schema').value); }
+    catch (e) { return 'Le schéma saisi n\'est pas un JSON valide : ' + e.message; }
+    return Techniques.formatJson(el('j-consigne').value, schema);
+  },
+  modif: function () {
+    const code = 'function calculerTotal(items) {\n  let t = 0;\n  for (const i of items) t += i.prix;\n  return t;\n}';
+    return Techniques.promptDeModification(code,
+      'ajoute la gestion des quantités : chaque item a un champ « quantite ».',
+      ['le nom calculerTotal', 'le comportement quand items est vide']);
+  },
+  spec: function () {
+    return Specification.construirePromptSpecification(el('s-idee').value, {
+      budgetMensuel: Number(el('s-budget').value),
+      public: el('s-public').value,
+      interdits: lignes('s-interdits')
+    });
+  }
+};
+
+document.querySelectorAll('[data-construire]').forEach(function (bouton) {
+  bouton.addEventListener('click', function () {
+    const cle = bouton.dataset.construire;
+    el('out-' + cle).textContent = constructeurs[cle]();
+  });
+});
+
+/* --- Envoi au modèle ---------------------------------------------------- */
+document.querySelectorAll('[data-envoyer]').forEach(function (bouton) {
+  bouton.addEventListener('click', async function () {
+    appliquerConfig();
+    const cle = bouton.dataset.envoyer;
+    const sortie = el('out-' + cle);
+    bouton.disabled = true;
+
+    try {
+      if (cle === 'vote') {
+        // La self-consistency : on affiche TOUTES les réponses, pas seulement
+        // la gagnante. C'est la divergence qui est instructive.
+        const r = await Techniques.voteMajoritaire(el('v-question').value, Number(el('v-nombre').value));
+        sortie.textContent =
+          'Réponses obtenues :\n' + r.toutes.map(function (t, i) { return '  ' + (i + 1) + '. ' + t; }).join('\n') +
+          '\n\nGagnante : ' + r.reponse +
+          '\nVoix : ' + r.voix + ' / ' + r.total +
+          '\nFiable : ' + (r.fiable ? 'oui' : 'NON — les réponses divergent, ne vous y fiez pas');
+
+      } else if (cle === 'spec') {
+        const r = await Specification.genererSpecification(el('s-idee').value, {
+          budgetMensuel: Number(el('s-budget').value),
+          public: el('s-public').value,
+          interdits: lignes('s-interdits')
+        });
+
+        sortie.textContent = r.succes
+          ? JSON.stringify(r.specification, null, 2) + '\n\n--- MISE EN FORME ---\n' + Specification.enMarkdown(r.specification)
+          : 'ÉCHEC : ' + r.erreur;
+
+        // Le rapport de contrôle : le vrai livrable de l'exercice.
+        const c = r.controle;
+        el('rapport-spec').innerHTML =
+          '<div class="rapport ' + (c.valide ? 'ok' : 'ko') + '"><b>Contrôle qualité : ' +
+          c.score + '/10.</b>' +
+          (c.valide ? ' La spécification est directement utilisable.'
+                    : '<ul>' + c.problemes.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ul>') +
+          '</div>';
+
+      } else {
+        const prompt = constructeurs[cle]();
+        sortie.textContent = prompt + '\n\n----- RÉPONSE DU MODÈLE -----\n\n'
+          + await LLM.demander(prompt, { temperature: cle === 'json' ? 0 : 0.5 });
+      }
+    } catch (erreur) {
+      sortie.textContent = 'Erreur : ' + erreur.message;
+    } finally {
+      bouton.disabled = false;
+    }
+  });
+});
+</script>
+</body>
+</html>
