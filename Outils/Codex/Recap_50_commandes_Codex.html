@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>50 commandes Codex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#FFFFFF; --accent:#0E8C86; --accent2:#0B6E68; --navy:#0B2D48;
+  --text:#16212B; --text2:#4B5C63; --card:#EAF4F3; --border:#D7E6E4;
+  --good:#1F9D67; --warn:#B9740A; --bad:#C1443B; --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:#F2F7F7;color:var(--text);line-height:1.55;}
+.page{max-width:1000px;margin:0 auto;background:var(--bg);padding:3.2rem 3.2rem 5rem;}
+header.doc{border-bottom:4px solid var(--accent);padding-bottom:1.4rem;margin-bottom:2.2rem;}
+.doc-org{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+h1{font-size:2.1rem;font-weight:800;color:var(--navy);margin:.6rem 0 .5rem;line-height:1.2;}
+.doc-sub{color:var(--text2);font-size:1.02rem;max-width:70ch;}
+.doc-meta{margin-top:1rem;display:flex;gap:1.6rem;flex-wrap:wrap;font-size:.85rem;color:var(--text2);}
+.doc-meta b{color:var(--navy);}
+h2{font-size:1.45rem;font-weight:800;color:var(--navy);margin:2.6rem 0 .9rem;padding-left:.8rem;border-left:5px solid var(--accent);}
+h3{font-size:1.1rem;font-weight:700;color:var(--accent2);margin:1.6rem 0 .6rem;}
+h4{font-size:.98rem;font-weight:700;color:var(--navy);margin:1.1rem 0 .4rem;}
+p{margin-bottom:.75rem;color:var(--text2);max-width:80ch;}
+p b, li b{color:var(--text);}
+ul,ol{margin:0 0 .9rem 1.3rem;color:var(--text2);}
+li{margin-bottom:.35rem;}
+a{color:var(--accent2);}
+pre{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1rem 1.2rem;font-family:'JetBrains Mono',Consolas,monospace;
+    font-size:.82rem;line-height:1.6;overflow-x:auto;margin:.7rem 0 1rem;white-space:pre-wrap;word-break:break-word;}
+pre .cm{color:#7FB3AE;}
+code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--card);color:var(--accent2);
+     padding:.08rem .34rem;border-radius:4px;font-size:.88em;}
+pre code{background:none;color:inherit;padding:0;}
+table{border-collapse:collapse;width:100%;margin:.8rem 0 1.4rem;font-size:.9rem;}
+th,td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left;vertical-align:top;}
+th{background:var(--card);color:var(--accent2);font-weight:700;}
+td{color:var(--text2);}
+td b{color:var(--text);}
+td code{white-space:nowrap;}
+.note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.warn{background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.good{background:#EEF9F3;border-left:4px solid var(--good);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.step{border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.4rem;margin:1.1rem 0;background:#FBFDFD;}
+.step-h{display:flex;align-items:baseline;gap:.7rem;margin-bottom:.5rem;}
+.step-n{background:var(--accent);color:#fff;font-weight:800;font-size:.8rem;border-radius:20px;padding:.18rem .7rem;white-space:nowrap;}
+.step-t{font-size:1.05rem;font-weight:700;color:var(--navy);}
+.badge{display:inline-block;background:var(--card);color:var(--accent2);border-radius:20px;padding:.12rem .65rem;
+       font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-right:.4rem;}
+.badge.deb{background:#EEF9F3;color:var(--good);}
+.badge.int{background:#FFF6E8;color:var(--warn);}
+.badge.avc{background:#FDEDEC;color:var(--bad);}
+.fill{width:100%;border:none;border-bottom:1px dashed #9FBDBA;background:#FCFEFE;font-family:'Inter',sans-serif;
+      font-size:.95rem;color:var(--text);padding:.35rem .2rem;}
+.fill:focus{outline:none;border-bottom-color:var(--accent);background:#F4FBFA;}
+textarea.fill{border:1px dashed #9FBDBA;border-radius:8px;padding:.6rem .8rem;min-height:5.5rem;resize:vertical;line-height:1.5;}
+.ck{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem 0;border-bottom:1px dotted var(--border);}
+.ck input{margin-top:.32rem;width:1.05rem;height:1.05rem;accent-color:var(--accent);flex:none;}
+.ck label{font-size:.95rem;color:var(--text2);}
+.ck label b{color:var(--text);}
+.toolbar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;display:flex;gap:.7rem;align-items:center;
+         padding:.6rem 1rem;flex-wrap:wrap;}
+.toolbar span{font-size:.82rem;color:#B9D6D3;margin-right:auto;}
+.toolbar button{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:.45rem .95rem;
+                font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;}
+.toolbar button:hover{background:#12A79F;}
+.toolbar button.ghost{background:transparent;border:1px solid #2A4C63;}
+footer.doc{margin-top:3.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text2);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.kpi{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;}
+.kpi div{flex:1;min-width:150px;background:var(--card);border-radius:10px;padding:.9rem 1.1rem;}
+.kpi b{display:block;font-size:1.5rem;color:var(--navy);}
+.kpi span{font-size:.82rem;color:var(--text2);}
+@media (max-width:820px){
+  .page{padding:1.6rem 1.1rem 3rem;}
+  h1{font-size:1.55rem;} h2{font-size:1.2rem;}
+  .grid2{grid-template-columns:1fr;}
+  table{display:block;overflow-x:auto;}
+}
+@media print{
+  body{background:#fff;}
+  .toolbar{display:none !important;}
+  .page{max-width:none;padding:0;}
+  h2{page-break-after:avoid;} .step,table,pre{page-break-inside:avoid;}
+  .fill{border-bottom:1px solid #999;background:none;}
+  textarea.fill{border:1px solid #999;min-height:4.5rem;}
+  a{color:#0B6E68;text-decoration:none;}
+  @page{margin:14mm 12mm;}
+}
+
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span>CODEX · MEMO DES 50 COMMANDES</span>
+  <span id="compteur"></span>
+  <button id="btnPdf">&#11015; Exporter en PDF</button>
+  <button id="btnRaz" class="ghost">Effacer mes reponses</button>
+</div>
+<div class="page">
+<header class="doc">
+  <div class="doc-org">Digital House Company</div>
+  <h1>Codex — les 50 commandes à retenir</h1>
+  <p class="doc-sub">Le mémo de la formation. Les quinze premières entrées couvrent 90 % d'une journée de travail. Cochez ce que vous maîtrisez, complétez vos notes en bas de page, puis exportez en PDF.</p>
+  <div class="doc-meta"><span><b>Formation</b> L'IA pour les développeurs</span> <span><b>Outil</b> Codex</span> <span><b>Code base</b> MiniCRM</span> <span><b>Version</b> septembre 2026</span></div>
+</header>
+<div class="note">Cinquante entrées, classées par usage réel. Les <b>quinze premières</b> couvrent 90 % d'une journée. Cochez au fur et à mesure — la page retient vos coches, et le bouton <b>Exporter en PDF</b> vous en donne une copie à garder.</div>
+<h2>1 · Démarrer et s'orienter — 8 entrées</h2>
+<table><thead><tr><th>#</th><th>Commande</th><th>Ce qu'elle fait</th><th>À retenir</th></tr></thead><tbody><tr><td>1</td><td><code>codex</code></td><td>Ouvre une session dans le dossier courant</td><td><b>Toujours se placer dans le projet d'abord.</b> Il ne voit que ce dossier</td></tr><tr><td>2</td><td><code>codex "question"</code></td><td>Démarre avec une première instruction</td><td>Sans entrer dans l'interface</td></tr><tr><td>3</td><td><code>codex login</code></td><td>Se connecter</td><td>Compte ChatGPT ou clé d'API</td></tr><tr><td>4</td><td><code>/status</code></td><td>Modèle, approbations, bac à sable, tokens</td><td><b>Le premier réflexe de chaque session.</b> Quatre informations à connaître avant de laisser travailler</td></tr><tr><td>5</td><td><code>/init</code></td><td>Génère un premier AGENTS.md</td><td><b>Relisez-le :</b> ce qu'il devine est juste, ce qu'il ne peut pas deviner manque</td></tr><tr><td>6</td><td><code>/new</code></td><td>Nouvelle conversation</td><td>Entre deux sujets sans rapport</td></tr><tr><td>7</td><td><code>/resume</code></td><td>Reprend une session précédente</td><td><code>codex resume</code> depuis le terminal</td></tr><tr><td>8</td><td><code>/exit</code></td><td>Ferme la session</td><td>Alias : <code>/quit</code></td></tr></tbody></table>
+<h2>2 · Bac à sable et approbations — 7 entrées</h2>
+<p>Les deux réglages qui décident de ce qu'il a le droit de faire. Tout le reste vient après.</p>
+<table><thead><tr><th>#</th><th>Entrée</th><th>Ce que ça fait</th><th>À retenir</th></tr></thead><tbody><tr><td>9</td><td><code>--sandbox read-only</code></td><td>Lecture seule</td><td>Explorer un dépôt inconnu, faire une revue, poser des questions</td></tr><tr><td>10</td><td><code>--sandbox workspace-write</code></td><td>Écriture dans le dossier de travail</td><td><b>Le mode de travail normal</b></td></tr><tr><td>11</td><td><code>--sandbox danger-full-access</code></td><td>Tout le disque, et le réseau</td><td>Un conteneur jetable. <b>Jamais votre poste</b></td></tr><tr><td>12</td><td><code>-a on-request</code></td><td>Il demande quand il estime en avoir besoin</td><td>Le bon équilibre</td></tr><tr><td>13</td><td><code>-a on-failure</code></td><td>Il demande seulement après un échec</td><td>Tâche longue et cadrée, sur une branche</td></tr><tr><td>14</td><td><code>-a never</code></td><td>Il ne demande jamais</td><td><b>Uniquement</b> associé à <code>read-only</code>, ou dans un conteneur</td></tr><tr><td>15</td><td><code>/permissions</code></td><td>Change le réglage sans quitter la session</td><td>Utile quand la tâche change de nature en cours de route</td></tr></tbody></table>
+<div class="warn"><code>--dangerously-bypass-approvals-and-sandbox</code> (alias <code>--yolo</code>) désactive les deux protections d'un coup. Le nom est explicite : c'est une option de conteneur jetable, pas de poste de travail.<br><br>Le vrai risque n'est pas que l'agent soit malveillant : c'est qu'il exécute avec zèle une instruction mal comprise, sans garde-fou entre elle et votre disque.</div>
+<h2>3 · Les trois garde-fous — 6 entrées</h2>
+<table><thead><tr><th>#</th><th>Commande</th><th>Quand</th><th>Ce qu'elle apporte</th></tr></thead><tbody><tr><td>16</td><td><code>/plan</code></td><td><b>Avant</b></td><td>Il décrit sans écrire. Corriger un plan coûte trois lignes</td></tr><tr><td>17</td><td><code>/diff</code></td><td><b>Pendant</b></td><td>Ce qui a réellement changé, pas ce qu'il dit avoir changé</td></tr><tr><td>18</td><td><code>/review</code></td><td><b>Après</b></td><td>Une relecture automatique. Elle ne remplace pas la vôtre</td></tr><tr><td>19</td><td><code>/goal</code></td><td>Au début</td><td>Fixe un objectif qui persiste d'un tour à l'autre</td></tr><tr><td>20</td><td><code>/undo</code></td><td>Quand ça dérape</td><td>Annule la dernière modification</td></tr><tr><td>21</td><td><code>/approve</code></td><td>Après un refus</td><td>Relance une action que le vérificateur avait bloquée</td></tr></tbody></table>
+<div class="good">Les trois premiers ensemble prennent moins de deux minutes. C'est le prix du contrôle, et il est dérisoire comparé au coût d'un défaut découvert trois semaines plus tard.</div>
+<h2>4 · Le contexte — 8 entrées</h2>
+<table><thead><tr><th>#</th><th>Commande</th><th>Ce qu'elle fait</th><th>À retenir</th></tr></thead><tbody><tr><td>22</td><td><code>/mention</code></td><td>Attache un fichier précis</td><td>Quand il cherche au mauvais endroit</td></tr><tr><td>23</td><td><code>/ide</code></td><td>Récupère les fichiers ouverts dans l'éditeur</td><td>Le contexte que vous avez déjà sous les yeux</td></tr><tr><td>24</td><td><code>/compact</code></td><td>Résume pour libérer du contexte</td><td>Longue session</td></tr><tr><td>25</td><td><code>/clear</code></td><td>Vide l'écran et le contexte</td><td>Repartir propre</td></tr><tr><td>26</td><td><code>/memories</code></td><td>Gère la mémoire persistante</td><td>Ce qui doit survivre à la session</td></tr><tr><td>27</td><td><code>--image capture.png</code></td><td>Joint une image au démarrage</td><td>Une capture de bug, une maquette</td></tr><tr><td>28</td><td><code>--add-dir ../autre</code></td><td>Ajoute un dossier accessible</td><td>Monorepo, projet voisin</td></tr><tr><td>29</td><td><code>--search</code></td><td>Recherche web en direct</td><td>Au lieu de la version en cache</td></tr></tbody></table>
+<h2>5 · Modèle et performance — 5 entrées</h2>
+<table><thead><tr><th>#</th><th>Commande</th><th>Ce qu'elle fait</th><th>À retenir</th></tr></thead><tbody><tr><td>30</td><td><code>/model</code></td><td>Change de modèle en cours de session</td><td>Une tâche simple ne mérite pas le plus gros</td></tr><tr><td>31</td><td><code>/fast</code></td><td>Bascule vers un service plus rapide</td><td>Quand la latence compte plus que la profondeur</td></tr><tr><td>32</td><td><code>model_reasoning_effort</code></td><td>Profondeur de raisonnement</td><td><b>Élevé sur une correction de bogue</b> : la cause est rarement à l'endroit du symptôme</td></tr><tr><td>33</td><td><code>/personality</code></td><td>Style de réponse</td><td><code>friendly</code>, <code>pragmatic</code>, <code>none</code></td></tr><tr><td>34</td><td><code>--profile nom</code></td><td>Charge un jeu de réglages nommé</td><td>Un profil <code>revue</code> en lecture seule, par exemple</td></tr></tbody></table>
+<h2>6 · Personnaliser — 6 entrées</h2>
+<table><thead><tr><th>#</th><th>Entrée</th><th>Ce que c'est</th></tr></thead><tbody><tr><td>35</td><td><code>AGENTS.md</code></td><td>Le contexte du projet, lu automatiquement. <b>Format ouvert</b>, partagé avec d'autres agents</td></tr><tr><td>36</td><td><code>.codex/config.toml</code></td><td>Modèle, approbations, bac à sable, MCP, profils — versionné</td></tr><tr><td>37</td><td><code>.codex/prompts/*.md</code></td><td>Vos commandes maison, invocables par <code>/nom</code></td></tr><tr><td>38</td><td><code>/skills</code></td><td>Les compétences disponibles, invocables par le modèle lui-même</td></tr><tr><td>39</td><td><code>/hooks</code></td><td>Les hooks du cycle de vie : relancer les tests, refuser une action, journaliser</td></tr><tr><td>40</td><td><code>/plugins</code></td><td>Les extensions installées</td></tr></tbody></table>
+<h3>Le squelette d'une commande maison</h3>
+<pre><code><span class="cm"># .codex/prompts/corriger-un-bogue.md</span>
+
+Corrige UN SEUL défaut, celui qui concerne : $1
+
+1. Lance `node run-tests.js` et identifie le test en échec.
+2. Lis le test : il dit ce qui est attendu. Ne le modifie pas.
+3. Explique la CAUSE en deux phrases, AVANT de toucher au code.
+4. Fais la correction la PLUS PETITE possible.
+5. Relance : ce test passe, aucun autre ne casse.
+6. Propose un message de commit d'une ligne, en français.
+
+Si le test te semble faux, dis-le et arrête-toi.</code></pre>
+<h2>7 · Automatiser et déléguer — 6 entrées</h2>
+<table><thead><tr><th>#</th><th>Commande</th><th>Ce qu'elle fait</th><th>À retenir</th></tr></thead><tbody><tr><td>41</td><td><code>codex exec "…"</code></td><td>Une tâche, aucune interaction</td><td>Le mode script</td></tr><tr><td>42</td><td><code>codex exec --json</code></td><td>Sortie exploitable par un programme</td><td>Intégration continue</td></tr><tr><td>43</td><td><code>codex resume</code></td><td>Reprend une session</td><td>Sans repartir de zéro</td></tr><tr><td>44</td><td><code>codex fork</code></td><td>Duplique une session</td><td>Explorer deux pistes</td></tr><tr><td>45</td><td><code>codex cloud</code></td><td>Lance une tâche dans le cloud</td><td>Tâche longue, environnement reproductible</td></tr><tr><td>46</td><td><code>codex apply</code></td><td>Applique localement le diff d'une tâche cloud</td><td><b>Relisez-le comme les autres</b></td></tr></tbody></table>
+<div class="warn">Le risque de la délégation n'est pas technique, il est humain : plus le travail est distant, moins on le relit. Règle simple : une tâche déléguée doit être <b>vérifiable automatiquement</b>. « Fais passer les tests » se délègue. « Améliore l'architecture » ne se délègue pas.</div>
+<h2>8 · Diagnostic et MCP — 4 entrées</h2>
+<table><thead><tr><th>#</th><th>Commande</th><th>Ce qu'elle fait</th></tr></thead><tbody><tr><td>47</td><td><code>/mcp</code></td><td>État des serveurs MCP et des outils exposés</td></tr><tr><td>48</td><td><code>codex mcp-server</code></td><td>Fait de Codex lui-même un serveur MCP, appelable par un autre agent</td></tr><tr><td>49</td><td><code>/debug-config</code></td><td>Affiche toute la pile de configuration, dans l'ordre de priorité</td></tr><tr><td>50</td><td><code>/ps</code> et <code>/stop</code></td><td>Voir et arrêter les processus lancés en arrière-plan</td></tr></tbody></table>
+<h2>Annexe A · Les options de la ligne de commande</h2>
+<table><thead><tr><th>Option</th><th>Effet</th></tr></thead><tbody><tr><td><code>-m, --model</code></td><td>Choisit le modèle</td></tr><tr><td><code>-s, --sandbox</code></td><td><code>read-only</code> | <code>workspace-write</code> | <code>danger-full-access</code></td></tr><tr><td><code>-a, --ask-for-approval</code></td><td><code>on-request</code> | <code>on-failure</code> | <code>never</code></td></tr><tr><td><code>--full-auto</code></td><td>Raccourci : écriture dans le dossier + approbations allégées</td></tr><tr><td><code>-C, --cd &lt;chemin&gt;</code></td><td>Change le dossier de travail avant de démarrer</td></tr><tr><td><code>-p, --profile &lt;nom&gt;</code></td><td>Charge un profil de configuration</td></tr><tr><td><code>-c, --config clé=valeur</code></td><td>Surcharge un réglage pour cette exécution</td></tr><tr><td><code>-i, --image &lt;fichier&gt;</code></td><td>Joint une ou plusieurs images</td></tr><tr><td><code>--add-dir &lt;chemin&gt;</code></td><td>Dossier supplémentaire accessible en écriture</td></tr><tr><td><code>--search</code></td><td>Recherche web en direct</td></tr><tr><td><code>--json</code></td><td>Sortie structurée (avec <code>codex exec</code>)</td></tr><tr><td><code>--oss</code></td><td>Modèle local, via Ollama</td></tr><tr><td><code>--yolo</code></td><td>Désactive approbations <b>et</b> bac à sable. Conteneur uniquement</td></tr></tbody></table>
+<h2>Annexe B · La pile de configuration, du plus fort au plus faible</h2>
+<ol><li>Les options de la ligne de commande et <code>--config</code></li><li>La configuration du projet — <code>.codex/config.toml</code></li><li>Le profil nommé — <code>~/.codex/&lt;profil&gt;.config.toml</code></li><li>Votre configuration personnelle — <code>~/.codex/config.toml</code></li><li>Les valeurs gérées par l'organisation</li><li>La configuration système — <code>/etc/codex/config.toml</code></li><li>Les valeurs par défaut de l'outil</li></ol>
+<div class="note"><code>/debug-config</code> affiche cette pile telle qu'elle est réellement résolue chez vous. C'est la commande à lancer quand un réglage « ne prend pas ».</div>
+<h2>Annexe C · Les quatre fichiers à créer dans un projet</h2>
+<table><thead><tr><th>Fichier</th><th>Versionné ?</th><th>Ce qu'on y met</th></tr></thead><tbody><tr><td><code>AGENTS.md</code></td><td><b>Oui</b></td><td>État du projet, <b>commandes pour lancer les tests</b>, architecture, règles métier, interdits</td></tr><tr><td><code>.codex/config.toml</code></td><td><b>Oui</b></td><td>Modèle, approbations, bac à sable, MCP, profils</td></tr><tr><td><code>.codex/prompts/*.md</code></td><td><b>Oui</b></td><td>Vos méthodes de travail, écrites une fois</td></tr><tr><td><code>~/.codex/config.toml</code></td><td>Non</td><td>Vos préférences personnelles, tous projets</td></tr></tbody></table>
+<div class="good"><b>Ce qui compte le plus dans AGENTS.md :</b> les commandes. Un agent qui ne sait pas comment lancer vos tests travaille à l'aveugle, et vous rendra du code plausible sans aucun signal de qualité.</div>
+<h2>Vos notes</h2>
+<h4>Les trois commandes que je veux prendre l'habitude d'utiliser</h4><textarea class="fill" rows="3" placeholder="Une par ligne, avec dans quel cas."></textarea>
+<h4>Mes réglages de bac à sable et d'approbation, par type de tâche</h4><textarea class="fill" rows="3" placeholder="Exploration / développement / intégration continue."></textarea>
+<h4>Ce que je mettrai dans l'AGENTS.md de mon projet, dès demain</h4><textarea class="fill" rows="4" placeholder="Les commandes en premier. Puis les règles métier, puis les interdits."></textarea>
+<footer class="doc">
+  Formation animee par <b>Kuate Joel Parfait</b> — Digital House Company · hello@dhcompany.pro<br>
+  Ce document est prevu pour etre rempli a l'ecran puis exporte en PDF
+  (bouton « Exporter en PDF » ou <code>Ctrl</code>+<code>P</code> → « Enregistrer au format PDF »).
+</footer>
+</div>
+<script>
+
+// Sauvegarde locale des reponses : pratique pour reprendre une fiche entre
+// deux journees. Tout est entoure de try/catch, la page fonctionne meme
+// si le navigateur refuse le stockage (mode prive, fichier local bride...).
+(function () {
+  var KEY = 'fiche::' + (document.title || 'sans-titre');
+  var champs = document.querySelectorAll('.fill, .ck input[type=checkbox]');
+
+  function charger() {
+    try {
+      var brut = localStorage.getItem(KEY);
+      if (!brut) return;
+      var data = JSON.parse(brut);
+      champs.forEach(function (el, i) {
+        if (data[i] === undefined) return;
+        if (el.type === 'checkbox') { el.checked = data[i]; } else { el.value = data[i]; }
+      });
+      majCompteur();
+    } catch (e) { /* stockage indisponible : on continue sans */ }
+  }
+
+  function sauver() {
+    try {
+      var data = [];
+      champs.forEach(function (el) { data.push(el.type === 'checkbox' ? el.checked : el.value); });
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) { /* idem */ }
+  }
+
+  function majCompteur() {
+    var cases = document.querySelectorAll('.ck input[type=checkbox]');
+    var faits = document.querySelectorAll('.ck input[type=checkbox]:checked');
+    var out = document.getElementById('compteur');
+    if (out && cases.length) { out.textContent = faits.length + ' / ' + cases.length + ' coche(s)'; }
+  }
+
+  champs.forEach(function (el) {
+    el.addEventListener('input', function () { sauver(); majCompteur(); });
+    el.addEventListener('change', function () { sauver(); majCompteur(); });
+  });
+
+  var bPdf = document.getElementById('btnPdf');
+  if (bPdf) bPdf.addEventListener('click', function () { window.print(); });
+
+  var bRaz = document.getElementById('btnRaz');
+  if (bRaz) bRaz.addEventListener('click', function () {
+    if (!confirm('Effacer toutes vos reponses de cette fiche ?')) return;
+    champs.forEach(function (el) { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    majCompteur();
+  });
+
+  charger();
+  majCompteur();
+})();
+
+</script>
+</body>
+</html>

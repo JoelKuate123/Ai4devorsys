@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercices guides — Claude Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#FFFFFF; --accent:#0E8C86; --accent2:#0B6E68; --navy:#0B2D48;
+  --text:#16212B; --text2:#4B5C63; --card:#EAF4F3; --border:#D7E6E4;
+  --good:#1F9D67; --warn:#B9740A; --bad:#C1443B; --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:#F2F7F7;color:var(--text);line-height:1.55;}
+.page{max-width:1000px;margin:0 auto;background:var(--bg);padding:3.2rem 3.2rem 5rem;}
+header.doc{border-bottom:4px solid var(--accent);padding-bottom:1.4rem;margin-bottom:2.2rem;}
+.doc-org{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+h1{font-size:2.1rem;font-weight:800;color:var(--navy);margin:.6rem 0 .5rem;line-height:1.2;}
+.doc-sub{color:var(--text2);font-size:1.02rem;max-width:70ch;}
+.doc-meta{margin-top:1rem;display:flex;gap:1.6rem;flex-wrap:wrap;font-size:.85rem;color:var(--text2);}
+.doc-meta b{color:var(--navy);}
+h2{font-size:1.45rem;font-weight:800;color:var(--navy);margin:2.6rem 0 .9rem;padding-left:.8rem;border-left:5px solid var(--accent);}
+h3{font-size:1.1rem;font-weight:700;color:var(--accent2);margin:1.6rem 0 .6rem;}
+h4{font-size:.98rem;font-weight:700;color:var(--navy);margin:1.1rem 0 .4rem;}
+p{margin-bottom:.75rem;color:var(--text2);max-width:80ch;}
+p b, li b{color:var(--text);}
+ul,ol{margin:0 0 .9rem 1.3rem;color:var(--text2);}
+li{margin-bottom:.35rem;}
+a{color:var(--accent2);}
+pre{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1rem 1.2rem;font-family:'JetBrains Mono',Consolas,monospace;
+    font-size:.82rem;line-height:1.6;overflow-x:auto;margin:.7rem 0 1rem;white-space:pre-wrap;word-break:break-word;}
+pre .cm{color:#7FB3AE;}
+code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--card);color:var(--accent2);
+     padding:.08rem .34rem;border-radius:4px;font-size:.88em;}
+pre code{background:none;color:inherit;padding:0;}
+table{border-collapse:collapse;width:100%;margin:.8rem 0 1.4rem;font-size:.9rem;}
+th,td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left;vertical-align:top;}
+th{background:var(--card);color:var(--accent2);font-weight:700;}
+td{color:var(--text2);}
+td b{color:var(--text);}
+td code{white-space:nowrap;}
+.note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.warn{background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.good{background:#EEF9F3;border-left:4px solid var(--good);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.step{border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.4rem;margin:1.1rem 0;background:#FBFDFD;}
+.step-h{display:flex;align-items:baseline;gap:.7rem;margin-bottom:.5rem;}
+.step-n{background:var(--accent);color:#fff;font-weight:800;font-size:.8rem;border-radius:20px;padding:.18rem .7rem;white-space:nowrap;}
+.step-t{font-size:1.05rem;font-weight:700;color:var(--navy);}
+.badge{display:inline-block;background:var(--card);color:var(--accent2);border-radius:20px;padding:.12rem .65rem;
+       font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-right:.4rem;}
+.badge.deb{background:#EEF9F3;color:var(--good);}
+.badge.int{background:#FFF6E8;color:var(--warn);}
+.badge.avc{background:#FDEDEC;color:var(--bad);}
+.fill{width:100%;border:none;border-bottom:1px dashed #9FBDBA;background:#FCFEFE;font-family:'Inter',sans-serif;
+      font-size:.95rem;color:var(--text);padding:.35rem .2rem;}
+.fill:focus{outline:none;border-bottom-color:var(--accent);background:#F4FBFA;}
+textarea.fill{border:1px dashed #9FBDBA;border-radius:8px;padding:.6rem .8rem;min-height:5.5rem;resize:vertical;line-height:1.5;}
+.ck{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem 0;border-bottom:1px dotted var(--border);}
+.ck input{margin-top:.32rem;width:1.05rem;height:1.05rem;accent-color:var(--accent);flex:none;}
+.ck label{font-size:.95rem;color:var(--text2);}
+.ck label b{color:var(--text);}
+.toolbar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;display:flex;gap:.7rem;align-items:center;
+         padding:.6rem 1rem;flex-wrap:wrap;}
+.toolbar span{font-size:.82rem;color:#B9D6D3;margin-right:auto;}
+.toolbar button{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:.45rem .95rem;
+                font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;}
+.toolbar button:hover{background:#12A79F;}
+.toolbar button.ghost{background:transparent;border:1px solid #2A4C63;}
+footer.doc{margin-top:3.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text2);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.kpi{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;}
+.kpi div{flex:1;min-width:150px;background:var(--card);border-radius:10px;padding:.9rem 1.1rem;}
+.kpi b{display:block;font-size:1.5rem;color:var(--navy);}
+.kpi span{font-size:.82rem;color:var(--text2);}
+@media (max-width:820px){
+  .page{padding:1.6rem 1.1rem 3rem;}
+  h1{font-size:1.55rem;} h2{font-size:1.2rem;}
+  .grid2{grid-template-columns:1fr;}
+  table{display:block;overflow-x:auto;}
+}
+@media print{
+  body{background:#fff;}
+  .toolbar{display:none !important;}
+  .page{max-width:none;padding:0;}
+  h2{page-break-after:avoid;} .step,table,pre{page-break-inside:avoid;}
+  .fill{border-bottom:1px solid #999;background:none;}
+  textarea.fill{border:1px solid #999;min-height:4.5rem;}
+  a{color:#0B6E68;text-decoration:none;}
+  @page{margin:14mm 12mm;}
+}
+
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span>CLAUDE CODE · EXERCICES GUIDES</span>
+  <span id="compteur"></span>
+  <button id="btnPdf">&#11015; Exporter en PDF</button>
+  <button id="btnRaz" class="ghost">Effacer mes reponses</button>
+</div>
+<div class="page">
+<header class="doc">
+  <div class="doc-org">Digital House Company</div>
+  <h1>Claude Code · Exercices guidés</h1>
+  <p class="doc-sub">Trois exercices sur MiniCRM, treize étapes. Le projet est sain : 90 tests au vert, de la dette technique, et des fonctionnalités manquantes.</p>
+  <div class="doc-meta"><span><b>Durée totale</b> 3 h 10</span> <span><b>Niveau</b> débutant à intermédiaire</span> <span><b>Code base</b> MiniCRM · variante dette technique</span> <span><b>Tests</b> 90 au vert</span></div>
+</header>
+<div class="note">Chaque étape tient en une action. Faites-les <b>dans l'ordre</b>. Les cases se cochent à l'écran et la page retient vos coches ; les zones de texte sont à remplir — c'est là que se joue l'apprentissage. Le bouton <b>Exporter en PDF</b> vous en donne une copie à garder.</div>
+<div class="warn"><b>Le projet est sain :</b> les 90 tests passent. Rien n'est cassé. Ce qui vous attend, c'est de la dette technique et des fonctionnalités manquantes — la situation où un assistant agentique est le plus utile, et la plus proche de votre quotidien.</div>
+<h2>Avant de commencer · 10 minutes</h2>
+<div class="step"><div class="step-h"><span class="step-n">0</span><span class="step-t">Installer et vérifier</span></div><span class="badge deb">Debutant</span><pre><code>npm install -g @anthropic-ai/claude-code
+
+<span class="cm"># Se placer DANS le projet. Ce point est capital :</span>
+<span class="cm"># Claude Code ne voit que le dossier depuis lequel on le lance.</span>
+cd Outils/Claude_Code/codebase_minicrm
+
+claude
+/login
+/doctor</code></pre><div class="ck"><input type="checkbox"><label><code>/doctor</code> ne signale aucun problème</label></div><div class="ck"><input type="checkbox"><label><code>node run-tests.js</code> affiche 90 tests au vert</label></div><div class="ck"><input type="checkbox"><label><code>index.html</code> s'ouvre et affiche douze contacts</label></div><div class="ck"><input type="checkbox"><label>J'ai lu <code>CLAUDE.md</code> en entier — il fait une page</label></div><div class="ck"><input type="checkbox"><label>J'ai parcouru <code>DETTE_TECHNIQUE.md</code></label></div><div class="warn">Si vous lancez <code>claude</code> depuis votre dossier personnel, il voit votre disque entier et ne comprend rien au projet. <b>Toujours se placer dans le projet d'abord.</b></div></div>
+<h2>Exercice 1 · Prendre en main MiniCRM</h2>
+<p><b>Durée :</b> 45 minutes · <b>Seul</b></p>
+<div class="step"><div class="step-h"><span class="step-n">1.1</span><span class="step-t">Voir ce qu'il sait déjà</span></div><span class="badge deb">Debutant</span><ol><li>Tapez <code>/status</code>. Notez le modèle et le dossier.</li><li>Tapez <code>/context</code>. Regardez ce qui occupe déjà la mémoire.</li></ol><h4>Qu'a-t-il déjà en mémoire, sans que vous ayez rien demandé ?</h4><textarea class="fill" rows="2" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">1.2</span><span class="step-t">L'expérience du CLAUDE.md</span></div><span class="badge deb">Debutant</span><p>C'est l'expérience la plus parlante de la journée. Faites-la vraiment, ne la survolez pas.</p><ol><li>Demandez : <i>« explique-moi l'architecture de ce projet en cinq lignes »</i>.</li><li>Copiez sa réponse ci-dessous.</li><li>Renommez <code>CLAUDE.md</code> en <code>CLAUDE.off</code>.</li><li>Faites <code>/clear</code>, puis reposez <b>exactement la même question</b>.</li><li>Comparez.</li><li><b>Remettez le fichier en place.</b></li></ol><h4>Sa réponse AVEC le CLAUDE.md</h4><textarea class="fill" rows="4" placeholder=""></textarea><h4>Sa réponse SANS le CLAUDE.md</h4><textarea class="fill" rows="4" placeholder=""></textarea><h4>La différence, en une phrase</h4><textarea class="fill" rows="2" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">1.3</span><span class="step-t">Le mode plan</span></div><span class="badge deb">Debutant</span><ol><li>Tapez <code>/plan</code>.</li><li>Demandez le sujet <b>A1</b> de <code>DETTE_TECHNIQUE.md</code> : une flèche de tri sur la colonne active.</li><li><b>Ne l'approuvez pas tout de suite.</b> Lisez le plan.</li></ol><h4>Le plan, résumé en trois lignes</h4><textarea class="fill" rows="3" placeholder=""></textarea><h4>Ce que j'ai corrigé dans le plan avant d'approuver</h4><textarea class="fill" rows="3" placeholder="S'il n'y avait rien à corriger, écrivez-le — c'est une information aussi."></textarea><div class="good">Corriger un plan coûte trois lignes. Corriger trois cents lignes de code coûte une heure. C'est tout l'intérêt du mode plan.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">1.4</span><span class="step-t">Relire avant de valider</span></div><span class="badge deb">Debutant</span><ol><li>Approuvez le plan, laissez-le travailler.</li><li>Tapez <code>/diff</code>. Lisez tout.</li><li>Tapez <code>/verifier</code> — la compétence livrée avec le projet.</li><li>Ouvrez <code>index.html</code> et cliquez sur les en-têtes du tableau.</li></ol><div class="ck"><input type="checkbox"><label>La flèche apparaît sur la colonne active</label></div><div class="ck"><input type="checkbox"><label>Elle s'inverse quand je reclique</label></div><div class="ck"><input type="checkbox"><label>Les 90 tests sont au vert</label></div><div class="ck"><input type="checkbox"><label><code>/verifier</code> répond « PRÊT À VALIDER »</label></div><h4>A-t-il fait quelque chose que je n'avais pas demandé ?</h4><textarea class="fill" rows="2" placeholder=""></textarea></div>
+<h2>Exercice 2 · Attaquer la dette technique, proprement</h2>
+<p><b>Durée :</b> 1 h 15 · <b>En binôme</b></p>
+<div class="step"><div class="step-h"><span class="step-n">2.1</span><span class="step-t">Choisir deux sujets</span></div><span class="badge deb">Debutant</span><p>Deux. Pas six. Le but n'est pas de vider le carnet de commandes, c'est d'apprendre une méthode.</p><div class="grid2"><div><h4>Premier sujet choisi</h4><input class="fill" type="text" placeholder="A1 à A6, ou B1 à B3"></div><div><h4>Second sujet choisi</h4><input class="fill" type="text" placeholder=""></div></div><h4>Pourquoi ces deux-là en premier ?</h4><textarea class="fill" rows="2" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">2.2</span><span class="step-t">La boucle, pour chaque sujet</span></div><span class="badge int">Intermediaire</span><p>Répétez pour chacun des deux sujets, sans sauter d'étape :</p><ol><li><code>/plan</code> — lire, corriger, approuver.</li><li>Laisser travailler.</li><li><code>/diff</code> — relire tout le diff.</li><li><code>@relecteur relis ce diff</code> — le sous-agent livré avec le projet.</li><li><code>node run-tests.js</code> — les 90 tests.</li><li>Commit. Laissez-le rédiger le message, <b>puis relisez-le</b>.</li></ol><h4>Ce que le relecteur a trouvé et que je n'avais PAS vu</h4><textarea class="fill" rows="3" placeholder="C'est la ligne la plus utile de tout ce document."></textarea><h4>Ce que j'avais vu et qu'il n'a PAS trouvé</h4><textarea class="fill" rows="3" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">2.3</span><span class="step-t">Écrire votre première compétence</span></div><span class="badge int">Intermediaire</span><p>Créez <code>.claude/skills/commit-propre/SKILL.md</code>. Elle doit lancer les tests, montrer le diff, et proposer un message de commit.</p><pre><code>---
+name: commit-propre
+description: Vérifie et prépare un commit propre sur MiniCRM.
+allowed-tools: Bash(node run-tests.js) Bash(git diff:*) Bash(git status) Read
+---
+
+<span class="cm">## Contexte</span>
+
+<span class="cm">### Modifications</span>
+!`git diff --stat`
+
+<span class="cm">### Tests</span>
+```!
+node run-tests.js 2&gt;&amp;1 | tail -3
+```
+
+<span class="cm">## Ce qu'il faut faire</span>
+
+1. Si des tests échouent, dis-le et ARRÊTE-TOI.
+2. Sinon, vérifie que le diff relève d'une SEULE intention.
+3. Propose un message de commit d'une ligne, en français, à l'impératif.
+
+N'écris rien d'autre. Ne fais pas le commit toi-même.</code></pre><ol><li>Enregistrez le fichier.</li><li>Dans la session, tapez <code>/commit-propre</code>.</li><li>Si la commande n'apparaît pas : vérifiez le chemin et l'en-tête YAML.</li></ol><div class="ck"><input type="checkbox"><label>Ma compétence apparaît dans le menu <code>/</code></label></div><div class="ck"><input type="checkbox"><label>Elle affiche le vrai état des tests, sans que je le lui donne</label></div><div class="ck"><input type="checkbox"><label>Elle s'arrête quand un test échoue</label></div><h4>Quelle autre compétence écrirais-je pour MON projet réel ?</h4><textarea class="fill" rows="3" placeholder="Ce que vous retapez le plus souvent, mot pour mot."></textarea></div>
+<h2>Exercice 3 · Automatiser et brancher</h2>
+<p><b>Durée :</b> 1 heure · <b>En binôme</b></p>
+<div class="step"><div class="step-h"><span class="step-n">3.1</span><span class="step-t">L'expérience du hook</span></div><span class="badge int">Intermediaire</span><ol><li>Ouvrez <code>.claude/settings.json</code> et lisez le hook <code>PostToolUse</code>.</li><li>Commentez-le temporairement (renommez la clé <code>hooks</code> en <code>hooks_off</code>).</li><li>Redémarrez la session, demandez une modification qui casse un test (par exemple : « change le seuil de 90 jours à 90 heures dans contactsDormants »).</li><li>Observez : vous rend-il la main avec un test cassé ?</li><li>Réactivez le hook, redémarrez, refaites la même demande.</li></ol><h4>La différence de comportement, en deux phrases</h4><textarea class="fill" rows="3" placeholder=""></textarea><div class="good">Ce que vous venez d'observer : le hook ne rend pas les tests plus utiles, il rend l'assistant plus <b>autonome</b>. Il voit son erreur avant vous.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">3.2</span><span class="step-t">Ajouter un hook de démarrage</span></div><span class="badge int">Intermediaire</span><p>Dans <code>.claude/settings.json</code>, ajoutez un hook <code>SessionStart</code> qui affiche la branche git et le nombre de fichiers modifiés.</p><pre><code>"SessionStart": [
+  {
+    "hooks": [
+      {
+        "type": "command",
+        "command": "echo \"Branche : $(git branch --show-current) — $(git status --short | wc -l) fichier(s) modifié(s)\""
+      }
+    ]
+  }
+]</code></pre><div class="ck"><input type="checkbox"><label>Le message s'affiche au démarrage d'une nouvelle session</label></div><div class="ck"><input type="checkbox"><label>Je comprends la différence entre <code>SessionStart</code> et <code>PostToolUse</code></label></div></div>
+<div class="step"><div class="step-h"><span class="step-n">3.3</span><span class="step-t">Brancher le serveur MCP du jour 3</span></div><span class="badge avc">Avance</span><pre><code>claude mcp add rag-local -- python ../../../Jour3_LLM_et_RAG_local/codebase/exercice_7_mcp/serveur_mcp.py
+
+<span class="cm"># puis, dans la session :</span>
+/mcp</code></pre><ol><li>Vérifiez que le serveur apparaît avec ses trois outils.</li><li>Posez une question dont la réponse est UNIQUEMENT dans la base documentaire : <i>« combien de jours de congé annuel avons-nous ? »</i></li><li>Vérifiez qu'il cite le fichier source.</li></ol><h4>A-t-il appelé l'outil de lui-même, ou a-t-il fallu le lui dire ?</h4><textarea class="fill" rows="2" placeholder=""></textarea><div class="warn">Si le serveur n'apparaît pas : le chemin relatif est presque toujours en cause. Mettez un <b>chemin absolu</b>. <code>claude --debug=mcp</code> affiche les échanges.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">3.4</span><span class="step-t">Un sous-agent aux outils restreints</span></div><span class="badge avc">Avance</span><p>Créez <code>.claude/agents/testeur.md</code> : un agent qui écrit des tests et n'a <b>pas</b> le droit de modifier <code>js/</code>.</p><pre><code>---
+name: testeur
+description: Écrit des tests pour MiniCRM. Ne modifie jamais le code de production.
+tools: Read, Grep, Glob, Edit, Bash
+model: sonnet
+---
+
+Tu écris des tests pour MiniCRM, dans le dossier tests/ UNIQUEMENT.
+
+Tu ne modifies JAMAIS un fichier de js/. Si le code te semble faux,
+tu écris le test qui le prouve, et tu le signales. Tu ne le corriges pas.
+
+Chaque test que tu écris contient au minimum :
+- le cas nominal ;
+- un cas limite : liste vide, null, division par zéro, date invalide ;
+- un cas d'erreur : ce qui doit être refusé, et pourquoi.
+
+Le nom du test se lit comme une phrase de spécification, en français.</code></pre><ol><li>Appelez-le : <code>@testeur écris les tests manquants pour exporterCsv()</code>.</li><li>Lisez les tests produits. Sont-ils utiles ?</li><li><b>Cassez volontairement</b> <code>exporterCsv()</code> et relancez : les nouveaux tests deviennent-ils rouges ?</li></ol><h4>Le test le plus utile qu'il a écrit</h4><textarea class="fill" rows="2" placeholder=""></textarea><h4>Un test qui ne sert à rien, s'il y en a un</h4><textarea class="fill" rows="2" placeholder="Un test qui reste vert quoi qu'on casse est un test raté."></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">3.5</span><span class="step-t">Le mode sans interface</span></div><span class="badge avc">Avance</span><pre><code>claude -p "liste les fonctions de js/ qui n'ont aucun test" \
+  --allowedTools "Read" "Grep" \
+  --output-format json \
+  --max-turns 3</code></pre><h4>Que renvoie la commande ? À quoi cela servirait-il dans une chaîne d'intégration continue ?</h4><textarea class="fill" rows="3" placeholder=""></textarea></div>
+<h2>Bilan</h2>
+<h4>Les trois commandes que je vais utiliser dès demain</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<h4>Le CLAUDE.md que je vais écrire pour mon projet réel — les cinq règles métier qui ne se devinent pas</h4><textarea class="fill" rows="4" placeholder=""></textarea>
+<h4>Ce qui me retient encore d'utiliser cet outil au quotidien</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<footer class="doc">
+  Formation animee par <b>Kuate Joel Parfait</b> — Digital House Company · hello@dhcompany.pro<br>
+  Ce document est prevu pour etre rempli a l'ecran puis exporte en PDF
+  (bouton « Exporter en PDF » ou <code>Ctrl</code>+<code>P</code> → « Enregistrer au format PDF »).
+</footer>
+</div>
+<script>
+
+// Sauvegarde locale des reponses : pratique pour reprendre une fiche entre
+// deux journees. Tout est entoure de try/catch, la page fonctionne meme
+// si le navigateur refuse le stockage (mode prive, fichier local bride...).
+(function () {
+  var KEY = 'fiche::' + (document.title || 'sans-titre');
+  var champs = document.querySelectorAll('.fill, .ck input[type=checkbox]');
+
+  function charger() {
+    try {
+      var brut = localStorage.getItem(KEY);
+      if (!brut) return;
+      var data = JSON.parse(brut);
+      champs.forEach(function (el, i) {
+        if (data[i] === undefined) return;
+        if (el.type === 'checkbox') { el.checked = data[i]; } else { el.value = data[i]; }
+      });
+      majCompteur();
+    } catch (e) { /* stockage indisponible : on continue sans */ }
+  }
+
+  function sauver() {
+    try {
+      var data = [];
+      champs.forEach(function (el) { data.push(el.type === 'checkbox' ? el.checked : el.value); });
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) { /* idem */ }
+  }
+
+  function majCompteur() {
+    var cases = document.querySelectorAll('.ck input[type=checkbox]');
+    var faits = document.querySelectorAll('.ck input[type=checkbox]:checked');
+    var out = document.getElementById('compteur');
+    if (out && cases.length) { out.textContent = faits.length + ' / ' + cases.length + ' coche(s)'; }
+  }
+
+  champs.forEach(function (el) {
+    el.addEventListener('input', function () { sauver(); majCompteur(); });
+    el.addEventListener('change', function () { sauver(); majCompteur(); });
+  });
+
+  var bPdf = document.getElementById('btnPdf');
+  if (bPdf) bPdf.addEventListener('click', function () { window.print(); });
+
+  var bRaz = document.getElementById('btnRaz');
+  if (bRaz) bRaz.addEventListener('click', function () {
+    if (!confirm('Effacer toutes vos reponses de cette fiche ?')) return;
+    champs.forEach(function (el) { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    majCompteur();
+  });
+
+  charger();
+  majCompteur();
+})();
+
+</script>
+</body>
+</html>

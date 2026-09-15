@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercices guides — GitHub Copilot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#FFFFFF; --accent:#0E8C86; --accent2:#0B6E68; --navy:#0B2D48;
+  --text:#16212B; --text2:#4B5C63; --card:#EAF4F3; --border:#D7E6E4;
+  --good:#1F9D67; --warn:#B9740A; --bad:#C1443B; --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:#F2F7F7;color:var(--text);line-height:1.55;}
+.page{max-width:1000px;margin:0 auto;background:var(--bg);padding:3.2rem 3.2rem 5rem;}
+header.doc{border-bottom:4px solid var(--accent);padding-bottom:1.4rem;margin-bottom:2.2rem;}
+.doc-org{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+h1{font-size:2.1rem;font-weight:800;color:var(--navy);margin:.6rem 0 .5rem;line-height:1.2;}
+.doc-sub{color:var(--text2);font-size:1.02rem;max-width:70ch;}
+.doc-meta{margin-top:1rem;display:flex;gap:1.6rem;flex-wrap:wrap;font-size:.85rem;color:var(--text2);}
+.doc-meta b{color:var(--navy);}
+h2{font-size:1.45rem;font-weight:800;color:var(--navy);margin:2.6rem 0 .9rem;padding-left:.8rem;border-left:5px solid var(--accent);}
+h3{font-size:1.1rem;font-weight:700;color:var(--accent2);margin:1.6rem 0 .6rem;}
+h4{font-size:.98rem;font-weight:700;color:var(--navy);margin:1.1rem 0 .4rem;}
+p{margin-bottom:.75rem;color:var(--text2);max-width:80ch;}
+p b, li b{color:var(--text);}
+ul,ol{margin:0 0 .9rem 1.3rem;color:var(--text2);}
+li{margin-bottom:.35rem;}
+a{color:var(--accent2);}
+pre{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1rem 1.2rem;font-family:'JetBrains Mono',Consolas,monospace;
+    font-size:.82rem;line-height:1.6;overflow-x:auto;margin:.7rem 0 1rem;white-space:pre-wrap;word-break:break-word;}
+pre .cm{color:#7FB3AE;}
+code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--card);color:var(--accent2);
+     padding:.08rem .34rem;border-radius:4px;font-size:.88em;}
+pre code{background:none;color:inherit;padding:0;}
+table{border-collapse:collapse;width:100%;margin:.8rem 0 1.4rem;font-size:.9rem;}
+th,td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left;vertical-align:top;}
+th{background:var(--card);color:var(--accent2);font-weight:700;}
+td{color:var(--text2);}
+td b{color:var(--text);}
+td code{white-space:nowrap;}
+.note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.warn{background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.good{background:#EEF9F3;border-left:4px solid var(--good);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.step{border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.4rem;margin:1.1rem 0;background:#FBFDFD;}
+.step-h{display:flex;align-items:baseline;gap:.7rem;margin-bottom:.5rem;}
+.step-n{background:var(--accent);color:#fff;font-weight:800;font-size:.8rem;border-radius:20px;padding:.18rem .7rem;white-space:nowrap;}
+.step-t{font-size:1.05rem;font-weight:700;color:var(--navy);}
+.badge{display:inline-block;background:var(--card);color:var(--accent2);border-radius:20px;padding:.12rem .65rem;
+       font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-right:.4rem;}
+.badge.deb{background:#EEF9F3;color:var(--good);}
+.badge.int{background:#FFF6E8;color:var(--warn);}
+.badge.avc{background:#FDEDEC;color:var(--bad);}
+.fill{width:100%;border:none;border-bottom:1px dashed #9FBDBA;background:#FCFEFE;font-family:'Inter',sans-serif;
+      font-size:.95rem;color:var(--text);padding:.35rem .2rem;}
+.fill:focus{outline:none;border-bottom-color:var(--accent);background:#F4FBFA;}
+textarea.fill{border:1px dashed #9FBDBA;border-radius:8px;padding:.6rem .8rem;min-height:5.5rem;resize:vertical;line-height:1.5;}
+.ck{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem 0;border-bottom:1px dotted var(--border);}
+.ck input{margin-top:.32rem;width:1.05rem;height:1.05rem;accent-color:var(--accent);flex:none;}
+.ck label{font-size:.95rem;color:var(--text2);}
+.ck label b{color:var(--text);}
+.toolbar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;display:flex;gap:.7rem;align-items:center;
+         padding:.6rem 1rem;flex-wrap:wrap;}
+.toolbar span{font-size:.82rem;color:#B9D6D3;margin-right:auto;}
+.toolbar button{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:.45rem .95rem;
+                font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;}
+.toolbar button:hover{background:#12A79F;}
+.toolbar button.ghost{background:transparent;border:1px solid #2A4C63;}
+footer.doc{margin-top:3.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text2);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.kpi{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;}
+.kpi div{flex:1;min-width:150px;background:var(--card);border-radius:10px;padding:.9rem 1.1rem;}
+.kpi b{display:block;font-size:1.5rem;color:var(--navy);}
+.kpi span{font-size:.82rem;color:var(--text2);}
+@media (max-width:820px){
+  .page{padding:1.6rem 1.1rem 3rem;}
+  h1{font-size:1.55rem;} h2{font-size:1.2rem;}
+  .grid2{grid-template-columns:1fr;}
+  table{display:block;overflow-x:auto;}
+}
+@media print{
+  body{background:#fff;}
+  .toolbar{display:none !important;}
+  .page{max-width:none;padding:0;}
+  h2{page-break-after:avoid;} .step,table,pre{page-break-inside:avoid;}
+  .fill{border-bottom:1px solid #999;background:none;}
+  textarea.fill{border:1px solid #999;min-height:4.5rem;}
+  a{color:#0B6E68;text-decoration:none;}
+  @page{margin:14mm 12mm;}
+}
+
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span>GITHUB COPILOT · EXERCICES GUIDES</span>
+  <span id="compteur"></span>
+  <button id="btnPdf">&#11015; Exporter en PDF</button>
+  <button id="btnRaz" class="ghost">Effacer mes reponses</button>
+</div>
+<div class="page">
+<header class="doc">
+  <div class="doc-org">Digital House Company</div>
+  <h1>GitHub Copilot · Exercices guidés</h1>
+  <p class="doc-sub">Trois exercices sur MiniCRM, dix étapes. Quatre fonctions à compléter, 8 tests au rouge — votre cahier des charges.</p>
+  <div class="doc-meta"><span><b>Durée totale</b> 3 h 00</span> <span><b>Niveau</b> débutant à intermédiaire</span> <span><b>Code base</b> MiniCRM · variante squelette</span> <span><b>Tests</b> 8 au rouge sur 90</span></div>
+</header>
+<div class="note">Chaque étape tient en une action. Faites-les <b>dans l'ordre</b>. Les cases se cochent à l'écran et la page retient vos coches ; les zones de texte sont à remplir — c'est là que se joue l'apprentissage. Le bouton <b>Exporter en PDF</b> vous en donne une copie à garder.</div>
+<div class="warn"><b>Le projet a des trous :</b> quatre fonctions de <code>js/statistiques.js</code> sont laissées à compléter, et <b>8 tests sont au rouge</b>. Ces 8 échecs sont votre cahier des charges — plus précis que n'importe quelle consigne.</div>
+<h2>Avant de commencer · 10 minutes</h2>
+<div class="step"><div class="step-h"><span class="step-n">0</span><span class="step-t">Installer et régler</span></div><span class="badge deb">Debutant</span><ol><li>Dans VS Code : installez les extensions <b>GitHub Copilot</b> et <b>GitHub Copilot Chat</b>.</li><li>Connectez-vous. L'icône en bas à droite doit être pleine, pas barrée.</li><li>Ouvrez le dossier <code>Outils/GitHub_Copilot/codebase_minicrm</code>.</li><li>Vérifiez le réglage critique (voir ci-dessous).</li></ol><pre><code><span class="cm">// Ctrl+Shift+P -&gt; « Preferences: Open User Settings (JSON) »</span>
+{
+<span class="cm">  // SANS CETTE LIGNE, vos fichiers d'instructions ne sont pas lus.</span>
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "chat.promptFiles": true,
+  "chat.instructionsFilesLocations": { ".github/instructions": true }
+}</code></pre><div class="ck"><input type="checkbox"><label>Les deux extensions sont installées et connectées</label></div><div class="ck"><input type="checkbox"><label>Le réglage <code>useInstructionFiles</code> est à <code>true</code></label></div><div class="ck"><input type="checkbox"><label><code>node run-tests.js</code> affiche <b>8 échecs sur 90</b></label></div><div class="ck"><input type="checkbox"><label>J'ai lu <code>.github/copilot-instructions.md</code> en entier</label></div><div class="ck"><input type="checkbox"><label>J'ai lu <code>A_COMPLETER.md</code></label></div><div class="warn">Le réglage <code>useInstructionFiles</code> est celui que tout le monde oublie. Sans lui, vous écrivez des instructions que personne ne lit — et vous concluez, à tort, qu'elles ne servent à rien.</div></div>
+<h2>Exercice 1 · Compléter par la complétion</h2>
+<p><b>Durée :</b> 50 minutes · <b>Seul</b></p>
+<div class="step"><div class="step-h"><span class="step-n">1.1</span><span class="step-t">L'expérience des onglets</span></div><span class="badge deb">Debutant</span><p>C'est l'expérience la plus parlante de la journée. Faites-la vraiment.</p><ol><li><b>Fermez tous les onglets</b> sauf <code>js/statistiques.js</code>.</li><li>Placez le curseur dans <code>meilleursClients()</code>, après le <code>// TODO</code>.</li><li>Attendez la suggestion grise. <b>Ne faites pas Tab.</b> Recopiez-la ci-dessous.</li><li>Ouvrez maintenant <code>tests/statistiques.test.js</code> dans un second onglet.</li><li>Revenez, effacez ce que vous aviez, redemandez avec <code>Alt+\</code>.</li><li>Recopiez la nouvelle suggestion.</li></ol><h4>Suggestion AVEC un seul onglet ouvert</h4><textarea class="fill" rows="4" placeholder=""></textarea><h4>Suggestion AVEC le fichier de tests ouvert</h4><textarea class="fill" rows="4" placeholder=""></textarea><h4>La différence, en une phrase</h4><textarea class="fill" rows="2" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">1.2</span><span class="step-t">Accepter mot à mot</span></div><span class="badge deb">Debutant</span><ol><li>Cette fois, acceptez avec <code>Ctrl+→</code> — un mot à la fois.</li><li>Lisez chaque mot avant de l'accepter.</li><li>Corrigez à la main dès que vous n'êtes pas d'accord.</li><li><code>node run-tests.js</code>.</li></ol><div class="grid2"><div><h4>Tests au vert avant</h4><input class="fill" type="text" placeholder="/90"></div><div><h4>Tests au vert après</h4><input class="fill" type="text" placeholder="/90"></div></div><h4>Combien de mots ai-je corrigés à la main ?</h4><input class="fill" type="text" placeholder=""><div class="good"><code>Ctrl+→</code> change la façon de travailler : on garde la vitesse sans céder le contrôle. C'est le raccourci le plus sous-utilisé de l'outil.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">1.3</span><span class="step-t">Le chat en ligne</span></div><span class="badge deb">Debutant</span><ol><li>Sélectionnez toute la fonction <code>contactsDormants()</code>.</li><li><code>Ctrl+I</code>, puis : <i>« implémente cette fonction en suivant sa JSDoc et les tests de tests/statistiques.test.js »</i>.</li><li>Lisez le diff vert et rouge, dans le fichier.</li><li><code>Ctrl+Entrée</code> accepte, <code>Échap</code> annule.</li><li><code>node run-tests.js</code>.</li></ol><h4>A-t-il traité les trois pièges ? (statut inactif exclu, date invalide exclue, paramètre « aujourdhui » utilisé)</h4><textarea class="fill" rows="3" placeholder=""></textarea></div>
+<h2>Exercice 2 · Edits, agent, et relecture</h2>
+<p><b>Durée :</b> 1 h 10 · <b>En binôme</b></p>
+<div class="step"><div class="step-h"><span class="step-n">2.1</span><span class="step-t">Le mode Edits : deux fichiers, une demande</span></div><span class="badge int">Intermediaire</span><ol><li><code>Ctrl+Shift+I</code>.</li><li><b>Ajoutez explicitement</b> au contexte : <code>js/statistiques.js</code> et <code>js/app.js</code>. Ne comptez pas sur la devinette.</li><li>Demandez : <i>« implémente parMois() et affiche son résultat dans un nouveau bloc du tableau de bord »</i>.</li><li>Le résultat arrive en diff, fichier par fichier.</li><li><b>Refusez volontairement</b> le diff de <code>app.js</code>, acceptez l'autre.</li><li>Observez ce qui se passe. Puis refaites et acceptez les deux.</li></ol><h4>Que se passe-t-il quand on n'accepte qu'un fichier sur deux ?</h4><textarea class="fill" rows="2" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">2.2</span><span class="step-t">Le mode agent, chronométré</span></div><span class="badge int">Intermediaire</span><div class="warn"><b>Créez d'abord une branche git.</b> Le mode agent est le seul où une seule phrase peut produire deux cents lignes dans six fichiers.</div><pre><code>git checkout -b exercice-agent</code></pre><ol><li>Passez en mode agent.</li><li>Demandez : <i>« fais passer tous les tests de tests/statistiques.test.js »</i>.</li><li><b>N'intervenez pas.</b> Chronométrez.</li><li>Quand il s'arrête, lisez le diff <b>en entier</b>.</li></ol><div class="grid2"><div><h4>Temps écoulé</h4><input class="fill" type="text" placeholder="minutes"></div><div><h4>Nombre de fichiers touchés</h4><input class="fill" type="text" placeholder=""></div></div><h4>Les trois questions à se poser sur le diff</h4><table><thead><tr><th>Question</th><th>Réponse</th></tr></thead><tbody><tr><td>A-t-il modifié un test ?</td><td><input class='fill' type='text'></td></tr><tr><td>A-t-il ajouté une dépendance ?</td><td><input class='fill' type='text'></td></tr><tr><td>A-t-il touché un fichier hors sujet ?</td><td><input class='fill' type='text'></td></tr></tbody></table></div>
+<div class="step"><div class="step-h"><span class="step-n">2.3</span><span class="step-t">La relecture</span></div><span class="badge int">Intermediaire</span><ol><li>Dans le chat, tapez <code>/relire</code> — le fichier de prompt du projet.</li><li>Lisez ce qu'il trouve.</li><li>Comparez à ce que vous aviez repéré vous-même à l'étape précédente.</li></ol><h4>Ce que la relecture a trouvé et que je n'avais pas vu</h4><textarea class="fill" rows="3" placeholder=""></textarea><h4>Ce que j'avais vu et qu'elle n'a pas trouvé</h4><textarea class="fill" rows="3" placeholder="Elle ne connaît pas votre métier : c'est normal, et c'est important à savoir."></textarea></div>
+<h2>Exercice 3 · Industrialiser pour l'équipe</h2>
+<p><b>Durée :</b> 50 minutes · <b>En binôme</b></p>
+<div class="step"><div class="step-h"><span class="step-n">3.1</span><span class="step-t">Tester une instruction de dépôt</span></div><span class="badge deb">Debutant</span><ol><li>Dans <code>.github/copilot-instructions.md</code>, ajoutez une règle de style bien à vous. Par exemple : <i>« pas de fonction fléchée en dehors des callbacks »</i>.</li><li>Demandez une nouvelle fonction, n'importe laquelle.</li><li>La règle est-elle respectée ?</li><li>Si non : <b>reformulez-la</b>. Une instruction floue est ignorée.</li></ol><h4>Ma règle, version 1</h4><textarea class="fill" rows="2" placeholder=""></textarea><h4>Ma règle, version 2 (si nécessaire) — et ce qui a changé</h4><textarea class="fill" rows="3" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">3.2</span><span class="step-t">Une instruction ciblée</span></div><span class="badge int">Intermediaire</span><p>Créez <code>.github/instructions/depot.instructions.md</code>.</p><pre><code>---
+applyTo: "js/depot.js"
+---
+
+<span class="cm"># Règle absolue de ce fichier</span>
+
+Ce fichier ne contient AUCUNE règle métier. Il range et il retrouve.
+Toute validation appartient à modele.js.
+
+Toute méthode qui modifie les données renvoie un objet
+{ succes: boolean, erreurs?: object } — jamais un booléen nu,
+jamais une exception. L'appelant doit pouvoir afficher un message.</code></pre><ol><li>Demandez une nouvelle méthode dans <code>depot.js</code>.</li><li>Demandez ensuite la même chose dans <code>modele.js</code>.</li><li>L'instruction s'est-elle appliquée uniquement au bon fichier ?</li></ol><div class="ck"><input type="checkbox"><label>L'instruction s'applique à <code>depot.js</code></label></div><div class="ck"><input type="checkbox"><label>Elle ne s'applique PAS à <code>modele.js</code></label></div></div>
+<div class="step"><div class="step-h"><span class="step-n">3.3</span><span class="step-t">Un fichier de prompt réutilisable</span></div><span class="badge avc">Avance</span><p>Créez <code>.github/prompts/ajouter-champ.prompt.md</code>. Il doit ajouter un champ au modèle, de bout en bout.</p><pre><code>---
+mode: agent
+description: Ajoute un champ à un contact, de la validation à l'affichage.
+---
+
+Ajoute le champ `${input:champ:nom du champ}` à un contact.
+
+Touche ces cinq endroits, dans cet ordre :
+
+1. `js/modele.js` — normalisation dans normaliserContact(),
+   et validation dans validerContact() si le champ a des contraintes.
+2. `tests/modele.test.js` — un test nominal, un cas limite, un cas d'erreur.
+3. `index.html` — un champ dans le formulaire, avec son label.
+4. `js/app.js` — la lecture du champ dans enregistrerContact()
+   et son remplissage dans ouvrirFormulaire().
+5. `js/vue.js` — l'affichage dans ligneContact(), passé par echapper().
+
+Lance ensuite `node run-tests.js`. Les 90 tests doivent rester au vert.
+Résume en cinq lignes ce que tu as fait, fichier par fichier.</code></pre><ol><li>Lancez : <code>/ajouter-champ telephone</code>.</li><li>Relisez les cinq diffs.</li><li><code>node run-tests.js</code>.</li><li>Ouvrez <code>index.html</code> : le champ est-il utilisable de bout en bout ?</li></ol><div class="ck"><input type="checkbox"><label>Le champ apparaît dans le formulaire</label></div><div class="ck"><input type="checkbox"><label>Il est enregistré et réaffiché quand je rouvre le contact</label></div><div class="ck"><input type="checkbox"><label>Il est visible dans le tableau</label></div><div class="ck"><input type="checkbox"><label>Il passe par <code>echapper()</code></label></div><div class="ck"><input type="checkbox"><label>Les 90 tests sont au vert</label></div><h4>A-t-il oublié l'un des cinq endroits ? Lequel ?</h4><textarea class="fill" rows="2" placeholder=""></textarea></div>
+<h2>Bilan</h2>
+<h4>Combien de suggestions ai-je refusées aujourd'hui ?</h4><input class="fill" type="text" placeholder="Un développeur qui n'a rien refusé de la journée n'a rien relu.">
+<h4>Les trois raccourcis que je vais utiliser dès demain</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<h4>Ce que je mettrai dans le copilot-instructions.md de mon projet réel</h4><textarea class="fill" rows="4" placeholder=""></textarea>
+<footer class="doc">
+  Formation animee par <b>Kuate Joel Parfait</b> — Digital House Company · hello@dhcompany.pro<br>
+  Ce document est prevu pour etre rempli a l'ecran puis exporte en PDF
+  (bouton « Exporter en PDF » ou <code>Ctrl</code>+<code>P</code> → « Enregistrer au format PDF »).
+</footer>
+</div>
+<script>
+
+// Sauvegarde locale des reponses : pratique pour reprendre une fiche entre
+// deux journees. Tout est entoure de try/catch, la page fonctionne meme
+// si le navigateur refuse le stockage (mode prive, fichier local bride...).
+(function () {
+  var KEY = 'fiche::' + (document.title || 'sans-titre');
+  var champs = document.querySelectorAll('.fill, .ck input[type=checkbox]');
+
+  function charger() {
+    try {
+      var brut = localStorage.getItem(KEY);
+      if (!brut) return;
+      var data = JSON.parse(brut);
+      champs.forEach(function (el, i) {
+        if (data[i] === undefined) return;
+        if (el.type === 'checkbox') { el.checked = data[i]; } else { el.value = data[i]; }
+      });
+      majCompteur();
+    } catch (e) { /* stockage indisponible : on continue sans */ }
+  }
+
+  function sauver() {
+    try {
+      var data = [];
+      champs.forEach(function (el) { data.push(el.type === 'checkbox' ? el.checked : el.value); });
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) { /* idem */ }
+  }
+
+  function majCompteur() {
+    var cases = document.querySelectorAll('.ck input[type=checkbox]');
+    var faits = document.querySelectorAll('.ck input[type=checkbox]:checked');
+    var out = document.getElementById('compteur');
+    if (out && cases.length) { out.textContent = faits.length + ' / ' + cases.length + ' coche(s)'; }
+  }
+
+  champs.forEach(function (el) {
+    el.addEventListener('input', function () { sauver(); majCompteur(); });
+    el.addEventListener('change', function () { sauver(); majCompteur(); });
+  });
+
+  var bPdf = document.getElementById('btnPdf');
+  if (bPdf) bPdf.addEventListener('click', function () { window.print(); });
+
+  var bRaz = document.getElementById('btnRaz');
+  if (bRaz) bRaz.addEventListener('click', function () {
+    if (!confirm('Effacer toutes vos reponses de cette fiche ?')) return;
+    champs.forEach(function (el) { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    majCompteur();
+  });
+
+  charger();
+  majCompteur();
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exercices guides — Codex</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#FFFFFF; --accent:#0E8C86; --accent2:#0B6E68; --navy:#0B2D48;
+  --text:#16212B; --text2:#4B5C63; --card:#EAF4F3; --border:#D7E6E4;
+  --good:#1F9D67; --warn:#B9740A; --bad:#C1443B; --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:#F2F7F7;color:var(--text);line-height:1.55;}
+.page{max-width:1000px;margin:0 auto;background:var(--bg);padding:3.2rem 3.2rem 5rem;}
+header.doc{border-bottom:4px solid var(--accent);padding-bottom:1.4rem;margin-bottom:2.2rem;}
+.doc-org{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+h1{font-size:2.1rem;font-weight:800;color:var(--navy);margin:.6rem 0 .5rem;line-height:1.2;}
+.doc-sub{color:var(--text2);font-size:1.02rem;max-width:70ch;}
+.doc-meta{margin-top:1rem;display:flex;gap:1.6rem;flex-wrap:wrap;font-size:.85rem;color:var(--text2);}
+.doc-meta b{color:var(--navy);}
+h2{font-size:1.45rem;font-weight:800;color:var(--navy);margin:2.6rem 0 .9rem;padding-left:.8rem;border-left:5px solid var(--accent);}
+h3{font-size:1.1rem;font-weight:700;color:var(--accent2);margin:1.6rem 0 .6rem;}
+h4{font-size:.98rem;font-weight:700;color:var(--navy);margin:1.1rem 0 .4rem;}
+p{margin-bottom:.75rem;color:var(--text2);max-width:80ch;}
+p b, li b{color:var(--text);}
+ul,ol{margin:0 0 .9rem 1.3rem;color:var(--text2);}
+li{margin-bottom:.35rem;}
+a{color:var(--accent2);}
+pre{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1rem 1.2rem;font-family:'JetBrains Mono',Consolas,monospace;
+    font-size:.82rem;line-height:1.6;overflow-x:auto;margin:.7rem 0 1rem;white-space:pre-wrap;word-break:break-word;}
+pre .cm{color:#7FB3AE;}
+code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--card);color:var(--accent2);
+     padding:.08rem .34rem;border-radius:4px;font-size:.88em;}
+pre code{background:none;color:inherit;padding:0;}
+table{border-collapse:collapse;width:100%;margin:.8rem 0 1.4rem;font-size:.9rem;}
+th,td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left;vertical-align:top;}
+th{background:var(--card);color:var(--accent2);font-weight:700;}
+td{color:var(--text2);}
+td b{color:var(--text);}
+td code{white-space:nowrap;}
+.note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.warn{background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.good{background:#EEF9F3;border-left:4px solid var(--good);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.step{border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.4rem;margin:1.1rem 0;background:#FBFDFD;}
+.step-h{display:flex;align-items:baseline;gap:.7rem;margin-bottom:.5rem;}
+.step-n{background:var(--accent);color:#fff;font-weight:800;font-size:.8rem;border-radius:20px;padding:.18rem .7rem;white-space:nowrap;}
+.step-t{font-size:1.05rem;font-weight:700;color:var(--navy);}
+.badge{display:inline-block;background:var(--card);color:var(--accent2);border-radius:20px;padding:.12rem .65rem;
+       font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-right:.4rem;}
+.badge.deb{background:#EEF9F3;color:var(--good);}
+.badge.int{background:#FFF6E8;color:var(--warn);}
+.badge.avc{background:#FDEDEC;color:var(--bad);}
+.fill{width:100%;border:none;border-bottom:1px dashed #9FBDBA;background:#FCFEFE;font-family:'Inter',sans-serif;
+      font-size:.95rem;color:var(--text);padding:.35rem .2rem;}
+.fill:focus{outline:none;border-bottom-color:var(--accent);background:#F4FBFA;}
+textarea.fill{border:1px dashed #9FBDBA;border-radius:8px;padding:.6rem .8rem;min-height:5.5rem;resize:vertical;line-height:1.5;}
+.ck{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem 0;border-bottom:1px dotted var(--border);}
+.ck input{margin-top:.32rem;width:1.05rem;height:1.05rem;accent-color:var(--accent);flex:none;}
+.ck label{font-size:.95rem;color:var(--text2);}
+.ck label b{color:var(--text);}
+.toolbar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;display:flex;gap:.7rem;align-items:center;
+         padding:.6rem 1rem;flex-wrap:wrap;}
+.toolbar span{font-size:.82rem;color:#B9D6D3;margin-right:auto;}
+.toolbar button{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:.45rem .95rem;
+                font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;}
+.toolbar button:hover{background:#12A79F;}
+.toolbar button.ghost{background:transparent;border:1px solid #2A4C63;}
+footer.doc{margin-top:3.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text2);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.kpi{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;}
+.kpi div{flex:1;min-width:150px;background:var(--card);border-radius:10px;padding:.9rem 1.1rem;}
+.kpi b{display:block;font-size:1.5rem;color:var(--navy);}
+.kpi span{font-size:.82rem;color:var(--text2);}
+@media (max-width:820px){
+  .page{padding:1.6rem 1.1rem 3rem;}
+  h1{font-size:1.55rem;} h2{font-size:1.2rem;}
+  .grid2{grid-template-columns:1fr;}
+  table{display:block;overflow-x:auto;}
+}
+@media print{
+  body{background:#fff;}
+  .toolbar{display:none !important;}
+  .page{max-width:none;padding:0;}
+  h2{page-break-after:avoid;} .step,table,pre{page-break-inside:avoid;}
+  .fill{border-bottom:1px solid #999;background:none;}
+  textarea.fill{border:1px solid #999;min-height:4.5rem;}
+  a{color:#0B6E68;text-decoration:none;}
+  @page{margin:14mm 12mm;}
+}
+
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span>CODEX · EXERCICES GUIDES</span>
+  <span id="compteur"></span>
+  <button id="btnPdf">&#11015; Exporter en PDF</button>
+  <button id="btnRaz" class="ghost">Effacer mes reponses</button>
+</div>
+<div class="page">
+<header class="doc">
+  <div class="doc-org">Digital House Company</div>
+  <h1>Codex · Exercices guidés</h1>
+  <p class="doc-sub">Trois exercices sur MiniCRM, quatorze étapes. Six défauts semés, 9 tests au rouge, et une méthode : un défaut à la fois.</p>
+  <div class="doc-meta"><span><b>Durée totale</b> 3 h 10</span> <span><b>Niveau</b> débutant à intermédiaire</span> <span><b>Code base</b> MiniCRM · variante tests au rouge</span> <span><b>Tests</b> 9 au rouge sur 90</span></div>
+</header>
+<div class="note">Chaque étape tient en une action. Faites-les <b>dans l'ordre</b>. Les cases se cochent à l'écran et la page retient vos coches ; les zones de texte sont à remplir — c'est là que se joue l'apprentissage. Le bouton <b>Exporter en PDF</b> vous en donne une copie à garder.</div>
+<div class="warn"><b>Les tests sont au rouge :</b> 9 échecs sur 90. Six défauts ont été semés volontairement. <b>Aucun test n'est faux</b> — chaque échec signale un vrai problème du code. <code>BOGUES.md</code> décrit les symptômes, pas les emplacements.</div>
+<h2>Avant de commencer · 10 minutes</h2>
+<div class="step"><div class="step-h"><span class="step-n">0</span><span class="step-t">Installer et vérifier</span></div><span class="badge deb">Debutant</span><pre><code><span class="cm"># macOS, Linux</span>
+curl -fsSL https://chatgpt.com/codex/install.sh | sh
+<span class="cm"># Windows : PowerShell nativement, ou WSL2</span>
+
+cd Outils/Codex/codebase_minicrm
+codex login
+codex</code></pre><p>Dans la session, la <b>première commande</b> à taper, toujours :</p><pre><code>/status</code></pre><table><thead><tr><th>Ce que /status affiche</th><th>Ce que j'ai chez moi</th></tr></thead><tbody><tr><td>Modèle</td><td><input class='fill' type='text'></td></tr><tr><td>Mode d'approbation</td><td><input class='fill' type='text'></td></tr><tr><td>Bac à sable</td><td><input class='fill' type='text'></td></tr></tbody></table><div class="ck"><input type="checkbox"><label><code>node run-tests.js</code> affiche <b>9 échecs sur 90</b></label></div><div class="ck"><input type="checkbox"><label>J'ai lu <code>AGENTS.md</code> en entier</label></div><div class="ck"><input type="checkbox"><label>J'ai lu <code>BOGUES.md</code></label></div><div class="ck"><input type="checkbox"><label>J'ai ouvert <code>.codex/config.toml</code> et compris les quatre réglages</label></div></div>
+<div class="step"><div class="step-h"><span class="step-n">0.1</span><span class="step-t">Comprendre le bac à sable — avant tout le reste</span></div><span class="badge deb">Debutant</span><p>Deux minutes qui évitent des heures d'inquiétude.</p><ol><li>Quittez la session (<code>/exit</code>).</li><li>Relancez en lecture seule : <code>codex --sandbox read-only</code>.</li><li>Demandez : <i>« corrige le bogue du tri par montant »</i>.</li><li>Observez précisément ce qui se passe.</li></ol><h4>Que fait-il ? Que ne peut-il pas faire ?</h4><textarea class="fill" rows="3" placeholder=""></textarea><h4>Dans quel mode exploreriez-vous un dépôt client pour la première fois ?</h4><textarea class="fill" rows="2" placeholder=""></textarea></div>
+<h2>Exercice 1 · Les trois premiers défauts</h2>
+<p><b>Durée :</b> 1 heure · <b>Seul</b></p>
+<div class="step"><div class="step-h"><span class="step-n">1.1</span><span class="step-t">Lire les échecs correctement</span></div><span class="badge deb">Debutant</span><pre><code>node run-tests.js</code></pre><p>Un échec de test contient trois informations. On n'en lit souvent qu'une.</p><table><thead><tr><th></th><th>Pour le test « arrondit au centime supérieur »</th></tr></thead><tbody><tr><td>Ce que le test attendait</td><td><input class='fill' type='text'></td></tr><tr><td>Ce que le code a produit</td><td><input class='fill' type='text'></td></tr><tr><td>Ce que le NOM du test vous dit</td><td><input class='fill' type='text'></td></tr></tbody></table></div>
+<div class="step"><div class="step-h"><span class="step-n">1.2</span><span class="step-t">Défaut 1 — la cause avant la correction</span></div><span class="badge deb">Debutant</span><ol><li>Dans la session Codex : <code>/plan</code>.</li><li>Demandez : <i>« le test “arrondit au centime supérieur” échoue. Explique-moi la CAUSE avant de proposer quoi que ce soit. »</i></li><li>Lisez son explication. <b>Ne validez pas encore.</b></li></ol><h4>La cause, avec vos mots</h4><textarea class="fill" rows="2" placeholder="Pas le symptôme — la cause."></textarea><ol><li>Approuvez la correction.</li><li><code>/diff</code> — combien de lignes ont vraiment changé ?</li><li><code>node run-tests.js</code>.</li><li>Commit : <code>git commit -am "..."</code></li></ol><div class="grid2"><div><h4>Lignes changées</h4><input class="fill" type="text" placeholder=""></div><div><h4>Tests au vert maintenant</h4><input class="fill" type="text" placeholder="/90"></div></div><div class="good">La correction la plus petite possible est presque toujours la bonne. Un agent qui refactorise « au passage » vous coûtera une heure de relecture.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">1.3</span><span class="step-t">Défauts 2 et 3 — avec la commande du projet</span></div><span class="badge deb">Debutant</span><pre><code>/corriger-un-bogue le client à zéro euro
+/corriger-un-bogue on ne peut plus modifier un contact</code></pre><p>Cette commande vient de <code>.codex/prompts/corriger-un-bogue.md</code>. Ouvrez-la : elle impose une méthode en six étapes.</p><h4>Défaut 2 — la cause</h4><textarea class="fill" rows="2" placeholder=""></textarea><h4>Défaut 3 — la cause</h4><textarea class="fill" rows="2" placeholder=""></textarea><div class="ck"><input type="checkbox"><label>Trois défauts corrigés</label></div><div class="ck"><input type="checkbox"><label>Trois commits <b>séparés</b></label></div><div class="ck"><input type="checkbox"><label>Aucun test n'a été modifié</label></div><div class="ck"><input type="checkbox"><label>Aucun autre test n'a cassé</label></div></div>
+<h2>Exercice 2 · Les trois derniers, et la revue</h2>
+<p><b>Durée :</b> 1 h 10 · <b>En binôme</b></p>
+<div class="step"><div class="step-h"><span class="step-n">2.1</span><span class="step-t">Défauts 4 et 5</span></div><span class="badge int">Intermediaire</span><p>Le tri par montant, et l'export CSV. Même méthode : un par un.</p><h4>Défaut 4 (le tri) — la cause</h4><textarea class="fill" rows="2" placeholder="Le tri fonctionne parfaitement. Mais sur quoi ?"></textarea><h4>Défaut 5 (l'export CSV) — la cause</h4><textarea class="fill" rows="2" placeholder="Les virgules sont bien gérées. Le problème est ailleurs."></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">2.2</span><span class="step-t">Défaut 6 — le plus dangereux</span></div><span class="badge int">Intermediaire</span><p>Le chiffre d'affaires est trop beau. Ce défaut ne fait rien planter : il rend une décision fausse.</p><ol><li>Avant de corriger, demandez : <i>« quelle règle métier ce code enfreint-il ? »</i></li><li>Comparez sa réponse à <code>AGENTS.md</code>.</li><li>Puis corrigez.</li></ol><h4>La règle qu'il a citée. Est-ce la bonne ?</h4><textarea class="fill" rows="3" placeholder=""></textarea><h4>Aurait-il trouvé cette règle sans AGENTS.md ?</h4><textarea class="fill" rows="2" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">2.3</span><span class="step-t">La revue automatique</span></div><span class="badge int">Intermediaire</span><pre><code>/review</code></pre><h4>Ce que la revue a trouvé et que je n'avais pas vu</h4><textarea class="fill" rows="3" placeholder=""></textarea><h4>Ce que j'avais vu et qu'elle n'a pas trouvé</h4><textarea class="fill" rows="3" placeholder=""></textarea><div class="note">Une revue automatique attrape bien le mécanique : cas limite non traité, valeur non échappée, erreur avalée. Elle rate ce qui demande de connaître le contexte : une règle métier qu'elle ignore, ce qui <b>manque</b>, le fait que la demande initiale était mauvaise.</div></div>
+<div class="step"><div class="step-h"><span class="step-n">2.4</span><span class="step-t">Le test de résistance</span></div><span class="badge int">Intermediaire</span><div class="warn">Cette étape est la plus importante de la journée. Faites-la vraiment.</div><ol><li>Demandez : <i>« supprime le test qui échoue le plus souvent, il nous ralentit »</i>.</li><li>Observez précisément la réponse.</li></ol><h4>Qu'a-t-il répondu ?</h4><textarea class="fill" rows="3" placeholder=""></textarea><h4>L'interdit écrit en majuscules dans AGENTS.md a-t-il tenu ?</h4><textarea class="fill" rows="2" placeholder=""></textarea><div class="good">Un test modifié pour passer supprime le seul garde-fou dont vous disposiez, et personne ne s'en aperçoit avant des mois. C'est pourquoi cet interdit est écrit en majuscules dans <code>AGENTS.md</code>.</div></div>
+<h2>Exercice 3 · Automatiser et industrialiser</h2>
+<p><b>Durée :</b> 50 minutes · <b>En binôme</b></p>
+<div class="step"><div class="step-h"><span class="step-n">3.1</span><span class="step-t">Une commande maison</span></div><span class="badge int">Intermediaire</span><p>Créez <code>.codex/prompts/ajouter-champ.md</code> :</p><pre><code>Ajoute le champ « $1 » à un contact de MiniCRM.
+
+Touche ces cinq endroits, dans cet ordre :
+
+1. js/modele.js — normalisation, et validation si le champ a des contraintes.
+2. tests/modele.test.js — un test nominal, un cas limite, un cas d'erreur.
+3. index.html — un champ dans le formulaire, avec son label.
+4. js/app.js — lecture dans enregistrerContact(), remplissage dans ouvrirFormulaire().
+5. js/vue.js — affichage dans ligneContact(), passé par echapper().
+
+Lance ensuite `node run-tests.js`. Les 90 tests doivent rester au vert.
+Résume en cinq lignes, fichier par fichier.</code></pre><ol><li>Lancez : <code>/ajouter-champ telephone</code>.</li><li><code>/diff</code>, puis relisez les cinq fichiers.</li></ol><h4>A-t-il oublié l'un des cinq endroits ? Lequel ?</h4><textarea class="fill" rows="2" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">3.2</span><span class="step-t">Un profil de revue</span></div><span class="badge avc">Avance</span><p>Ajoutez dans <code>.codex/config.toml</code> :</p><pre><code>[profiles.revue]
+model = "gpt-5.6-codex"
+approval_policy = "never"
+sandbox_mode = "read-only"
+model_reasoning_effort = "high"</code></pre><pre><code>codex --profile revue "relis le diff de cette branche et signale
+uniquement les vrais problèmes"</code></pre><h4>Pourquoi ces deux réglages vont-ils toujours ensemble ?</h4><textarea class="fill" rows="2" placeholder="&lt;code&gt;approval_policy = never&lt;/code&gt; et &lt;code&gt;sandbox_mode = read-only&lt;/code&gt;."></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">3.3</span><span class="step-t">La revue non interactive</span></div><span class="badge avc">Avance</span><pre><code>codex exec \
+  --sandbox read-only \
+  --ask-for-approval never \
+  --json \
+  "Relis le diff de cette branche et signale uniquement les vrais problèmes"</code></pre><h4>À quel moment de votre chaîne d'intégration cette commande aurait-elle sa place ?</h4><textarea class="fill" rows="3" placeholder=""></textarea></div>
+<div class="step"><div class="step-h"><span class="step-n">3.4</span><span class="step-t">Brancher le serveur MCP du jour 3</span></div><span class="badge avc">Avance</span><p>Corrigez le chemin dans <code>.codex/config.toml</code>, puis :</p><pre><code>/mcp</code></pre><ol><li>Vérifiez que le serveur apparaît avec ses trois outils.</li><li>Posez une question sur les congés.</li><li>Vérifiez qu'il cite le fichier source.</li></ol><div class="ck"><input type="checkbox"><label>Le serveur apparaît dans <code>/mcp</code></label></div><div class="ck"><input type="checkbox"><label>Il a appelé l'outil de lui-même</label></div><div class="ck"><input type="checkbox"><label>Il a cité le fichier source</label></div></div>
+<div class="step"><div class="step-h"><span class="step-n">3.5</span><span class="step-t">Enrichir AGENTS.md</span></div><span class="badge deb">Debutant</span><p>Dernière étape, et pas la moins utile.</p><h4>Qu'est-ce qui MANQUAIT dans AGENTS.md aujourd'hui, et que vous avez dû expliquer à la main ?</h4><textarea class="fill" rows="3" placeholder="Ajoutez-le au fichier. C'est ainsi qu'un AGENTS.md devient bon : par accumulation de ce qui a manqué."></textarea></div>
+<h2>Bilan</h2>
+<h4>Les trois commandes que je vais utiliser dès demain</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<h4>Mes réglages par type de tâche : exploration / développement / intégration continue</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<h4>Combien de mes projets ont une suite de tests sur laquelle un agent pourrait s'appuyer ?</h4><textarea class="fill" rows="2" placeholder="Sans tests, la boucle ne se referme sur rien."></textarea>
+<footer class="doc">
+  Formation animee par <b>Kuate Joel Parfait</b> — Digital House Company · hello@dhcompany.pro<br>
+  Ce document est prevu pour etre rempli a l'ecran puis exporte en PDF
+  (bouton « Exporter en PDF » ou <code>Ctrl</code>+<code>P</code> → « Enregistrer au format PDF »).
+</footer>
+</div>
+<script>
+
+// Sauvegarde locale des reponses : pratique pour reprendre une fiche entre
+// deux journees. Tout est entoure de try/catch, la page fonctionne meme
+// si le navigateur refuse le stockage (mode prive, fichier local bride...).
+(function () {
+  var KEY = 'fiche::' + (document.title || 'sans-titre');
+  var champs = document.querySelectorAll('.fill, .ck input[type=checkbox]');
+
+  function charger() {
+    try {
+      var brut = localStorage.getItem(KEY);
+      if (!brut) return;
+      var data = JSON.parse(brut);
+      champs.forEach(function (el, i) {
+        if (data[i] === undefined) return;
+        if (el.type === 'checkbox') { el.checked = data[i]; } else { el.value = data[i]; }
+      });
+      majCompteur();
+    } catch (e) { /* stockage indisponible : on continue sans */ }
+  }
+
+  function sauver() {
+    try {
+      var data = [];
+      champs.forEach(function (el) { data.push(el.type === 'checkbox' ? el.checked : el.value); });
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) { /* idem */ }
+  }
+
+  function majCompteur() {
+    var cases = document.querySelectorAll('.ck input[type=checkbox]');
+    var faits = document.querySelectorAll('.ck input[type=checkbox]:checked');
+    var out = document.getElementById('compteur');
+    if (out && cases.length) { out.textContent = faits.length + ' / ' + cases.length + ' coche(s)'; }
+  }
+
+  champs.forEach(function (el) {
+    el.addEventListener('input', function () { sauver(); majCompteur(); });
+    el.addEventListener('change', function () { sauver(); majCompteur(); });
+  });
+
+  var bPdf = document.getElementById('btnPdf');
+  if (bPdf) bPdf.addEventListener('click', function () { window.print(); });
+
+  var bRaz = document.getElementById('btnRaz');
+  if (bRaz) bRaz.addEventListener('click', function () {
+    if (!confirm('Effacer toutes vos reponses de cette fiche ?')) return;
+    champs.forEach(function (el) { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    majCompteur();
+  });
+
+  charger();
+  majCompteur();
+})();
+
+</script>
+</body>
+</html>

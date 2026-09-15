@@ -1,0 +1,11 @@
+{
+  "//": "Serveurs MCP partages avec l'equipe. Ce fichier est versionne.",
+  "//2": "Celui-ci pointe vers le serveur RAG construit au jour 3.",
+  "//3": "Adaptez le chemin, ou supprimez l'entree si vous ne l'utilisez pas.",
+  "mcpServers": {
+    "rag-local": {
+      "command": "python",
+      "args": ["../../../Jour3_LLM_et_RAG_local/codebase/exercice_7_mcp/serveur_mcp.py"]
+    }
+  }
+}

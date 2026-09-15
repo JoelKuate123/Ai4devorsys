@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>50 commandes Claude Code</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#FFFFFF; --accent:#0E8C86; --accent2:#0B6E68; --navy:#0B2D48;
+  --text:#16212B; --text2:#4B5C63; --card:#EAF4F3; --border:#D7E6E4;
+  --good:#1F9D67; --warn:#B9740A; --bad:#C1443B; --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:#F2F7F7;color:var(--text);line-height:1.55;}
+.page{max-width:1000px;margin:0 auto;background:var(--bg);padding:3.2rem 3.2rem 5rem;}
+header.doc{border-bottom:4px solid var(--accent);padding-bottom:1.4rem;margin-bottom:2.2rem;}
+.doc-org{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+h1{font-size:2.1rem;font-weight:800;color:var(--navy);margin:.6rem 0 .5rem;line-height:1.2;}
+.doc-sub{color:var(--text2);font-size:1.02rem;max-width:70ch;}
+.doc-meta{margin-top:1rem;display:flex;gap:1.6rem;flex-wrap:wrap;font-size:.85rem;color:var(--text2);}
+.doc-meta b{color:var(--navy);}
+h2{font-size:1.45rem;font-weight:800;color:var(--navy);margin:2.6rem 0 .9rem;padding-left:.8rem;border-left:5px solid var(--accent);}
+h3{font-size:1.1rem;font-weight:700;color:var(--accent2);margin:1.6rem 0 .6rem;}
+h4{font-size:.98rem;font-weight:700;color:var(--navy);margin:1.1rem 0 .4rem;}
+p{margin-bottom:.75rem;color:var(--text2);max-width:80ch;}
+p b, li b{color:var(--text);}
+ul,ol{margin:0 0 .9rem 1.3rem;color:var(--text2);}
+li{margin-bottom:.35rem;}
+a{color:var(--accent2);}
+pre{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1rem 1.2rem;font-family:'JetBrains Mono',Consolas,monospace;
+    font-size:.82rem;line-height:1.6;overflow-x:auto;margin:.7rem 0 1rem;white-space:pre-wrap;word-break:break-word;}
+pre .cm{color:#7FB3AE;}
+code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--card);color:var(--accent2);
+     padding:.08rem .34rem;border-radius:4px;font-size:.88em;}
+pre code{background:none;color:inherit;padding:0;}
+table{border-collapse:collapse;width:100%;margin:.8rem 0 1.4rem;font-size:.9rem;}
+th,td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left;vertical-align:top;}
+th{background:var(--card);color:var(--accent2);font-weight:700;}
+td{color:var(--text2);}
+td b{color:var(--text);}
+td code{white-space:nowrap;}
+.note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.warn{background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.good{background:#EEF9F3;border-left:4px solid var(--good);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.step{border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.4rem;margin:1.1rem 0;background:#FBFDFD;}
+.step-h{display:flex;align-items:baseline;gap:.7rem;margin-bottom:.5rem;}
+.step-n{background:var(--accent);color:#fff;font-weight:800;font-size:.8rem;border-radius:20px;padding:.18rem .7rem;white-space:nowrap;}
+.step-t{font-size:1.05rem;font-weight:700;color:var(--navy);}
+.badge{display:inline-block;background:var(--card);color:var(--accent2);border-radius:20px;padding:.12rem .65rem;
+       font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-right:.4rem;}
+.badge.deb{background:#EEF9F3;color:var(--good);}
+.badge.int{background:#FFF6E8;color:var(--warn);}
+.badge.avc{background:#FDEDEC;color:var(--bad);}
+.fill{width:100%;border:none;border-bottom:1px dashed #9FBDBA;background:#FCFEFE;font-family:'Inter',sans-serif;
+      font-size:.95rem;color:var(--text);padding:.35rem .2rem;}
+.fill:focus{outline:none;border-bottom-color:var(--accent);background:#F4FBFA;}
+textarea.fill{border:1px dashed #9FBDBA;border-radius:8px;padding:.6rem .8rem;min-height:5.5rem;resize:vertical;line-height:1.5;}
+.ck{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem 0;border-bottom:1px dotted var(--border);}
+.ck input{margin-top:.32rem;width:1.05rem;height:1.05rem;accent-color:var(--accent);flex:none;}
+.ck label{font-size:.95rem;color:var(--text2);}
+.ck label b{color:var(--text);}
+.toolbar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;display:flex;gap:.7rem;align-items:center;
+         padding:.6rem 1rem;flex-wrap:wrap;}
+.toolbar span{font-size:.82rem;color:#B9D6D3;margin-right:auto;}
+.toolbar button{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:.45rem .95rem;
+                font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;}
+.toolbar button:hover{background:#12A79F;}
+.toolbar button.ghost{background:transparent;border:1px solid #2A4C63;}
+footer.doc{margin-top:3.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text2);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.kpi{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;}
+.kpi div{flex:1;min-width:150px;background:var(--card);border-radius:10px;padding:.9rem 1.1rem;}
+.kpi b{display:block;font-size:1.5rem;color:var(--navy);}
+.kpi span{font-size:.82rem;color:var(--text2);}
+@media (max-width:820px){
+  .page{padding:1.6rem 1.1rem 3rem;}
+  h1{font-size:1.55rem;} h2{font-size:1.2rem;}
+  .grid2{grid-template-columns:1fr;}
+  table{display:block;overflow-x:auto;}
+}
+@media print{
+  body{background:#fff;}
+  .toolbar{display:none !important;}
+  .page{max-width:none;padding:0;}
+  h2{page-break-after:avoid;} .step,table,pre{page-break-inside:avoid;}
+  .fill{border-bottom:1px solid #999;background:none;}
+  textarea.fill{border:1px solid #999;min-height:4.5rem;}
+  a{color:#0B6E68;text-decoration:none;}
+  @page{margin:14mm 12mm;}
+}
+
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span>CLAUDE CODE · MEMO DES 50 COMMANDES</span>
+  <span id="compteur"></span>
+  <button id="btnPdf">&#11015; Exporter en PDF</button>
+  <button id="btnRaz" class="ghost">Effacer mes reponses</button>
+</div>
+<div class="page">
+<header class="doc">
+  <div class="doc-org">Digital House Company</div>
+  <h1>Claude Code — les 50 commandes à retenir</h1>
+  <p class="doc-sub">Le mémo de la formation. Les quinze premières entrées couvrent 90 % d'une journée de travail. Cochez ce que vous maîtrisez, complétez vos notes en bas de page, puis exportez en PDF.</p>
+  <div class="doc-meta"><span><b>Formation</b> L'IA pour les développeurs</span> <span><b>Outil</b> Claude Code</span> <span><b>Code base</b> MiniCRM</span> <span><b>Version</b> septembre 2026</span></div>
+</header>
+<div class="note">Cinquante entrées, classées par usage réel, pas par ordre alphabétique. Les <b>quinze premières</b> couvrent 90 % d'une journée de travail : commencez par celles-là. Cochez au fur et à mesure — la page retient vos coches, et le bouton <b>Exporter en PDF</b> vous en donne une copie à garder.</div>
+<h2>1 · Démarrer et s'orienter — 8 commandes</h2>
+<table><thead><tr><th>#</th><th>Commande</th><th>Ce qu'elle fait</th><th>À retenir</th></tr></thead><tbody><tr><td>1</td><td><code>claude</code></td><td>Ouvre une session dans le dossier courant</td><td><b>Toujours se placer dans le projet d'abord.</b> Il ne voit que ce dossier.</td></tr><tr><td>2</td><td><code>claude "question"</code></td><td>Démarre avec une première question</td><td>Pratique pour une question rapide sans entrer dans l'interface</td></tr><tr><td>3</td><td><code>/login</code></td><td>Se connecter à son compte</td><td>Un navigateur s'ouvre, on revient au terminal</td></tr><tr><td>4</td><td><code>/doctor</code></td><td>Diagnostic complet de l'installation</td><td>Le premier réflexe quand quelque chose cloche</td></tr><tr><td>5</td><td><code>/status</code></td><td>Modèle, dossier, connexions, version</td><td>À regarder au démarrage de chaque session</td></tr><tr><td>6</td><td><code>/help</code></td><td>Liste les commandes disponibles</td><td>Le menu <code>/</code> filtre à la frappe</td></tr><tr><td>7</td><td><code>/init</code></td><td>Analyse le projet et écrit un premier CLAUDE.md</td><td><b>Relisez et corrigez</b> ce qu'il produit : il devine bien, il n'invente pas votre métier</td></tr><tr><td>8</td><td><code>/exit</code></td><td>Ferme la session</td><td><code>Ctrl+D</code> fait la même chose</td></tr></tbody></table>
+<div class="ck"><input type="checkbox"><label>J'ai lancé <code>claude</code> depuis le dossier du projet, pas depuis mon dossier personnel</label></div><div class="ck"><input type="checkbox"><label>J'ai fait <code>/doctor</code> au moins une fois</label></div><div class="ck"><input type="checkbox"><label>J'ai relu et corrigé le CLAUDE.md produit par <code>/init</code></label></div>
+<h2>2 · Le contexte — 9 commandes</h2>
+<p>C'est le module qui fait la différence entre un assistant utile et un assistant qui devine. Neuf commandes, toutes rentables.</p>
+<table><thead><tr><th>#</th><th>Commande</th><th>Ce qu'elle fait</th><th>À retenir</th></tr></thead><tbody><tr><td>9</td><td><code>/context</code></td><td>Montre ce qui occupe la mémoire</td><td>Le premier réflexe quand les réponses se dégradent</td></tr><tr><td>10</td><td><code>/compact</code></td><td>Résume la conversation pour libérer de la place</td><td>On peut guider : <code>/compact garde les décisions d'architecture</code></td></tr><tr><td>11</td><td><code>/clear</code></td><td>Repart de zéro, garde le CLAUDE.md</td><td><b>À faire entre deux tâches sans rapport.</b> Gratuit, et ça change tout</td></tr><tr><td>12</td><td><code>/memory</code></td><td>Ouvre les fichiers CLAUDE.md pour édition</td><td>Quatre niveaux : personnel, projet, local, sous-dossier</td></tr><tr><td>13</td><td><code>/add-dir ../autre</code></td><td>Ajoute un dossier à la session</td><td>Sans quitter la session en cours</td></tr><tr><td>14</td><td><code>/cd chemin</code></td><td>Change de dossier de travail</td><td>Utile dans un monorepo</td></tr><tr><td>15</td><td><code>@fichier.js</code></td><td>Mentionne un fichier dans le message</td><td>L'autocomplétion s'ouvre dès le <code>@</code></td></tr><tr><td>16</td><td><code>!commande</code></td><td>Lance une commande et injecte sa sortie</td><td><b>Le geste le plus rentable :</b> <code>!node run-tests.js</code> vaut mieux que « les tests plantent »</td></tr><tr><td>17</td><td><code>#texte</code></td><td>Propose d'ajouter cette ligne à la mémoire</td><td>En début de message, pour capturer une décision au vol</td></tr></tbody></table>
+<div class="good"><b>La règle qui résume ce chapitre :</b> lui <b>donner</b> l'information plutôt que la décrire. Une erreur collée vaut dix phrases de paraphrase.</div>
+<h2>3 · Travailler sous contrôle — 7 commandes</h2>
+<table><thead><tr><th>#</th><th>Commande</th><th>Ce qu'elle fait</th><th>À retenir</th></tr></thead><tbody><tr><td>18</td><td><code>/plan</code></td><td>Entre en mode plan : il propose, il n'écrit rien</td><td><b>Avant toute tâche de plus de dix minutes.</b> Sans exception</td></tr><tr><td>19</td><td><code>Shift+Tab</code></td><td>Fait tourner les modes de permission</td><td>default → acceptEdits → plan, sans quitter la session</td></tr><tr><td>20</td><td><code>/permissions</code></td><td>Règles fines d'autorisation</td><td>Autoriser <code>Bash(node run-tests.js)</code> une fois pour toutes</td></tr><tr><td>21</td><td><code>/diff</code></td><td>Montre les modifications du dossier de travail</td><td><b>Avant chaque commit.</b> Trente secondes de lecture</td></tr><tr><td>22</td><td><code>/rewind</code></td><td>Annule code <b>et</b> conversation</td><td>Le filet de sécurité qu'on oublie d'utiliser</td></tr><tr><td>23</td><td><code>Échap</code></td><td>Interrompt sans perdre le contexte</td><td>La touche la plus utile de toutes : on corrige le tir, il repart</td></tr><tr><td>24</td><td><code>Échap Échap</code></td><td>Efface le brouillon, ou remonte en arrière</td><td>Deux pressions rapides</td></tr></tbody></table>
+<div class="warn"><code>--dangerously-skip-permissions</code> porte ce nom pour une raison. Sur une machine avec vos clés SSH et vos accès en production, ne l'utilisez pas. Dans un conteneur jetable, c'est une autre discussion.</div>
+<h2>4 · Relire et livrer — 6 commandes</h2>
+<table><thead><tr><th>#</th><th>Commande</th><th>Ce qu'elle fait</th><th>À retenir</th></tr></thead><tbody><tr><td>25</td><td><code>/code-review</code></td><td>Relit le diff ou une pull request</td><td>Alias : <code>/review</code>. Accepte <code>--fix</code> et <code>--comment</code></td></tr><tr><td>26</td><td><code>/security-review</code></td><td>Cherche les failles introduites par le diff</td><td>Avant chaque fusion, sur tout ce qui touche une entrée utilisateur</td></tr><tr><td>27</td><td><code>/simplify</code></td><td>Propose de simplifier le code</td><td>À lire avec méfiance : « simple » n'est pas « clair »</td></tr><tr><td>28</td><td><code>/install-github-app</code></td><td>Installe l'application GitHub</td><td>Elle relit automatiquement vos pull requests</td></tr><tr><td>29</td><td><code>/export</code></td><td>Exporte la conversation en texte</td><td>Pour une trace dans un ticket ou un compte rendu</td></tr><tr><td>30</td><td><code>/copy</code></td><td>Copie la dernière réponse dans le presse-papiers</td><td><code>/copy 2</code> remonte de deux réponses</td></tr></tbody></table>
+<h2>5 · Personnaliser — 6 commandes</h2>
+<p>C'est ici que l'outil devient <b>le vôtre</b>, et surtout celui de votre équipe : tout ce qui suit se versionne.</p>
+<table><thead><tr><th>#</th><th>Commande</th><th>Ce qu'elle fait</th><th>À retenir</th></tr></thead><tbody><tr><td>31</td><td><code>/config</code></td><td>Ouvre les réglages</td><td>Thème, mode vim, éditeur</td></tr><tr><td>32</td><td><code>/model</code></td><td>Change de modèle</td><td>Une tâche simple ne mérite pas le plus gros modèle</td></tr><tr><td>33</td><td><code>/effort</code></td><td>Règle le niveau d'effort</td><td>Monter quand ça bloque, pas par défaut</td></tr><tr><td>34</td><td><code>/agents</code></td><td>Crée et gère les sous-agents</td><td>Fichiers dans <code>.claude/agents/</code></td></tr><tr><td>35</td><td><code>/hooks</code></td><td>Affiche les hooks actifs</td><td>Configurés dans <code>.claude/settings.json</code></td></tr><tr><td>36</td><td><code>/plugin</code></td><td>Gère les extensions</td><td>Marketplaces et plugins d'équipe</td></tr></tbody></table>
+<h3>Créer sa propre commande</h3>
+<pre><code><span class="cm"># .claude/skills/ma-commande/SKILL.md</span>
+---
+name: ma-commande
+description: Ce qu'elle fait, et QUAND l'utiliser. C'est cette phrase
+             qui décide si Claude l'invoque de lui-même.
+allowed-tools: Bash(node run-tests.js) Read Grep
+argument-hint: [sujet]
+---
+
+<span class="cm">## Contexte</span>
+!`git status --short`
+
+<span class="cm">## Ce qu'il faut faire</span>
+Traite le sujet suivant : $ARGUMENTS
+</code></pre>
+<div class="note">Les placeholders disponibles : <code>$ARGUMENTS</code> (tout), <code>$0</code>, <code>$1</code>, <code>$2</code> (par position), <code>$nom</code> (avec <code>arguments: [nom]</code> dans l'en-tête). <code>!`commande`</code> exécute <b>avant</b> l'envoi et injecte la sortie.</div>
+<h2>6 · Déléguer et paralléliser — 6 commandes</h2>
+<table><thead><tr><th>#</th><th>Commande</th><th>Ce qu'elle fait</th><th>À retenir</th></tr></thead><tbody><tr><td>37</td><td><code>@nom-agent</code></td><td>Appelle un sous-agent dans un message</td><td>Le sous-agent a son propre contexte : le vôtre reste propre</td></tr><tr><td>38</td><td><code>/subtask</code></td><td>Confie une tâche annexe à un sous-agent</td><td>Pour une exploration qui lirait quarante fichiers</td></tr><tr><td>39</td><td><code>/tasks</code></td><td>Liste les travaux de fond</td><td>Et leur état d'avancement</td></tr><tr><td>40</td><td><code>/background</code></td><td>Détache la session en tâche de fond</td><td>Vous récupérez votre terminal</td></tr><tr><td>41</td><td><code>/fork</code></td><td>Copie la conversation dans une session parallèle</td><td>Explorer deux pistes sans perdre la première</td></tr><tr><td>42</td><td><code>/branch</code></td><td>Crée une branche de conversation</td><td>Revenir en arrière sans tout perdre</td></tr></tbody></table>
+<h2>7 · MCP et intégrations — 4 commandes</h2>
+<table><thead><tr><th>#</th><th>Commande</th><th>Ce qu'elle fait</th><th>À retenir</th></tr></thead><tbody><tr><td>43</td><td><code>claude mcp add nom -- cmd</code></td><td>Ajoute un serveur MCP</td><td>Pour vous seulement</td></tr><tr><td>44</td><td><code>/mcp</code></td><td>État des serveurs MCP</td><td>Et la liste des outils exposés</td></tr><tr><td>45</td><td><code>/ide</code></td><td>Connexion à l'éditeur</td><td>VS Code, JetBrains</td></tr><tr><td>46</td><td><code>claude --debug=mcp</code></td><td>Trace les échanges MCP</td><td>Quand un serveur ne se connecte pas et ne dit pas pourquoi</td></tr></tbody></table>
+<div class="note">Pour partager un serveur avec l'équipe : un fichier <code>.mcp.json</code> à la racine du dépôt, versionné. C'est le fichier livré avec MiniCRM.</div>
+<h2>8 · Reprendre, mesurer, automatiser — 4 commandes</h2>
+<table><thead><tr><th>#</th><th>Commande</th><th>Ce qu'elle fait</th><th>À retenir</th></tr></thead><tbody><tr><td>47</td><td><code>/resume</code></td><td>Reprend une conversation précédente</td><td><code>claude -c</code> reprend directement la dernière</td></tr><tr><td>48</td><td><code>/usage</code></td><td>Consommation et coût</td><td>Alias : <code>/cost</code>. À regarder la première semaine</td></tr><tr><td>49</td><td><code>/insights</code></td><td>Rapport d'usage détaillé, en HTML</td><td>Utile pour objectiver un déploiement en équipe</td></tr><tr><td>50</td><td><code>claude -p "…"</code></td><td>Mode sans interface, pour un script</td><td><b>La porte d'entrée de l'intégration continue</b></td></tr></tbody></table>
+<h2>Annexe A · Les options de la ligne de commande</h2>
+<table><thead><tr><th>Option</th><th>Effet</th></tr></thead><tbody><tr><td><code>-p, --print</code></td><td>Répond et sort. Le mode script.</td></tr><tr><td><code>-c, --continue</code></td><td>Reprend la dernière conversation de ce dossier</td></tr><tr><td><code>-r, --resume &lt;id&gt;</code></td><td>Reprend une session par son identifiant ou son nom</td></tr><tr><td><code>--model &lt;nom&gt;</code></td><td>Choisit le modèle de la session</td></tr><tr><td><code>--permission-mode &lt;mode&gt;</code></td><td><code>default</code>, <code>acceptEdits</code>, <code>plan</code>, <code>bypassPermissions</code></td></tr><tr><td><code>--allowedTools "…"</code></td><td>Outils autorisés sans demander</td></tr><tr><td><code>--disallowedTools "…"</code></td><td>Outils interdits, quoi qu'il arrive</td></tr><tr><td><code>--add-dir &lt;chemin&gt;</code></td><td>Dossiers supplémentaires accessibles</td></tr><tr><td><code>--output-format json</code></td><td>Sortie exploitable par un script</td></tr><tr><td><code>--max-turns 3</code></td><td>Plafond du nombre d'allers-retours</td></tr><tr><td><code>--max-budget-usd 2</code></td><td>Plafond de dépense pour la session</td></tr><tr><td><code>--append-system-prompt "…"</code></td><td>Ajoute une consigne permanente</td></tr><tr><td><code>--settings ./fichier.json</code></td><td>Charge un jeu de réglages</td></tr><tr><td><code>--mcp-config ./mcp.json</code></td><td>Charge des serveurs MCP</td></tr><tr><td><code>--debug=mcp,startup</code></td><td>Journal de débogage, par catégorie</td></tr><tr><td><code>--verbose</code></td><td>Sortie détaillée</td></tr></tbody></table>
+<h2>Annexe B · Les raccourcis clavier</h2>
+<div class="grid2"><div><h3>Pendant la saisie</h3><table><thead><tr><th>Touche</th><th>Effet</th></tr></thead><tbody><tr><td><code>Ctrl+J</code></td><td>Nouvelle ligne sans envoyer</td></tr><tr><td><code>\</code> puis Entrée</td><td>Idem, dans tous les terminaux</td></tr><tr><td><code>Ctrl+A</code> / <code>Ctrl+E</code></td><td>Début / fin de ligne</td></tr><tr><td><code>Ctrl+W</code></td><td>Efface le mot précédent</td></tr><tr><td><code>Ctrl+U</code></td><td>Efface jusqu'au début de la ligne</td></tr><tr><td><code>Ctrl+R</code></td><td>Recherche dans l'historique</td></tr><tr><td><code>↑</code> / <code>↓</code></td><td>Navigue dans l'historique</td></tr><tr><td><code>Ctrl+V</code></td><td>Colle une image du presse-papiers</td></tr></tbody></table></div><div><h3>Pendant qu'il travaille</h3><table><thead><tr><th>Touche</th><th>Effet</th></tr></thead><tbody><tr><td><code>Échap</code></td><td>Interrompt, garde le contexte</td></tr><tr><td><code>Échap Échap</code></td><td>Efface le brouillon, ou remonte</td></tr><tr><td><code>Shift+Tab</code></td><td>Change de mode de permission</td></tr><tr><td><code>Ctrl+O</code></td><td>Affiche la transcription</td></tr><tr><td><code>Ctrl+T</code></td><td>Affiche la liste des tâches</td></tr><tr><td><code>Ctrl+B</code></td><td>Passe la tâche en arrière-plan</td></tr><tr><td><code>Ctrl+C</code></td><td>Interrompt, ou vide la saisie</td></tr><tr><td><code>Ctrl+D</code></td><td>Quitte la session</td></tr></tbody></table></div></div>
+<h2>Annexe C · Les cinq fichiers à créer dans un projet</h2>
+<table><thead><tr><th>Fichier</th><th>Versionné ?</th><th>Ce qu'on y met</th></tr></thead><tbody><tr><td><code>CLAUDE.md</code></td><td><b>Oui</b></td><td>Architecture, conventions, règles métier, interdits. <b>Une page.</b></td></tr><tr><td><code>.claude/settings.json</code></td><td><b>Oui</b></td><td>Permissions <code>allow</code>/<code>deny</code>, hooks</td></tr><tr><td><code>.claude/skills/*/SKILL.md</code></td><td><b>Oui</b></td><td>Tout ce que vous répétez trois fois par semaine</td></tr><tr><td><code>.claude/agents/*.md</code></td><td><b>Oui</b></td><td>Vos relecteurs, testeurs, explorateurs</td></tr><tr><td><code>.mcp.json</code></td><td><b>Oui</b></td><td>Les serveurs MCP de l'équipe</td></tr><tr><td><code>.claude/settings.local.json</code></td><td>Non</td><td>Vos préférences personnelles</td></tr><tr><td><code>CLAUDE.local.md</code></td><td>Non</td><td>Vos chemins, vos raccourcis</td></tr></tbody></table>
+<h2>Vos notes</h2>
+<h4>Les trois commandes que je veux prendre l'habitude d'utiliser</h4><textarea class="fill" rows="3" placeholder="Une par ligne, avec dans quel cas."></textarea>
+<h4>La première compétence que je vais écrire pour mon projet</h4><textarea class="fill" rows="3" placeholder="Ce que je retape le plus souvent, mot pour mot."></textarea>
+<h4>Ce que je mettrai dans le CLAUDE.md de mon projet, dès demain</h4><textarea class="fill" rows="4" placeholder="Les règles métier qui ne se devinent pas en lisant le code."></textarea>
+<footer class="doc">
+  Formation animee par <b>Kuate Joel Parfait</b> — Digital House Company · hello@dhcompany.pro<br>
+  Ce document est prevu pour etre rempli a l'ecran puis exporte en PDF
+  (bouton « Exporter en PDF » ou <code>Ctrl</code>+<code>P</code> → « Enregistrer au format PDF »).
+</footer>
+</div>
+<script>
+
+// Sauvegarde locale des reponses : pratique pour reprendre une fiche entre
+// deux journees. Tout est entoure de try/catch, la page fonctionne meme
+// si le navigateur refuse le stockage (mode prive, fichier local bride...).
+(function () {
+  var KEY = 'fiche::' + (document.title || 'sans-titre');
+  var champs = document.querySelectorAll('.fill, .ck input[type=checkbox]');
+
+  function charger() {
+    try {
+      var brut = localStorage.getItem(KEY);
+      if (!brut) return;
+      var data = JSON.parse(brut);
+      champs.forEach(function (el, i) {
+        if (data[i] === undefined) return;
+        if (el.type === 'checkbox') { el.checked = data[i]; } else { el.value = data[i]; }
+      });
+      majCompteur();
+    } catch (e) { /* stockage indisponible : on continue sans */ }
+  }
+
+  function sauver() {
+    try {
+      var data = [];
+      champs.forEach(function (el) { data.push(el.type === 'checkbox' ? el.checked : el.value); });
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) { /* idem */ }
+  }
+
+  function majCompteur() {
+    var cases = document.querySelectorAll('.ck input[type=checkbox]');
+    var faits = document.querySelectorAll('.ck input[type=checkbox]:checked');
+    var out = document.getElementById('compteur');
+    if (out && cases.length) { out.textContent = faits.length + ' / ' + cases.length + ' coche(s)'; }
+  }
+
+  champs.forEach(function (el) {
+    el.addEventListener('input', function () { sauver(); majCompteur(); });
+    el.addEventListener('change', function () { sauver(); majCompteur(); });
+  });
+
+  var bPdf = document.getElementById('btnPdf');
+  if (bPdf) bPdf.addEventListener('click', function () { window.print(); });
+
+  var bRaz = document.getElementById('btnRaz');
+  if (bRaz) bRaz.addEventListener('click', function () {
+    if (!confirm('Effacer toutes vos reponses de cette fiche ?')) return;
+    champs.forEach(function (el) { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    majCompteur();
+  });
+
+  charger();
+  majCompteur();
+})();
+
+</script>
+</body>
+</html>

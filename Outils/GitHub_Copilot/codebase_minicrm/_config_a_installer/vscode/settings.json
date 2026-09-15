@@ -1,0 +1,20 @@
+{
+  "// ": "Reglages Copilot conseilles pour ce projet.",
+
+  "github.copilot.chat.codeGeneration.useInstructionFiles": true,
+  "chat.promptFiles": true,
+  "chat.instructionsFilesLocations": { ".github/instructions": true },
+
+  "// 2": "La completion en ligne, activee partout sauf dans les fichiers",
+  "// 3": "de configuration ou elle propose surtout du bruit.",
+  "github.copilot.enable": {
+    "*": true,
+    "plaintext": false,
+    "markdown": true,
+    "json": false
+  },
+
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "files.eol": "\n"
+}

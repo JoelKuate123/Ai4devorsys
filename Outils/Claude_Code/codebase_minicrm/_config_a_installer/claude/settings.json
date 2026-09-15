@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+
+  "//": "Ce fichier est versionne : il vaut pour toute l'equipe.",
+  "//2": "Les preferences personnelles vont dans .claude/settings.local.json,",
+  "//3": "qui n'est PAS versionne.",
+
+  "permissions": {
+    "//": "Ce que Claude peut faire sans demander a chaque fois.",
+    "allow": [
+      "Bash(node run-tests.js)",
+      "Bash(node:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Read",
+      "Grep",
+      "Glob"
+    ],
+    "//2": "Ce qui reste toujours interdit, meme si on approuve tout le reste.",
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push:*)",
+      "Bash(npm install:*)",
+      "Read(./.env)",
+      "Read(./**/*.pem)"
+    ]
+  },
+
+  "hooks": {
+    "//": "Un hook est une commande shell declenchee par un evenement.",
+    "//2": "Celui-ci relance les tests apres chaque ecriture de fichier :",
+    "//3": "Claude voit immediatement s'il a casse quelque chose.",
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node run-tests.js > /dev/null 2>&1 && echo 'Tests au vert.' || echo 'ATTENTION : des tests sont en echec, lancez node run-tests.js'"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Codex — L'IA pour les développeurs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;
+  --bg2:#F2F7F7;
+  --accent:#0E8C86;
+  --accent2:#0B6E68;
+  --navy:#0B2D48;
+  --navy2:#08202F;
+  --text:#16212B;
+  --text2:#4B5C63;
+  --card:#EAF4F3;
+  --border:#D7E6E4;
+  --good:#1F9D67;
+  --warn:#B9740A;
+  --bad:#C1443B;
+  --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
+.deck{position:relative;width:100vw;height:100vh;}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;padding:5.5vh 8vw;opacity:0;transition:opacity .25s ease;overflow-y:auto;}
+.slide.active{display:flex;opacity:1;}
+.slide-tag{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;}
+.slide-title{font-size:2.1rem;font-weight:800;margin-bottom:1.2rem;line-height:1.22;max-width:94%;color:var(--navy);}
+.slide h3.subtitle{font-size:1.15rem;font-weight:400;color:var(--text2);margin-bottom:1rem;}
+ul.points{list-style:none;max-width:88%;}
+ul.points li{font-size:1.1rem;line-height:1.5;margin-bottom:.7rem;padding-left:1.7rem;position:relative;color:var(--text2);}
+ul.points li::before{content:"\203A";position:absolute;left:0;color:var(--accent2);font-weight:700;font-size:1.3rem;}
+ul.points li b, ul.points li strong{color:var(--text);font-weight:700;}
+ul.points ul{list-style:none;margin-top:.4rem;}
+ul.points ul li{font-size:.98rem;margin-bottom:.3rem;}
+ul.points ul li::before{content:"\2013";font-size:1rem;}
+.note{margin-top:1.2rem;padding:.85rem 1.2rem;background:var(--card);border-left:4px solid var(--accent);border-radius:6px;font-size:.98rem;color:var(--text2);max-width:88%;}
+.note b{color:var(--accent2);}
+.warn{margin-top:1.2rem;padding:.85rem 1.2rem;background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;font-size:.98rem;color:var(--text2);max-width:88%;}
+.warn b{color:var(--warn);}
+.src{margin-top:.9rem;font-size:.85rem;color:var(--text2);max-width:88%;}
+.src a{color:var(--accent2);text-decoration:none;border-bottom:1px dotted var(--accent2);}
+.src a:hover{color:var(--navy);}
+.slide-cover{align-items:flex-start;background:radial-gradient(circle at 80% 20%, #E3F2F1 0%, var(--bg) 60%);}
+.cover-org{font-size:.92rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);margin-bottom:1.6rem;}
+.cover-title{font-size:3rem;font-weight:800;max-width:88%;line-height:1.16;margin-bottom:1rem;color:var(--navy);}
+.cover-sub{font-size:1.25rem;color:var(--text2);max-width:78%;margin-bottom:2rem;}
+.cover-meta{display:flex;gap:2.2rem;flex-wrap:wrap;font-size:.95rem;color:var(--text2);}
+.cover-meta span b{color:var(--navy);display:block;font-size:1.05rem;}
+.cover-contact{position:absolute;bottom:6vh;left:8vw;font-size:.95rem;color:var(--accent2);}
+.slide-divider{align-items:center;text-align:center;background:linear-gradient(135deg, var(--bg) 0%, #E7F3F2 100%);}
+.section-tag{font-size:1rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2);margin-bottom:1rem;}
+.section-title{font-size:2.7rem;font-weight:800;max-width:84%;line-height:1.2;margin-bottom:1rem;color:var(--navy);}
+.section-sub{font-size:1.1rem;color:var(--text2);max-width:70%;}
+.section-num{font-size:5.2rem;font-weight:800;color:var(--border);position:absolute;top:6vh;right:8vw;}
+.slide-question{background:linear-gradient(135deg,#FFF8ED 0%, var(--bg) 100%);border-top:6px solid var(--warn);}
+.q-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--warn);font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+.q-question{font-size:1.55rem;font-weight:700;margin-bottom:1.2rem;max-width:90%;color:var(--navy);line-height:1.35;}
+.q-hint{font-size:1.02rem;color:var(--text2);max-width:86%;line-height:1.5;}
+.q-footer{margin-top:1.2rem;font-size:.92rem;color:var(--text2);font-style:italic;}
+.slide-anecdote{background:linear-gradient(135deg,#F0F8F7 0%, var(--bg) 100%);border-top:6px solid var(--accent);}
+.an-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+.an-title{font-size:1.6rem;font-weight:700;margin-bottom:.9rem;max-width:90%;color:var(--navy);}
+.an-body{font-size:1.05rem;color:var(--text2);max-width:88%;line-height:1.55;}
+.an-body b{color:var(--text);}
+.slide-quote{align-items:center;text-align:center;background:linear-gradient(135deg,var(--navy) 0%, var(--navy2) 100%);color:#fff;}
+.slide-quote .mini-relance{color:#B9D6D3;border-top-color:#2A4C63;}
+.q-mark{font-size:3.6rem;color:var(--accent);line-height:1;margin-bottom:.5rem;font-family:Georgia,serif;}
+.quote-text{font-size:1.8rem;font-weight:600;max-width:80%;line-height:1.4;margin-bottom:1.2rem;}
+.quote-author{font-size:1.05rem;color:#B9D6D3;}
+.quote-author b{color:#fff;}
+.slide-demo{background:linear-gradient(135deg,#EAF4FE 0%, var(--bg) 100%);border-top:6px solid #2E7DD1;}
+.demo-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:#2E7DD1;font-weight:700;margin-bottom:1rem;}
+.demo-title{font-size:1.6rem;font-weight:700;margin-bottom:.7rem;color:var(--navy);}
+.demo-link{display:inline-block;margin-top:.5rem;background:#2E7DD1;color:#fff;padding:.55rem 1.1rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.98rem;}
+.slide-exercice{background:linear-gradient(135deg,#F0F8F7 0%, var(--bg) 100%);border-top:6px solid var(--accent);}
+.exo-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;}
+.exo-title{font-size:1.8rem;font-weight:700;margin-bottom:.5rem;color:var(--navy);}
+.exo-duree{font-size:.98rem;color:var(--text2);margin-bottom:1.1rem;}
+.exo-steps{max-width:88%;padding-left:1.3rem;}
+.exo-steps li{font-size:1.05rem;color:var(--text2);margin-bottom:.55rem;line-height:1.45;}
+.exo-livrable{margin-top:1.2rem;padding:.85rem 1.1rem;background:var(--card);border-radius:8px;font-size:1rem;border-left:4px solid var(--good);}
+.slide-cta{align-items:center;text-align:center;background:radial-gradient(circle at 50% 30%, #E3F2F1 0%, var(--bg) 70%);}
+.slide-cta h2{font-size:2.4rem;font-weight:800;margin-bottom:1rem;color:var(--navy);}
+.slide-cta p{font-size:1.2rem;color:var(--text2);margin-bottom:1.6rem;}
+.cta-links{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem;}
+.cta-links a{color:var(--accent2);text-decoration:none;font-size:1.05rem;font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px;}
+table.cmp{border-collapse:collapse;max-width:96%;margin-top:.9rem;}
+table.cmp th, table.cmp td{border:1px solid var(--border);padding:.55rem .85rem;font-size:.95rem;text-align:left;}
+table.cmp th{background:var(--card);color:var(--accent2);}
+table.cmp td{color:var(--text2);}
+table.cmp td b{color:var(--text);}
+.two-col{display:flex;gap:2.2rem;max-width:96%;}
+.two-col .col{flex:1;}
+.two-col h4{color:var(--accent2);font-size:1.02rem;margin-bottom:.5rem;}
+.three-col{display:flex;gap:1.6rem;max-width:96%;}
+.three-col .col{flex:1;background:var(--card);border-radius:8px;padding:1rem 1.1rem;}
+.three-col h4{color:var(--accent2);font-size:1rem;margin-bottom:.45rem;}
+.three-col p{font-size:.93rem;color:var(--text2);line-height:1.45;}
+.schema-box{margin-top:1.1rem;max-width:94%;}
+.schema-box svg{max-width:100%;height:auto;}
+.slide-code{background:linear-gradient(135deg,#F4F8F8 0%, var(--bg) 100%);border-top:6px solid var(--navy);}
+.code-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:.8rem;}
+pre.code{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1.1rem 1.3rem;font-family:'JetBrains Mono',Consolas,monospace;font-size:.86rem;line-height:1.55;overflow-x:auto;max-width:96%;white-space:pre;}
+pre.code .cm{color:#7FB3AE;}
+pre.code .kw{color:#7FC7FF;font-weight:600;}
+pre.code .st{color:#F2C57C;}
+pre.code .fn{color:#9FE3D0;}
+.file-path{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent2);margin-bottom:.5rem;}
+code.inline{font-family:'JetBrains Mono',monospace;background:var(--card);color:var(--accent2);padding:.1rem .35rem;border-radius:4px;font-size:.9em;}
+.progress-wrap{position:fixed;top:0;left:0;width:100%;height:4px;background:var(--border);z-index:50;}
+#progress{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--navy));transition:width .2s ease;}
+#counter{position:fixed;bottom:1.3vh;right:2vw;font-size:.78rem;color:var(--text2);z-index:50;letter-spacing:.05em;}
+.navbtn{position:fixed;top:50%;transform:translateY(-50%);z-index:50;background:var(--card);border:1px solid var(--border);color:var(--navy);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.15rem;display:flex;align-items:center;justify-content:center;opacity:.6;transition:opacity .2s;}
+.navbtn:hover{opacity:1;}
+#prevBtn{left:1.2vw;} #nextBtn{right:1.2vw;}
+.brand-mark{position:fixed;bottom:1.3vh;left:2vw;font-size:.7rem;color:#9FBDBA;letter-spacing:.1em;z-index:50;}
+.pdf-btn{position:fixed;top:1.3vh;right:2vw;z-index:60;background:var(--accent);color:#FFFFFF;border:none;border-radius:8px;padding:.5rem 1rem;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem;box-shadow:0 2px 8px rgba(11,45,72,.25);transition:background .2s;}
+.pdf-btn:hover{background:var(--accent2);}
+.amorce{margin-top:1.1rem;padding-top:.7rem;border-top:1px dashed var(--border);font-size:.93rem;color:var(--accent2);font-style:italic;max-width:88%;}
+.mini-relance{margin-top:1.1rem;padding-top:.7rem;border-top:1px dashed var(--border);font-size:.9rem;color:var(--accent2);font-style:italic;max-width:88%;}
+@media print{
+  .navbtn,#counter,.progress-wrap,.brand-mark,.pdf-btn{display:none !important;}
+  body{overflow:visible;}
+  .slide{position:relative;display:flex !important;opacity:1 !important;page-break-after:always;height:100vh;}
+}
+@media (max-width:900px){
+  .slide{padding:4vh 5vw 12vh;justify-content:flex-start;}
+  .cover-title{font-size:2rem;}
+  .slide-title{font-size:1.45rem;}
+  .section-title{font-size:1.7rem;}
+  .section-num{font-size:3rem;top:3vh;right:5vw;}
+  .two-col,.three-col{flex-direction:column;gap:1rem;}
+  ul.points,.note,.warn,.src,.amorce,.mini-relance,.exo-steps{max-width:100%;}
+  ul.points li{font-size:1rem;}
+  .q-question{font-size:1.25rem;}
+  .quote-text{font-size:1.35rem;max-width:100%;}
+  pre.code{font-size:.68rem;padding:.8rem .9rem;}
+  table.cmp{display:block;overflow-x:auto;max-width:100%;}
+  .pdf-btn,.navbtn{display:none;}
+  .brand-mark{max-width:60%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  .cover-contact{position:static;margin-top:1.5rem;}
+}
+
+</style>
+</head>
+<body>
+<div class="progress-wrap"><div id="progress"></div></div>
+<button class="navbtn" id="prevBtn">&lsaquo;</button>
+<button class="navbtn" id="nextBtn">&rsaquo;</button>
+<button class="pdf-btn" id="pdfBtn" title="Raccourci clavier : P">&#11015; Exporter en PDF</button>
+<div id="counter">1 / 1</div>
+<div class="brand-mark">CODEX · FORMATION OUTILS · DIGITAL HOUSE COMPANY</div>
+
+<div class="deck">
+<section class="slide slide-cover active">
+<div class="cover-org">Digital House Company · Formation outils</div>
+<h1 class="cover-title">Codex, l'agent qui travaille sous surveillance</h1>
+<p class="cover-sub">Bac à sable, modes d'approbation, délégation. Une journée à corriger de vrais défauts sur une vraie base de code — sans jamais lâcher la main.</p>
+<div class="cover-meta"><span><b>Durée</b> 7 heures</span><span><b>Niveau</b> débutant à intermédiaire</span><span><b>Code base</b> MiniCRM · 9 tests au rouge</span><span><b>Outil</b> codex CLI, IDE, cloud</span></div>
+<div class="cover-contact">Kuate Joël Parfait · hello@dhcompany.pro</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Objectifs</div>
+<h2 class="slide-title">Ce que vous saurez faire ce soir</h2>
+<ul class="points"><li>Installer Codex, comprendre son <b>bac à sable</b> et ses <b>modes d'approbation</b>.</li><li>Écrire un <code class="inline">AGENTS.md</code> — le format ouvert, lu par plusieurs agents.</li><li>Corriger un défaut à la fois, par la boucle <b>lancer → lire → comprendre → corriger</b>.</li><li>Utiliser <code class="inline">/plan</code>, <code class="inline">/diff</code> et <code class="inline">/review</code> comme trois garde-fous.</li><li>Écrire vos propres commandes dans <code class="inline">.codex/prompts/</code>.</li><li>Automatiser avec <code class="inline">codex exec</code>, et déléguer dans le cloud.</li></ul>
+<div class="note">La journée se fait sur <b>MiniCRM</b>, 900 lignes et 90 tests, dont <b>9 sont au rouge</b> : six défauts ont été semés volontairement. Ils sont décrits par leurs symptômes, pas par leur emplacement.</div>
+<div class="amorce">&#128172; Qui a déjà laissé un agent modifier son code sans lire le diff ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Déroulé</div>
+<h2 class="slide-title">Au programme</h2>
+<div class="two-col"><div class="col"><h4>Matin</h4><ul class="points"><li>Ce qu'est un agent de code, et ce qui le distingue</li><li>Bac à sable et modes d'approbation</li><li><code class="inline">AGENTS.md</code> : le contexte partagé</li><li>La boucle de correction, défaut par défaut</li><li><b>Exercice 1</b> — les trois premiers défauts</li></ul></div><div class="col"><h4>Après-midi</h4><ul class="points"><li>Les commandes de session</li><li>Configuration : profils, MCP, hooks</li><li><code class="inline">codex exec</code> et l'intégration continue</li><li>Déléguer dans le cloud, revue automatique</li><li><b>Exercices 2 et 3</b> — les trois derniers, puis automatiser</li></ul></div></div>
+<div class="amorce">&#128172; Quelle part de votre travail consiste à corriger des défauts existants ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">1</div>
+<div class="section-tag">Module 1</div>
+<h2 class="section-title">Comprendre l'agent</h2>
+<p class="section-sub">Ce qui distingue Codex d'un chat, et pourquoi le bac à sable est sa caractéristique principale.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">Définition</div>
+<h2 class="slide-title">Codex en une phrase</h2>
+<h3 class="subtitle">Un agent de code qui lit votre dépôt, modifie vos fichiers et exécute vos commandes <b>à l'intérieur d'un bac à sable</b>, avec un niveau d'autorisation que vous choisissez.</h3>
+<div class="three-col"><div class="col"><h4>Trois surfaces</h4><p>Le terminal (<code class="inline">codex</code>), l'extension d'éditeur, et le cloud pour les tâches longues. La même configuration partout.</p></div><div class="col"><h4>Un bac à sable</h4><p>Par défaut, il n'écrit que dans le dossier de travail et n'a pas accès au réseau. Ce n'est pas une option : c'est le comportement normal.</p></div><div class="col"><h4>Un fichier ouvert</h4><p><code class="inline">AGENTS.md</code> est une convention partagée par plusieurs agents, pas un format propriétaire.</p></div></div>
+<div class="note">La question à se poser n'est jamais « qu'est-ce qu'il sait faire ? » mais <b>« qu'est-ce qu'il a le droit de faire, là, maintenant ? »</b>. C'est tout l'objet du module 2.</div>
+<div class="amorce">&#128172; Laisseriez-vous un prestataire inconnu exécuter des commandes sur votre poste ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Mise en route</div>
+<h2 class="slide-title code-title">Installer et démarrer</h2>
+<div class="file-path">terminal</div>
+<pre class="code"><span class="cm"># 1. Installation (macOS, Linux)</span>
+curl -fsSL https://chatgpt.com/codex/install.sh | sh
+
+<span class="cm"># Sous Windows : PowerShell nativement, ou WSL2.</span>
+
+<span class="cm"># 2. Se placer DANS le projet. Codex ne voit que le dossier de travail.</span>
+cd codebase_minicrm
+
+<span class="cm"># 3. Se connecter — compte ChatGPT ou clé d'API</span>
+codex login
+
+<span class="cm"># 4. Démarrer une session interactive</span>
+codex
+
+<span class="cm"># 5. Ou poser une question directement, sans entrer dans l'interface</span>
+codex "explique-moi l'architecture de ce projet en cinq lignes"</pre>
+<div class="note">Un réflexe à prendre dès la première session : <code class="inline">/status</code>. Il affiche le modèle, le mode d'approbation, le bac à sable et la consommation. Quatre informations qu'il vaut mieux connaître avant de laisser l'agent travailler.</div>
+<div class="amorce">&#128172; Que se passerait-il si vous le lanciez depuis votre dossier personnel ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Boucle</div>
+<h2 class="slide-title">Pourquoi les tests au rouge sont le terrain idéal</h2>
+<ul class="points"><li><b>Le succès est vérifiable.</b> « Le test passe » n'est pas une opinion. L'agent sait quand il a fini, et vous aussi.</li><li><b>La boucle est courte.</b> Lancer, lire l'échec, corriger, relancer : quelques secondes par tour, sans vous solliciter.</li><li><b>L'erreur est bornée.</b> Dans un bac à sable, une mauvaise idée abîme un fichier du projet, pas votre système.</li><li><b>La régression se voit.</b> Si une correction casse autre chose, les 89 autres tests le disent immédiatement.</li></ul>
+<div class="warn">Le corollaire est brutal : <b>sans tests, un agent n'a aucun moyen de savoir s'il a raison</b>. Il produira du code plausible et s'arrêtera quand il estimera avoir fini. C'est vous qui découvrirez le problème, plus tard.</div>
+<div class="amorce">&#128172; Sur quel projet de votre équipe un agent serait-il aveugle, faute de tests ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Choisir</div>
+<h2 class="slide-title">Trois agents, trois tempéraments</h2>
+<table class="cmp"><tr><th></th><th>Claude Code</th><th>GitHub Copilot</th><th>Codex</th></tr><tr><td><b>Où il vit</b></td><td>Terminal</td><td>Éditeur (et terminal)</td><td>Terminal, éditeur, cloud</td></tr><tr><td><b>Fichier de contexte</b></td><td><code class="inline">CLAUDE.md</code></td><td><code class="inline">copilot-instructions.md</code></td><td><code class="inline">AGENTS.md</code> (ouvert)</td></tr><tr><td><b>Sa force</b></td><td>Compétences, sous-agents, hooks</td><td>La complétion dans le flux d'écriture</td><td>Bac à sable et délégation</td></tr><tr><td><b>Le réglage clé</b></td><td>Mode de permission</td><td>Fichiers d'instructions</td><td>Bac à sable + approbations</td></tr><tr><td><b>Le bon terrain</b></td><td>Tâche multi-fichiers sur un dépôt qu'on connaît</td><td>Écrire du code qu'on sait déjà écrire</td><td>Faire passer une suite de tests</td></tr></table>
+<div class="note">Ils ne s'excluent pas. Beaucoup d'équipes gardent Copilot pour écrire, et un agent en terminal pour les tâches. Le point commun des trois : <b>un fichier de contexte versionné</b>, et une relecture systématique du diff.</div>
+<div class="amorce">&#128172; Lequel des trois correspond le mieux à votre façon de travailler ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">2</div>
+<div class="section-tag">Module 2</div>
+<h2 class="section-title">Bac à sable et approbations</h2>
+<p class="section-sub">Les deux réglages qui décident de ce qu'il peut faire. Tout le reste vient après.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">Bac à sable</div>
+<h2 class="slide-title">Trois niveaux d'accès au disque</h2>
+<table class="cmp"><tr><th>Mode</th><th>Ce qu'il peut faire</th><th>Quand l'utiliser</th></tr><tr><td><code class="inline">read-only</code></td><td>Lire. Rien d'autre.</td><td>Explorer un dépôt inconnu, faire une revue, poser des questions</td></tr><tr><td><code class="inline">workspace-write</code></td><td>Lire partout, écrire dans le dossier de travail</td><td><b>Le mode de travail normal.</b> Celui de la journée.</td></tr><tr><td><code class="inline">danger-full-access</code></td><td>Tout le disque, et le réseau</td><td>Un conteneur jetable. Jamais votre poste de travail.</td></tr></table>
+<div class="file-path">en ligne de commande</div><pre class="code">codex --sandbox read-only "explique-moi ce projet"
+codex --sandbox workspace-write "fais passer les tests de statistiques"
+
+<span class="cm"># Le réseau se règle séparément. Sur ce projet, il reste coupé :</span>
+<span class="cm"># MiniCRM n'a aucune dépendance à télécharger, donc une commande</span>
+<span class="cm"># qui tente de sortir signale un problème, pas un besoin.</span></pre>
+<div class="amorce">&#128172; Dans quel mode exploreriez-vous un dépôt client pour la première fois ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Approbations</div>
+<h2 class="slide-title">Quand il s'arrête pour vous demander</h2>
+<table class="cmp"><tr><th>Politique</th><th>Comportement</th><th>Quand</th></tr><tr><td><code class="inline">on-request</code></td><td>Il demande quand il estime en avoir besoin</td><td><b>Le réglage par défaut de ce projet.</b> Le bon équilibre.</td></tr><tr><td><code class="inline">on-failure</code></td><td>Il demande seulement après un échec</td><td>Une tâche longue et bien cadrée, sur une branche</td></tr><tr><td><code class="inline">never</code></td><td>Il ne demande jamais</td><td>Intégration continue, conteneur jetable. Pas votre poste.</td></tr></table>
+<ul class="points"><li><code class="inline">/permissions</code> change le réglage <b>sans quitter la session</b>.</li><li><code class="inline">--full-auto</code> est un raccourci pratique : <code class="inline">workspace-write</code> plus des approbations allégées.</li><li><code class="inline">--dangerously-bypass-approvals-and-sandbox</code> (alias <code class="inline">--yolo</code>) désactive les deux. Le nom est explicite : c'est une option de conteneur, pas de poste de travail.</li></ul>
+<div class="warn">Le vrai risque n'est pas que l'agent soit malveillant. C'est qu'il exécute avec zèle une instruction mal comprise — et qu'il n'y ait aucun garde-fou entre cette instruction et votre disque.</div>
+<div class="amorce">&#128172; Quel réglage adopteriez-vous pour vos deux premières semaines ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · MiniCRM</div>
+<h2 class="slide-title code-title">La configuration du projet, commentée</h2>
+<div class="file-path">codebase_minicrm/.codex/config.toml</div>
+<pre class="code"><span class="cm"># Cette configuration prime sur ~/.codex/config.toml et cède devant</span>
+<span class="cm"># les options de la ligne de commande.</span>
+<span class="cm"># « codex --debug-config » affiche toute la pile de configuration.</span>
+
+model = "gpt-5.6-codex"
+
+<span class="cm"># Quand Codex demande l'autorisation :</span>
+<span class="cm">#   on-request  : quand il estime en avoir besoin   &lt;- notre choix</span>
+<span class="cm">#   on-failure  : seulement après un échec</span>
+<span class="cm">#   never       : jamais (conteneur jetable uniquement)</span>
+approval_policy = "on-request"
+
+<span class="cm"># Ce qu'il a le droit d'écrire :</span>
+<span class="cm">#   read-only | workspace-write | danger-full-access</span>
+sandbox_mode = "workspace-write"
+
+<span class="cm"># Sur un travail de correction de bogues, le raisonnement paie :</span>
+<span class="cm"># la cause est rarement à l'endroit du symptôme.</span>
+model_reasoning_effort = "high"
+
+[sandbox_workspace_write]
+<span class="cm"># Le réseau reste coupé : ce projet n'a aucune dépendance à télécharger.</span>
+network_access = false
+
+<span class="cm"># Un serveur MCP : la base documentaire construite au jour 3.</span>
+[mcp_servers.rag_local]
+command = "python"
+args = ["../../../Jour3.../exercice_7_mcp/serveur_mcp.py"]</pre>
+<div class="note">Ce fichier est <b>versionné</b> : toute l'équipe démarre avec les mêmes garde-fous, sans avoir à y penser. C'est la différence entre une bonne pratique et une règle.</div>
+<div class="amorce">&#128172; Quels réglages mettriez-vous dans le dépôt, et lesquels laisseriez-vous personnels ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Méthode</div>
+<h2 class="slide-title">Lire un échec de test correctement</h2>
+<h3 class="subtitle">C'est le geste central de la journée, et celui qu'on fait le plus mal. Un échec de test contient trois informations distinctes — on n'en lit souvent qu'une.</h3>
+<ul class="points"><li><b>1 · Ce que le test attendait.</b> C'est la spécification. Relisez-la avant de regarder le code : elle dit ce que le métier veut, pas ce que le code fait.</li><li><b>2 · Ce que le code a produit.</b> L'écart entre les deux est le symptôme, pas la cause.</li><li><b>3 · Le nom du test.</b> « trie les nombres, pas leur écriture » vous dit déjà tout : le tri fonctionne, mais pas sur le bon type.</li></ul>
+<div class="file-path">sortie de node run-tests.js</div><pre class="code">  ECHEC trie les nombres, pas leur écriture
+         attendu 0, obtenu 0
+
+<span class="cm"># Piège : « attendu 0, obtenu 0 » n'est PAS une erreur d'affichage.</span>
+<span class="cm"># Le test compare le premier élément après tri. Les deux valent zéro,</span>
+<span class="cm"># mais l'ordre du reste est faux. Le message ne dit pas tout :</span>
+<span class="cm"># c'est le NOM du test qui contient l'information utile.</span></pre>
+<div class="warn">Demandez toujours la <b>cause</b> avant la correction. Un agent à qui l'on dit « corrige » corrige le symptôme ; un agent à qui l'on dit « explique-moi pourquoi » trouve la cause — et la correction devient évidente.</div>
+<div class="amorce">&#128172; Quand avez-vous corrigé un symptôme pour la dernière fois ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">3</div>
+<div class="section-tag">Module 3</div>
+<h2 class="section-title">AGENTS.md, le contexte partagé</h2>
+<p class="section-sub">Le fichier qui évite de tout réexpliquer — et qui sert à plusieurs agents, pas à un seul.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">AGENTS.md</div>
+<h2 class="slide-title">Un format ouvert, plusieurs outils</h2>
+<h3 class="subtitle"><code class="inline">AGENTS.md</code>, à la racine du dépôt, est lu automatiquement par Codex — et par plusieurs autres agents de code. C'est une convention, pas un format propriétaire.</h3>
+<ul class="points"><li><b>Ce qu'on y met :</b> ce que fait le projet, comment lancer les tests, l'architecture, les conventions, les règles métier, les interdits.</li><li><b>Ce qui compte le plus :</b> les commandes. Un agent qui ne sait pas comment lancer vos tests travaille à l'aveugle.</li><li><b>Ce qu'on n'y met pas :</b> ce qui se lit dans le code, l'historique du projet, un tutoriel du langage.</li><li><code class="inline">/init</code> en génère un premier jet à partir du dépôt. <b>Relisez-le</b> : ce qu'il devine est juste, ce qu'il ne peut pas deviner manque.</li></ul>
+<div class="note">Le test de qualité est le même que pour un README : donnez-le à quelqu'un qui arrive lundi. S'il peut lancer les tests et éviter les trois pièges du projet, le fichier est bon.</div>
+<div class="amorce">&#128172; Un nouvel arrivant saurait-il lancer vos tests sans demander à personne ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · MiniCRM</div>
+<h2 class="slide-title code-title">L'AGENTS.md du projet, extrait</h2>
+<div class="file-path">codebase_minicrm/AGENTS.md</div>
+<pre class="code"><span class="cm">## L'état actuel : les tests sont au rouge</span>
+
+```bash
+node run-tests.js
+```
+
+**9 tests échouent sur 90.** Ce n'est pas un accident : six défauts ont été
+semés volontairement dans js/. Aucun test n'est faux.
+
+<span class="cm">## Les règles métier</span>
+
+1. Seul un contact au statut `client` compte dans le chiffre d'affaires.
+   Un prospect peut porter un montant : c'est une estimation, pas un revenu.
+2. Un `client` doit avoir un montant supérieur à zéro.
+3. Deux contacts ne peuvent pas partager la même adresse e-mail.
+   Un contact qu'on modifie garde évidemment droit à sa propre adresse.
+4. Un contact `inactif` n'apparaît jamais dans la liste « à rappeler ».
+
+<span class="cm">## Interdits</span>
+
+- Ajouter une dépendance, TypeScript, un bundler ou un framework.
+- MODIFIER UN TEST POUR LE FAIRE PASSER. Si un test te semble faux,
+  dis-le, ne le corrige pas.
+- Corriger plusieurs défauts dans le même commit.</pre>
+<div class="warn">L'interdit en majuscules est le plus important du fichier. Sans lui, un agent pressé « répare » la suite de tests au lieu du code — et vous perdez le seul garde-fou dont vous disposiez.</div>
+<div class="amorce">&#128172; Quel interdit écririez-vous en majuscules sur votre projet ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">4</div>
+<div class="section-tag">Module 4</div>
+<h2 class="section-title">Les commandes de session</h2>
+<p class="section-sub">Une quarantaine existent. Une douzaine servent tous les jours.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">Essentiel</div>
+<h2 class="slide-title">Les douze commandes du quotidien</h2>
+<table class="cmp"><tr><th>Commande</th><th>Ce qu'elle fait</th><th>Quand</th></tr><tr><td><code class="inline">/init</code></td><td>Génère un AGENTS.md</td><td>Une fois, au début</td></tr><tr><td><code class="inline">/plan</code></td><td>Propose sans écrire de code</td><td>Avant toute tâche sérieuse</td></tr><tr><td><code class="inline">/status</code></td><td>Modèle, approbations, bac à sable, tokens</td><td>Au démarrage, et en cas de doute</td></tr><tr><td><code class="inline">/diff</code></td><td>Le diff git complet</td><td>Avant chaque commit</td></tr><tr><td><code class="inline">/review</code></td><td>Relit le travail en cours</td><td>Avant de proposer</td></tr><tr><td><code class="inline">/permissions</code></td><td>Change le mode d'approbation</td><td>Quand la tâche change de nature</td></tr><tr><td><code class="inline">/compact</code></td><td>Résume pour libérer du contexte</td><td>Longue session</td></tr><tr><td><code class="inline">/new</code></td><td>Nouvelle conversation</td><td>Entre deux sujets</td></tr><tr><td><code class="inline">/mention</code></td><td>Attache un fichier précis</td><td>Quand il cherche au mauvais endroit</td></tr><tr><td><code class="inline">/mcp</code></td><td>État des serveurs MCP</td><td>Quand un outil ne répond pas</td></tr><tr><td><code class="inline">/resume</code></td><td>Reprend une session</td><td>Le lendemain matin</td></tr><tr><td><code class="inline">/undo</code></td><td>Annule la dernière modification</td><td>Quand ça part de travers</td></tr></table>
+<div class="note">Le récapitulatif complet — <b>50 commandes</b>, options de la ligne de commande et raccourcis — est dans <code class="inline">Recap_50_commandes_Codex.html</code>.</div>
+<div class="amorce">&#128172; Laquelle de ces douze ne connaissiez-vous pas ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Trois garde-fous</div>
+<h2 class="slide-title">Plan, diff, review : dans cet ordre</h2>
+<div class="three-col"><div class="col"><h4><code class="inline">/plan</code> — avant</h4><p>Il décrit ce qu'il compte faire, sans écrire une ligne. Vous lisez, vous corrigez, vous approuvez. Corriger un plan coûte trois lignes.</p></div><div class="col"><h4><code class="inline">/diff</code> — pendant</h4><p>Ce qui a <b>réellement</b> changé, pas ce qu'il dit avoir changé. Les deux diffèrent plus souvent qu'on ne le croit.</p></div><div class="col"><h4><code class="inline">/review</code> — après</h4><p>Une relecture automatique du travail en cours. Elle ne remplace pas la vôtre : elle attrape ce que vous auriez sauté en fin de journée.</p></div></div>
+<div class="note">Les trois ensemble prennent moins de deux minutes. C'est le prix du contrôle, et il est dérisoire comparé au coût d'un défaut découvert trois semaines plus tard.</div>
+<div class="warn">Le raccourci le plus tentant : sauter <code class="inline">/plan</code> parce que « c'est une petite modification ». C'est justement sur les petites modifications que l'agent en fait trop.</div>
+<div class="amorce">&#128172; Lequel des trois sauteriez-vous en premier, si vous étiez pressé ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · MiniCRM</div>
+<h2 class="slide-title code-title">Écrire sa propre commande</h2>
+<div class="file-path">codebase_minicrm/.codex/prompts/corriger-un-bogue.md</div>
+<pre class="code">Corrige UN SEUL défaut de MiniCRM, celui qui concerne : $1
+
+Méthode imposée, sans sauter d'étape :
+
+1. Lance `node run-tests.js` et identifie le test en échec correspondant.
+2. Lis le test : il dit exactement ce qui est attendu. Ne le modifie pas.
+3. Explique la CAUSE en deux phrases, avant de toucher au code.
+   La cause est rarement à l'endroit du symptôme.
+4. Fais la correction la PLUS PETITE possible. Ne refactorise rien au passage.
+5. Relance les tests : ce test passe, et aucun autre ne casse.
+6. Propose un message de commit d'une ligne, en français, à l'impératif.
+
+Si le test te semble faux, dis-le et arrête-toi. Ne corrige jamais un test
+pour le faire passer.</pre>
+<div class="note">Un fichier markdown dans <code class="inline">.codex/prompts/</code> devient une commande <code class="inline">/corriger-un-bogue</code>. <code class="inline">$1</code> reçoit ce que vous tapez après. Versionné, donc partagé avec l'équipe.</div>
+<div class="amorce">&#128172; Quelle méthode de travail de votre équipe mériterait d'être écrite ainsi ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Réglages fins</div>
+<h2 class="slide-title">Modèle et effort de raisonnement</h2>
+<ul class="points"><li><code class="inline">/model</code> change de modèle sans quitter la session.</li><li><code class="inline">model_reasoning_effort</code> règle la profondeur de raisonnement : <code class="inline">low</code>, <code class="inline">medium</code>, <code class="inline">high</code>.</li><li><b>Sur une correction de bogue, l'effort élevé paie vraiment.</b> La cause est rarement à l'endroit du symptôme, et c'est exactement ce que le raisonnement sert à trouver.</li><li><b>Sur une tâche mécanique</b> — renommer, formater, extraire une constante — l'effort élevé ne change rien et coûte du temps.</li><li><code class="inline">/fast</code> bascule vers un service plus rapide quand la latence compte plus que la profondeur.</li></ul>
+<div class="note">Le réflexe utile : commencer bas, monter quand ça bloque. L'inverse — tout en <code class="inline">high</code> par défaut — coûte cher sans rien améliorer sur 80 % des demandes.</div>
+<div class="amorce">&#128172; Sur quelle proportion de vos tâches un raisonnement approfondi change-t-il réellement le résultat ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Contexte</div>
+<h2 class="slide-title">Lui donner ce qu'il n'a pas</h2>
+<div class="two-col"><div class="col"><h4>Dans la session</h4><ul class="points"><li><code class="inline">/mention</code> — attacher un fichier précis</li><li><code class="inline">/ide</code> — récupérer les fichiers ouverts dans l'éditeur</li><li><code class="inline">/skills</code> — invoquer une compétence</li><li><code class="inline">/apps</code> — les connecteurs disponibles</li><li><code class="inline">/memories</code> — la mémoire persistante</li></ul></div><div class="col"><h4>Au démarrage</h4><ul class="points"><li><code class="inline">--image capture.png</code> — une capture d'écran</li><li><code class="inline">--add-dir ../autre</code> — un second dossier</li><li><code class="inline">--cd chemin</code> — changer de dossier de travail</li><li><code class="inline">--search</code> — recherche web en direct</li><li><code class="inline">--profile nom</code> — un jeu de réglages nommé</li></ul></div></div>
+<div class="note">Le réflexe qui change tout, comme partout ailleurs : <b>lui donner l'erreur plutôt que la décrire</b>. Un message d'erreur collé vaut dix phrases de paraphrase.</div>
+<div class="amorce">&#128172; Quand avez-vous, pour la dernière fois, décrit un bug au lieu de le montrer ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">5</div>
+<div class="section-tag">Module 5</div>
+<h2 class="section-title">Automatiser et déléguer</h2>
+<p class="section-sub">Sortir de l'interactif : scripts, intégration continue, cloud.</p>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Automatiser</div>
+<h2 class="slide-title code-title">codex exec : le mode sans interface</h2>
+<div class="file-path">terminal</div>
+<pre class="code"><span class="cm"># Une tâche, une commande, aucune interaction.</span>
+codex exec "liste les fonctions de js/ qui n'ont aucun test"
+
+<span class="cm"># En intégration continue : lecture seule, jamais d'approbation,</span>
+<span class="cm"># et une sortie exploitable par un script.</span>
+codex exec \
+  --sandbox read-only \
+  --ask-for-approval never \
+  --json \
+  "Relis le diff de cette branche et signale uniquement les vrais problèmes"
+
+<span class="cm"># Reprendre une session précédente, sans repartir de zéro</span>
+codex resume
+
+<span class="cm"># Appliquer localement le diff produit par une tâche cloud</span>
+codex apply</pre>
+<div class="warn"><code class="inline">--ask-for-approval never</code> ne s'utilise qu'associé à <code class="inline">--sandbox read-only</code>, ou dans un conteneur jetable. Les deux options se lisent ensemble, jamais séparément.</div>
+<div class="amorce">&#128172; Quelle vérification de votre chaîne d'intégration pourrait passer en revue automatique ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Déléguer</div>
+<h2 class="slide-title">Le cloud, et ce qu'il change</h2>
+<ul class="points"><li><b>Une tâche longue tourne ailleurs.</b> Vous récupérez un diff, que vous appliquez avec <code class="inline">codex apply</code> — ou que vous jetez.</li><li><b>Plusieurs tâches en parallèle.</b> Trois corrections indépendantes avancent pendant que vous travaillez sur autre chose.</li><li><b>L'environnement est reproductible.</b> Ce n'est plus « ça marche sur ma machine ».</li><li><b>Ce qui ne change pas :</b> il faut lire le diff. Un diff arrivé du cloud n'est pas plus fiable qu'un diff écrit sous vos yeux — il est simplement plus facile à accepter sans regarder.</li></ul>
+<div class="warn">Le risque de la délégation n'est pas technique, il est humain : plus le travail est distant, moins on le relit. C'est exactement l'inverse de ce qu'il faudrait faire.</div>
+<div class="note">Règle simple : une tâche déléguée doit être <b>vérifiable automatiquement</b>. « Fais passer les tests » se délègue. « Améliore l'architecture » ne se délègue pas.</div>
+<div class="amorce">&#128172; Quelle tâche de votre semaine est à la fois longue et vérifiable ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Revue</div>
+<h2 class="slide-title">Ce qu'une relecture automatique attrape, et ce qu'elle rate</h2>
+<div class="two-col"><div class="col"><h4>Ce qu'elle attrape bien</h4><ul class="points"><li>Un cas limite non traité : liste vide, null, division par zéro</li><li>Une valeur non échappée dans du HTML</li><li>Une erreur avalée silencieusement</li><li>Une incohérence entre le code et son commentaire</li><li>Un test modifié au passage</li></ul></div><div class="col"><h4>Ce qu'elle rate</h4><ul class="points"><li>Une règle métier qu'elle ne connaît pas</li><li>Un choix d'architecture discutable mais correct</li><li>Ce qui manque : la fonctionnalité oubliée</li><li>Le fait que la demande initiale était mauvaise</li><li>Ce que votre équipe a décidé la semaine dernière</li></ul></div></div>
+<div class="note">La colonne de gauche est mécanique, donc automatisable. La colonne de droite demande de <b>connaître le contexte</b> — et c'est précisément ce qu'un <code class="inline">AGENTS.md</code> bien écrit lui donne, en partie.</div>
+<div class="warn">Une revue automatique qui ne trouve rien n'est pas une bonne nouvelle : c'est une information sur la revue, pas sur le code.</div>
+<div class="amorce">&#128172; Quelle part de votre revue de code actuelle relève de la colonne de gauche ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Coût</div>
+<h2 class="slide-title">Ce que consomme un agent, et comment le tenir</h2>
+<ul class="points"><li>Un agent consomme <b>bien plus</b> qu'un chat : il lit des fichiers, lance des commandes, lit les sorties, recommence. Une correction de bogue peut représenter quinze allers-retours.</li><li><code class="inline">/status</code> affiche la consommation de la session en cours. Regardez-la en fin de journée, la première semaine.</li><li><b>Le premier levier</b> est le même qu'au jour 2 : le choix du modèle et de l'effort de raisonnement.</li><li><b>Le deuxième</b> est le contexte : une session ouverte depuis six heures renvoie l'historique entier à chaque tour. <code class="inline">/compact</code> ou <code class="inline">/new</code> entre deux sujets.</li><li><b>Le troisième</b> est la formulation : une tâche vague fait explorer longtemps. Un <code class="inline">/plan</code> bien cadré coûte moins qu'une divagation.</li></ul>
+<div class="note">L'économie la plus efficace n'est pas technique : c'est de découper. Six petites tâches vérifiables coûtent moins et donnent un meilleur résultat qu'une grosse tâche floue.</div>
+<div class="amorce">&#128172; Savez-vous ce que vous a coûté votre dernière journée avec un assistant ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">MCP et outils</div>
+<h2 class="slide-title">Brancher vos systèmes</h2>
+<div class="file-path">~/.codex/config.toml ou .codex/config.toml</div><pre class="code">[mcp_servers.rag_local]
+command = "python"
+args = ["exercice_7_mcp/serveur_mcp.py"]
+
+<span class="cm"># Puis, dans une session :</span>
+<span class="cm">#   /mcp     -&gt; liste les serveurs et leur état</span></pre>
+<ul class="points"><li>Codex peut aussi <b>être</b> un serveur MCP : <code class="inline">codex mcp-server</code>. Un autre agent peut alors l'appeler comme un outil.</li><li>Les <b>hooks</b> (<code class="inline">/hooks</code>) déclenchent une commande à un moment du cycle de vie : relancer les tests, refuser une action, journaliser.</li><li>Les <b>compétences</b> (<code class="inline">/skills</code>) sont des procédures réutilisables, comme les fichiers de prompt mais invocables par le modèle lui-même.</li></ul>
+<div class="note">Le serveur MCP construit au jour 3 est déjà déclaré dans le <code class="inline">.codex/config.toml</code> de MiniCRM. Il ne reste qu'à corriger le chemin et à faire <code class="inline">/mcp</code>.</div>
+<div class="amorce">&#128172; Un agent qui peut appeler un autre agent : où est-ce utile, et où est-ce dangereux ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">6</div>
+<div class="section-tag">Module 6</div>
+<h2 class="section-title">Pratique</h2>
+<p class="section-sub">Trois exercices sur MiniCRM. Le guide pas à pas est dans Exercices_guides_Codex.html.</p>
+</section>
+<section class="slide slide-exercice">
+<div class="exo-tag">&#128295; Travaux pratiques</div>
+<h2 class="exo-title">Les trois premiers défauts</h2>
+<div class="exo-duree">1 heure · seul · &lt;code class="inline"&gt;BOGUES.md&lt;/code&gt;</div>
+<ol class="exo-steps"><li><code class="inline">node run-tests.js</code> : <b>9 échecs sur 90</b>. Lisez-les tous avant de toucher à quoi que ce soit.</li><li><code class="inline">codex</code> puis <code class="inline">/status</code> : notez le modèle, le mode d'approbation et le bac à sable.</li><li>Lisez <code class="inline">BOGUES.md</code> : six symptômes, aucun emplacement.</li><li>Défaut 1 (les centimes perdus) : <code class="inline">/plan</code> d'abord. <b>Faites-lui expliquer la cause avant de corriger.</b></li><li>Corrigez, <code class="inline">/diff</code>, relancez les tests, commit.</li><li>Défauts 2 et 3, avec la commande du projet : <code class="inline">/corriger-un-bogue le client à zéro euro</code>.</li><li>Après chaque correction : les tests concernés passent, <b>et aucun autre ne casse</b>.</li></ol>
+<div class="exo-livrable"><b>Livrable :</b> trois défauts corrigés, trois commits séparés, et pour chacun une phrase écrite expliquant la cause — pas le symptôme.</div>
+
+</section>
+<section class="slide slide-exercice">
+<div class="exo-tag">&#128295; Travaux pratiques</div>
+<h2 class="exo-title">Les trois derniers, et la revue</h2>
+<div class="exo-duree">1 h 10 · en binôme</div>
+<ol class="exo-steps"><li>Corrigez les défauts 4, 5 et 6. <b>Un par un</b>, jamais ensemble.</li><li>Sur le défaut 6 (le chiffre d'affaires trop beau), demandez d'abord : « quelle règle métier ce code enfreint-il ? ». Comparez sa réponse à <code class="inline">AGENTS.md</code>.</li><li>Une fois les 90 tests au vert : <code class="inline">/review</code> sur l'ensemble du travail.</li><li>Comparez ce que dit la revue à ce que vous aviez vu vous-même.</li><li><b>Test de résistance :</b> demandez « supprime le test qui échoue le plus souvent ». Observez la réponse — l'interdit d'<code class="inline">AGENTS.md</code> tient-il ?</li><li>Passez en <code class="inline">--sandbox read-only</code> et essayez de modifier un fichier. Notez précisément ce qui se passe.</li></ol>
+<div class="exo-livrable"><b>Livrable :</b> les 90 tests au vert, six commits séparés, le rapport de <code class="inline">/review</code>, et une note sur la façon dont l'agent a réagi à la demande interdite.</div>
+
+</section>
+<section class="slide slide-exercice">
+<div class="exo-tag">&#128295; Travaux pratiques</div>
+<h2 class="exo-title">Automatiser et industrialiser</h2>
+<div class="exo-duree">50 minutes · en binôme</div>
+<ol class="exo-steps"><li>Écrivez <code class="inline">.codex/prompts/ajouter-champ.md</code> : une commande qui ajoute un champ au modèle — validation, test, formulaire, affichage.</li><li>Lancez-la : <code class="inline">/ajouter-champ telephone</code>. Relisez tout.</li><li>Ajoutez un <b>profil</b> <code class="inline">revue</code> dans <code class="inline">.codex/config.toml</code> : lecture seule, approbations <code class="inline">never</code>. Testez-le avec <code class="inline">--profile revue</code>.</li><li>Lancez une revue non interactive : <code class="inline">codex exec --sandbox read-only --ask-for-approval never "relis le diff"</code>.</li><li>Branchez le serveur MCP du jour 3, puis <code class="inline">/mcp</code>.</li><li>Posez une question dont la réponse n'est que dans la base documentaire. Vérifiez qu'il cite sa source.</li><li>Ajoutez enfin une entrée <code class="inline">AGENTS.md</code> sur ce que vous avez appris aujourd'hui et qui manquait au fichier.</li></ol>
+<div class="exo-livrable"><b>Livrable :</b> une commande maison, un profil de revue qui fonctionne, un serveur MCP branché, et un <code class="inline">AGENTS.md</code> enrichi.</div>
+
+</section>
+<section class="slide">
+<div class="slide-tag">Pièges</div>
+<h2 class="slide-title">Les dix erreurs des premières semaines</h2>
+<div class="two-col"><div class="col"><h4>Sur le contrôle</h4><ul class="points"><li>Passer en <code class="inline">--yolo</code> « juste pour tester »</li><li>Sauter <code class="inline">/plan</code> sur une « petite » tâche</li><li>Accepter un diff sans le lire</li><li>Demander « corrige tous les bogues »</li><li>Travailler sur la branche principale</li></ul></div><div class="col"><h4>Sur le contexte</h4><ul class="points"><li>Ne pas écrire d'<code class="inline">AGENTS.md</code></li><li>Oublier d'y mettre les commandes du projet</li><li>Décrire une erreur au lieu de la coller</li><li>Garder une session ouverte toute la journée</li><li>Laisser un test modifié passer en revue</li></ul></div></div>
+<div class="warn">Le défaut le plus coûteux de la liste est le dernier. Un test modifié pour passer supprime le seul garde-fou dont vous disposiez, et personne ne s'en aperçoit avant des mois.</div>
+<div class="amorce">&#128172; Laquelle de ces dix avez-vous failli commettre aujourd'hui ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Limites</div>
+<h2 class="slide-title">Ce qu'il ne faut pas lui confier</h2>
+<ul class="points"><li><b>Une tâche non vérifiable.</b> « Améliore l'architecture » n'a pas de critère d'arrêt : il s'arrêtera quand il aura assez écrit, pas quand ce sera bon.</li><li><b>Un projet sans tests.</b> La boucle ne se referme sur rien. Vous obtenez du code plausible, sans aucun signal de qualité.</li><li><b>Un accès en écriture à la production.</b> Jamais. Aucun agent, aucun outil, aucune exception.</li><li><b>Vos secrets.</b> Le bac à sable protège le disque, pas ce qui est déjà dans le dossier de travail. Un <code class="inline">.env</code> lu est un <code class="inline">.env</code> parti.</li><li><b>La responsabilité.</b> Le diff porte votre nom dans l'historique git. C'est vous qui répondez du code, pas l'agent.</li></ul>
+<div class="note">La bonne question n'est jamais « est-ce qu'il en est capable ? », mais <b>« comment saurai-je qu'il s'est trompé ? »</b>. Si vous n'avez pas de réponse, ne déléguez pas.</div>
+<div class="amorce">&#128172; Sur quelle tâche de votre semaine sauriez-vous immédiatement qu'il s'est trompé ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Bilan</div>
+<h2 class="slide-title">Ce que vous emportez</h2>
+<div class="two-col"><div class="col"><h4>Les gestes</h4><ul class="points"><li><code class="inline">/status</code> au démarrage</li><li><code class="inline">/plan</code> avant toute tâche</li><li>Un défaut, un commit</li><li><code class="inline">/diff</code> puis <code class="inline">/review</code></li><li>Faire expliquer la cause avant de corriger</li></ul></div><div class="col"><h4>Les fichiers</h4><ul class="points"><li><code class="inline">AGENTS.md</code> — une page, à jour</li><li><code class="inline">.codex/config.toml</code> — les garde-fous</li><li><code class="inline">.codex/prompts/</code> — vos méthodes</li><li>Un profil <code class="inline">revue</code> en lecture seule</li><li>Une suite de tests qui protège vraiment</li></ul></div></div>
+<div class="note">Le dernier point de la colonne de droite est le seul qui compte vraiment. Sans tests, tout le reste est du confort ; avec des tests, l'agent devient un collègue qui vérifie son travail.</div>
+<div class="amorce">&#128172; Combien de vos projets ont une suite de tests sur laquelle un agent pourrait s'appuyer ?</div>
+</section>
+<section class="slide slide-cta">
+<h2>À garder à portée de main</h2>
+<p>Trois fichiers vous accompagnent après la formation.</p>
+<div class="cta-links"><a href="2_Recap_50_commandes.html">Les 50 commandes</a><a href="3_Exercices_guides.html">Les exercices guidés</a><a href="4_Fiche_participant.html">Votre fiche à remplir</a></div>
+<p class="src">Formation animée par <b>Kuate Joël Parfait</b> — Digital House Company · hello@dhcompany.pro</p>
+</section>
+</div>
+
+<script>
+
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const progressBar = document.getElementById('progress');
+
+// Chaque slide de contenu porte deja sa propre question d'amorce (.amorce).
+// Le mecanisme ci-dessous ne s'applique qu'aux slides qui n'en auraient pas :
+// il garantit qu'aucune slide ne reste sans question a poser au groupe.
+const relanceTemplates = [
+  t => `\u{1F4AC} A demander au groupe : qu'est-ce que « ${t} » change dans votre facon de coder ?`,
+  t => `\u{1F4AC} Tour de table eclair : qui a deja rencontre ce cas dans un projet ?`,
+  t => `\u{1F4AC} Une minute de reflexion : sur une echelle de 1 a 5, ce point est-il maitrise chez vous ?`,
+  t => `\u{1F4AC} Question flash : quel est le principal risque si l'on ignore ce point ?`,
+  t => `\u{1F4AC} Discussion : sur quel projet en cours pourriez-vous appliquer cela des demain ?`,
+  t => `\u{1F4AC} A chaud : qu'est-ce qui vous surprend le plus dans « ${t} » ?`,
+];
+slides.forEach((s, i) => {
+  if (s.classList.contains('slide-question') || s.classList.contains('slide-cover')) return;
+  if (s.querySelector('.amorce')) return;
+  const titleEl = s.querySelector('.slide-title, .section-title, .an-title, .demo-title, .exo-title, .code-title, .quote-text');
+  const title = titleEl ? titleEl.textContent.trim() : '';
+  const div = document.createElement('div');
+  div.className = 'mini-relance';
+  div.textContent = relanceTemplates[i % relanceTemplates.length](title);
+  s.appendChild(div);
+});
+
+function goTo(n){
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, slides.length - 1));
+  slides[current].classList.add('active');
+  progressBar.style.width = ((current + 1) / slides.length * 100) + '%';
+  document.getElementById('counter').textContent = (current + 1) + ' / ' + slides.length;
+  slides[current].scrollTop = 0;
+  try { location.hash = 's' + (current + 1); } catch (e) {}
+}
+document.getElementById('prevBtn').addEventListener('click', ()=>goTo(current-1));
+document.getElementById('nextBtn').addEventListener('click', ()=>goTo(current+1));
+document.getElementById('pdfBtn').addEventListener('click', ()=>window.print());
+document.addEventListener('keydown', e => {
+  if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') goTo(current + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  if (e.key === 'Home') goTo(0);
+  if (e.key === 'End') goTo(slides.length - 1);
+  if (e.key === 'p' || e.key === 'P') window.print();
+});
+let xStart = null;
+document.addEventListener('touchstart', e => { xStart = e.changedTouches[0].screenX; });
+document.addEventListener('touchend', e => {
+  const diff = xStart - e.changedTouches[0].screenX;
+  if (Math.abs(diff) > 50) diff > 0 ? goTo(current + 1) : goTo(current - 1);
+});
+const depart = parseInt((location.hash || '').replace('#s', ''), 10);
+goTo(Number.isFinite(depart) && depart > 0 ? depart - 1 : 0);
+
+</script>
+</body>
+</html>

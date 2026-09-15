@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code — L'IA pour les développeurs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;
+  --bg2:#F2F7F7;
+  --accent:#0E8C86;
+  --accent2:#0B6E68;
+  --navy:#0B2D48;
+  --navy2:#08202F;
+  --text:#16212B;
+  --text2:#4B5C63;
+  --card:#EAF4F3;
+  --border:#D7E6E4;
+  --good:#1F9D67;
+  --warn:#B9740A;
+  --bad:#C1443B;
+  --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
+.deck{position:relative;width:100vw;height:100vh;}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;padding:5.5vh 8vw;opacity:0;transition:opacity .25s ease;overflow-y:auto;}
+.slide.active{display:flex;opacity:1;}
+.slide-tag{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;}
+.slide-title{font-size:2.1rem;font-weight:800;margin-bottom:1.2rem;line-height:1.22;max-width:94%;color:var(--navy);}
+.slide h3.subtitle{font-size:1.15rem;font-weight:400;color:var(--text2);margin-bottom:1rem;}
+ul.points{list-style:none;max-width:88%;}
+ul.points li{font-size:1.1rem;line-height:1.5;margin-bottom:.7rem;padding-left:1.7rem;position:relative;color:var(--text2);}
+ul.points li::before{content:"\203A";position:absolute;left:0;color:var(--accent2);font-weight:700;font-size:1.3rem;}
+ul.points li b, ul.points li strong{color:var(--text);font-weight:700;}
+ul.points ul{list-style:none;margin-top:.4rem;}
+ul.points ul li{font-size:.98rem;margin-bottom:.3rem;}
+ul.points ul li::before{content:"\2013";font-size:1rem;}
+.note{margin-top:1.2rem;padding:.85rem 1.2rem;background:var(--card);border-left:4px solid var(--accent);border-radius:6px;font-size:.98rem;color:var(--text2);max-width:88%;}
+.note b{color:var(--accent2);}
+.warn{margin-top:1.2rem;padding:.85rem 1.2rem;background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;font-size:.98rem;color:var(--text2);max-width:88%;}
+.warn b{color:var(--warn);}
+.src{margin-top:.9rem;font-size:.85rem;color:var(--text2);max-width:88%;}
+.src a{color:var(--accent2);text-decoration:none;border-bottom:1px dotted var(--accent2);}
+.src a:hover{color:var(--navy);}
+.slide-cover{align-items:flex-start;background:radial-gradient(circle at 80% 20%, #E3F2F1 0%, var(--bg) 60%);}
+.cover-org{font-size:.92rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);margin-bottom:1.6rem;}
+.cover-title{font-size:3rem;font-weight:800;max-width:88%;line-height:1.16;margin-bottom:1rem;color:var(--navy);}
+.cover-sub{font-size:1.25rem;color:var(--text2);max-width:78%;margin-bottom:2rem;}
+.cover-meta{display:flex;gap:2.2rem;flex-wrap:wrap;font-size:.95rem;color:var(--text2);}
+.cover-meta span b{color:var(--navy);display:block;font-size:1.05rem;}
+.cover-contact{position:absolute;bottom:6vh;left:8vw;font-size:.95rem;color:var(--accent2);}
+.slide-divider{align-items:center;text-align:center;background:linear-gradient(135deg, var(--bg) 0%, #E7F3F2 100%);}
+.section-tag{font-size:1rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2);margin-bottom:1rem;}
+.section-title{font-size:2.7rem;font-weight:800;max-width:84%;line-height:1.2;margin-bottom:1rem;color:var(--navy);}
+.section-sub{font-size:1.1rem;color:var(--text2);max-width:70%;}
+.section-num{font-size:5.2rem;font-weight:800;color:var(--border);position:absolute;top:6vh;right:8vw;}
+.slide-question{background:linear-gradient(135deg,#FFF8ED 0%, var(--bg) 100%);border-top:6px solid var(--warn);}
+.q-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--warn);font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+.q-question{font-size:1.55rem;font-weight:700;margin-bottom:1.2rem;max-width:90%;color:var(--navy);line-height:1.35;}
+.q-hint{font-size:1.02rem;color:var(--text2);max-width:86%;line-height:1.5;}
+.q-footer{margin-top:1.2rem;font-size:.92rem;color:var(--text2);font-style:italic;}
+.slide-anecdote{background:linear-gradient(135deg,#F0F8F7 0%, var(--bg) 100%);border-top:6px solid var(--accent);}
+.an-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+.an-title{font-size:1.6rem;font-weight:700;margin-bottom:.9rem;max-width:90%;color:var(--navy);}
+.an-body{font-size:1.05rem;color:var(--text2);max-width:88%;line-height:1.55;}
+.an-body b{color:var(--text);}
+.slide-quote{align-items:center;text-align:center;background:linear-gradient(135deg,var(--navy) 0%, var(--navy2) 100%);color:#fff;}
+.slide-quote .mini-relance{color:#B9D6D3;border-top-color:#2A4C63;}
+.q-mark{font-size:3.6rem;color:var(--accent);line-height:1;margin-bottom:.5rem;font-family:Georgia,serif;}
+.quote-text{font-size:1.8rem;font-weight:600;max-width:80%;line-height:1.4;margin-bottom:1.2rem;}
+.quote-author{font-size:1.05rem;color:#B9D6D3;}
+.quote-author b{color:#fff;}
+.slide-demo{background:linear-gradient(135deg,#EAF4FE 0%, var(--bg) 100%);border-top:6px solid #2E7DD1;}
+.demo-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:#2E7DD1;font-weight:700;margin-bottom:1rem;}
+.demo-title{font-size:1.6rem;font-weight:700;margin-bottom:.7rem;color:var(--navy);}
+.demo-link{display:inline-block;margin-top:.5rem;background:#2E7DD1;color:#fff;padding:.55rem 1.1rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.98rem;}
+.slide-exercice{background:linear-gradient(135deg,#F0F8F7 0%, var(--bg) 100%);border-top:6px solid var(--accent);}
+.exo-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;}
+.exo-title{font-size:1.8rem;font-weight:700;margin-bottom:.5rem;color:var(--navy);}
+.exo-duree{font-size:.98rem;color:var(--text2);margin-bottom:1.1rem;}
+.exo-steps{max-width:88%;padding-left:1.3rem;}
+.exo-steps li{font-size:1.05rem;color:var(--text2);margin-bottom:.55rem;line-height:1.45;}
+.exo-livrable{margin-top:1.2rem;padding:.85rem 1.1rem;background:var(--card);border-radius:8px;font-size:1rem;border-left:4px solid var(--good);}
+.slide-cta{align-items:center;text-align:center;background:radial-gradient(circle at 50% 30%, #E3F2F1 0%, var(--bg) 70%);}
+.slide-cta h2{font-size:2.4rem;font-weight:800;margin-bottom:1rem;color:var(--navy);}
+.slide-cta p{font-size:1.2rem;color:var(--text2);margin-bottom:1.6rem;}
+.cta-links{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem;}
+.cta-links a{color:var(--accent2);text-decoration:none;font-size:1.05rem;font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px;}
+table.cmp{border-collapse:collapse;max-width:96%;margin-top:.9rem;}
+table.cmp th, table.cmp td{border:1px solid var(--border);padding:.55rem .85rem;font-size:.95rem;text-align:left;}
+table.cmp th{background:var(--card);color:var(--accent2);}
+table.cmp td{color:var(--text2);}
+table.cmp td b{color:var(--text);}
+.two-col{display:flex;gap:2.2rem;max-width:96%;}
+.two-col .col{flex:1;}
+.two-col h4{color:var(--accent2);font-size:1.02rem;margin-bottom:.5rem;}
+.three-col{display:flex;gap:1.6rem;max-width:96%;}
+.three-col .col{flex:1;background:var(--card);border-radius:8px;padding:1rem 1.1rem;}
+.three-col h4{color:var(--accent2);font-size:1rem;margin-bottom:.45rem;}
+.three-col p{font-size:.93rem;color:var(--text2);line-height:1.45;}
+.schema-box{margin-top:1.1rem;max-width:94%;}
+.schema-box svg{max-width:100%;height:auto;}
+.slide-code{background:linear-gradient(135deg,#F4F8F8 0%, var(--bg) 100%);border-top:6px solid var(--navy);}
+.code-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:.8rem;}
+pre.code{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1.1rem 1.3rem;font-family:'JetBrains Mono',Consolas,monospace;font-size:.86rem;line-height:1.55;overflow-x:auto;max-width:96%;white-space:pre;}
+pre.code .cm{color:#7FB3AE;}
+pre.code .kw{color:#7FC7FF;font-weight:600;}
+pre.code .st{color:#F2C57C;}
+pre.code .fn{color:#9FE3D0;}
+.file-path{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent2);margin-bottom:.5rem;}
+code.inline{font-family:'JetBrains Mono',monospace;background:var(--card);color:var(--accent2);padding:.1rem .35rem;border-radius:4px;font-size:.9em;}
+.progress-wrap{position:fixed;top:0;left:0;width:100%;height:4px;background:var(--border);z-index:50;}
+#progress{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--navy));transition:width .2s ease;}
+#counter{position:fixed;bottom:1.3vh;right:2vw;font-size:.78rem;color:var(--text2);z-index:50;letter-spacing:.05em;}
+.navbtn{position:fixed;top:50%;transform:translateY(-50%);z-index:50;background:var(--card);border:1px solid var(--border);color:var(--navy);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.15rem;display:flex;align-items:center;justify-content:center;opacity:.6;transition:opacity .2s;}
+.navbtn:hover{opacity:1;}
+#prevBtn{left:1.2vw;} #nextBtn{right:1.2vw;}
+.brand-mark{position:fixed;bottom:1.3vh;left:2vw;font-size:.7rem;color:#9FBDBA;letter-spacing:.1em;z-index:50;}
+.pdf-btn{position:fixed;top:1.3vh;right:2vw;z-index:60;background:var(--accent);color:#FFFFFF;border:none;border-radius:8px;padding:.5rem 1rem;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem;box-shadow:0 2px 8px rgba(11,45,72,.25);transition:background .2s;}
+.pdf-btn:hover{background:var(--accent2);}
+.amorce{margin-top:1.1rem;padding-top:.7rem;border-top:1px dashed var(--border);font-size:.93rem;color:var(--accent2);font-style:italic;max-width:88%;}
+.mini-relance{margin-top:1.1rem;padding-top:.7rem;border-top:1px dashed var(--border);font-size:.9rem;color:var(--accent2);font-style:italic;max-width:88%;}
+@media print{
+  .navbtn,#counter,.progress-wrap,.brand-mark,.pdf-btn{display:none !important;}
+  body{overflow:visible;}
+  .slide{position:relative;display:flex !important;opacity:1 !important;page-break-after:always;height:100vh;}
+}
+@media (max-width:900px){
+  .slide{padding:4vh 5vw 12vh;justify-content:flex-start;}
+  .cover-title{font-size:2rem;}
+  .slide-title{font-size:1.45rem;}
+  .section-title{font-size:1.7rem;}
+  .section-num{font-size:3rem;top:3vh;right:5vw;}
+  .two-col,.three-col{flex-direction:column;gap:1rem;}
+  ul.points,.note,.warn,.src,.amorce,.mini-relance,.exo-steps{max-width:100%;}
+  ul.points li{font-size:1rem;}
+  .q-question{font-size:1.25rem;}
+  .quote-text{font-size:1.35rem;max-width:100%;}
+  pre.code{font-size:.68rem;padding:.8rem .9rem;}
+  table.cmp{display:block;overflow-x:auto;max-width:100%;}
+  .pdf-btn,.navbtn{display:none;}
+  .brand-mark{max-width:60%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  .cover-contact{position:static;margin-top:1.5rem;}
+}
+
+</style>
+</head>
+<body>
+<div class="progress-wrap"><div id="progress"></div></div>
+<button class="navbtn" id="prevBtn">&lsaquo;</button>
+<button class="navbtn" id="nextBtn">&rsaquo;</button>
+<button class="pdf-btn" id="pdfBtn" title="Raccourci clavier : P">&#11015; Exporter en PDF</button>
+<div id="counter">1 / 1</div>
+<div class="brand-mark">CLAUDE CODE · FORMATION OUTILS · DIGITAL HOUSE COMPANY</div>
+
+<div class="deck">
+<section class="slide slide-cover active">
+<div class="cover-org">Digital House Company · Formation outils</div>
+<h1 class="cover-title">Claude Code, de la première commande à l'automatisation</h1>
+<p class="cover-sub">L'assistant qui travaille dans votre terminal, sur votre vraie base de code. Une journée, une code base réelle, cinquante commandes à retenir.</p>
+<div class="cover-meta"><span><b>Durée</b> 7 heures</span><span><b>Niveau</b> débutant à intermédiaire</span><span><b>Code base</b> MiniCRM · 90 tests</span><span><b>Prérequis</b> un terminal, rien d'autre</span></div>
+<div class="cover-contact">Kuate Joël Parfait · hello@dhcompany.pro</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Objectifs</div>
+<h2 class="slide-title">Ce que vous saurez faire ce soir</h2>
+<ul class="points"><li>Installer Claude Code, l'ouvrir sur un projet et comprendre <b>ce qu'il voit</b>.</li><li>Écrire un <code class="inline">CLAUDE.md</code> qui évite d'avoir à tout réexpliquer chaque matin.</li><li>Travailler en <b>mode plan</b> : décider avant de laisser écrire.</li><li>Gérer les permissions pour ne plus valider trente fois la même commande.</li><li>Créer vos propres <b>compétences</b> et <b>sous-agents</b>, et les partager avec l'équipe.</li><li>Brancher un <b>hook</b> qui relance vos tests à chaque écriture de fichier.</li><li>Savoir ce qu'il ne faut <b>pas</b> lui confier.</li></ul>
+<div class="note">La journée se fait sur <b>MiniCRM</b>, une vraie application de 900 lignes avec 90 tests. Pas de « hello world » : les problèmes intéressants n'apparaissent que sur du code réel.</div>
+<div class="amorce">&#128172; Qui a déjà lancé Claude Code ? Qui s'est arrêté au bout de dix minutes ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Déroulé</div>
+<h2 class="slide-title">Au programme</h2>
+<div class="two-col"><div class="col"><h4>Matin</h4><ul class="points"><li>Ce qu'est un assistant en terminal</li><li>Le contexte : ce qu'il voit, ce qu'il ignore</li><li><code class="inline">CLAUDE.md</code> et la mémoire du projet</li><li>Le mode plan et les modes de permission</li><li><b>Exercice 1</b> — prendre en main MiniCRM</li></ul></div><div class="col"><h4>Après-midi</h4><ul class="points"><li>Les commandes qui font gagner du temps</li><li>Écrire ses propres compétences</li><li>Sous-agents, tâches de fond, parallélisme</li><li>Hooks, MCP, Git et intégration continue</li><li><b>Exercices 2 et 3</b> — dette technique et automatisation</li></ul></div></div>
+<div class="amorce">&#128172; Sur quelle partie attendez-vous le plus ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">1</div>
+<div class="section-tag">Module 1</div>
+<h2 class="section-title">Comprendre l'outil</h2>
+<p class="section-sub">Avant les commandes : ce qu'un assistant en terminal fait, et ce qu'il ne fera jamais.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">Définition</div>
+<h2 class="slide-title">Claude Code en une phrase</h2>
+<h3 class="subtitle">Un assistant qui vit dans votre terminal, lit votre dépôt, écrit dans vos fichiers et exécute vos commandes — avec votre accord, à chaque étape.</h3>
+<div class="three-col"><div class="col"><h4>Il lit</h4><p>Vos fichiers, votre historique git, la sortie de vos commandes, les pages web que vous lui donnez.</p></div><div class="col"><h4>Il écrit</h4><p>Dans vos fichiers, directement. Pas de copier-coller depuis un chat.</p></div><div class="col"><h4>Il exécute</h4><p>Vos tests, vos scripts, git. Et il lit ce que ça renvoie, pour corriger tout seul.</p></div></div>
+<div class="note">La différence avec un chat n'est pas la qualité du modèle : c'est la <b>boucle</b>. Écrire, lancer, lire l'erreur, corriger. Sans vous.</div>
+<div class="amorce">&#128172; Combien de fois par jour copiez-vous du code d'un chat vers votre éditeur ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Positionnement</div>
+<h2 class="slide-title">Terminal ou éditeur : ce que ça change vraiment</h2>
+<table class="cmp"><tr><th></th><th>Dans l'éditeur (Copilot)</th><th>Dans le terminal (Claude Code)</th></tr><tr><td><b>Unité de travail</b></td><td>La ligne, la fonction, le fichier ouvert</td><td>La tâche : plusieurs fichiers, plusieurs commandes</td></tr><tr><td><b>Ce qu'il voit</b></td><td>Ce qui est ouvert, plus ce que vous mentionnez</td><td>Tout le dépôt, qu'il explore lui-même</td></tr><tr><td><b>Vérification</b></td><td>Vous lancez les tests</td><td>Il lance les tests et lit le résultat</td></tr><tr><td><b>Rythme</b></td><td>Seconde par seconde, en tapant</td><td>Minute par minute, par tâche</td></tr><tr><td><b>Le risque</b></td><td>Accepter une suggestion sans la lire</td><td>Laisser tourner une tâche sans lire le plan</td></tr></table>
+<div class="warn">Les deux ne s'opposent pas : la plupart des développeurs qui les utilisent sérieusement gardent Copilot pour écrire, et l'assistant en terminal pour les tâches qui touchent plusieurs fichiers.</div>
+<div class="amorce">&#128172; Laquelle de ces deux unités de travail correspond à votre journée type ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Mise en route</div>
+<h2 class="slide-title code-title">Installer et ouvrir une première session</h2>
+<div class="file-path">terminal</div>
+<pre class="code"><span class="cm"># 1. Installation (une seule fois)</span>
+npm install -g @anthropic-ai/claude-code
+
+<span class="cm"># 2. Se placer DANS le projet. Ce point est capital :</span>
+<span class="cm">#    Claude Code ne voit que le dossier depuis lequel on le lance.</span>
+cd codebase_minicrm
+
+<span class="cm"># 3. Démarrer</span>
+claude
+
+<span class="cm"># 4. Se connecter — un navigateur s'ouvre, on revient au terminal</span>
+/login
+
+<span class="cm"># 5. Vérifier que tout est en place</span>
+/doctor           # diagnostic complet de l'installation
+/status           # modèle, dossier, connexions, version</pre>
+<div class="note"><code class="inline">claude</code> lancé depuis votre dossier personnel voit votre disque entier et ne comprend rien à votre projet. <b>Toujours se placer dans le projet d'abord.</b></div>
+<div class="amorce">&#128172; Que se passerait-il si vous le lanciez depuis la racine de votre disque ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Premiers pas</div>
+<h2 class="slide-title">Les cinq premières minutes, dans l'ordre</h2>
+<ul class="points"><li><code class="inline">/init</code> — il lit le projet et rédige un premier <code class="inline">CLAUDE.md</code>. <b>Relisez-le et corrigez-le</b> : ce qu'il devine est correct, ce qu'il ne peut pas deviner manque.</li><li><code class="inline">/context</code> — voir ce qu'il a en mémoire, et combien il en reste.</li><li>Une première question <b>de lecture</b>, pas d'écriture : « explique-moi l'architecture de ce projet ».</li><li><code class="inline">/plan</code> — décrire une modification sans l'écrire. Lire. Corriger. Approuver.</li><li><code class="inline">/diff</code> — relire ce qui a réellement changé, avant tout commit.</li></ul>
+<div class="warn">L'erreur numéro un du premier jour : demander tout de suite une grosse modification. On obtient trois cents lignes qu'on ne relit pas, on prend peur, et on désinstalle. <b>Commencez par lui faire lire.</b></div>
+<div class="amorce">&#128172; Quelle question de lecture poseriez-vous en premier sur votre propre projet ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Mécanique</div>
+<h2 class="slide-title">La boucle, en quatre temps</h2>
+<ul class="points"><li><b>1 · Il explore.</b> Il cherche les fichiers pertinents avec des outils de recherche, pas en lisant tout le dépôt. Vous voyez chaque recherche défiler.</li><li><b>2 · Il propose.</b> Une modification de fichier, une commande à lancer. Selon le mode de permission, il vous demande ou il agit.</li><li><b>3 · Il exécute.</b> Vos tests, votre linter, git.</li><li><b>4 · Il lit le résultat</b> et recommence si ça a échoué — souvent trois ou quatre fois, sans vous solliciter.</li></ul>
+<div class="note">C'est le point 4 qui fait toute la différence. Un chat vous rend un code plausible ; un agent vous rend un code <b>qui passe les tests</b> — à condition que vous ayez des tests.</div>
+<div class="amorce">&#128172; Sans tests, sur quoi la boucle se referme-t-elle ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Limites</div>
+<h2 class="slide-title">Ce qu'il voit, et ce qu'il ignore complètement</h2>
+<div class="two-col"><div class="col"><h4>Il voit</h4><ul class="points"><li>Les fichiers du dossier où vous l'avez lancé</li><li>L'historique git, les diffs, les branches</li><li>La sortie des commandes qu'il lance</li><li>Ce que vous lui donnez : fichiers, images, URL</li><li>Les serveurs MCP que vous avez branchés</li></ul></div><div class="col"><h4>Il ignore</h4><ul class="points"><li>Ce qui est hors du dossier (sauf <code class="inline">/add-dir</code>)</li><li>Votre base de données, vos journaux de production</li><li>Ce que votre équipe a décidé en réunion</li><li>Pourquoi ce contournement bizarre existe depuis 2019</li><li>Les sessions précédentes, sauf <code class="inline">CLAUDE.md</code></li></ul></div></div>
+<div class="note">La colonne de droite est exactement le contenu d'un bon <code class="inline">CLAUDE.md</code>. C'est le sujet du module suivant.</div>
+<div class="amorce">&#128172; Citez une chose que seul un ancien de votre équipe sait sur votre code.</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">2</div>
+<div class="section-tag">Module 2</div>
+<h2 class="section-title">Le contexte : la seule chose qui compte vraiment</h2>
+<p class="section-sub">Un assistant bien informé sur un petit modèle bat un assistant ignorant sur un grand modèle.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">CLAUDE.md</div>
+<h2 class="slide-title">La mémoire du projet</h2>
+<h3 class="subtitle">Un fichier markdown, à la racine du dépôt, lu automatiquement au démarrage de chaque session. Versionné, donc partagé avec toute l'équipe.</h3>
+<ul class="points"><li><b>Ce qu'on y met :</b> l'architecture en une table, les conventions, les règles métier qui ne se devinent pas, les commandes du projet, les interdits.</li><li><b>Ce qu'on n'y met pas :</b> ce qui se lit dans le code, un tutoriel, l'historique du projet, des politesses.</li><li><b>La bonne longueur :</b> une page. Passé deux, il n'est plus lu attentivement — ni par l'assistant, ni par vos collègues.</li><li><b>Le test :</b> écrivez-le comme une note à un nouveau collègue compétent qui arrive lundi.</li></ul>
+<div class="warn">Un <code class="inline">CLAUDE.md</code> qui ment est pire que pas de <code class="inline">CLAUDE.md</code> du tout. Relisez-le le jour où vous changez d'architecture.</div>
+<div class="amorce">&#128172; Combien de temps mettez-vous à expliquer votre projet à un nouvel arrivant ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · MiniCRM</div>
+<h2 class="slide-title code-title">Le CLAUDE.md de notre projet, extrait</h2>
+<div class="file-path">codebase_minicrm/CLAUDE.md</div>
+<pre class="code"><span class="cm">## Architecture</span>
+
+| Fichier              | Rôle                          | Ne doit jamais            |
+|----------------------|-------------------------------|---------------------------|
+| js/modele.js         | Valider, normaliser, formater | toucher au DOM            |
+| js/depot.js          | Ranger, retrouver, trier      | contenir une règle métier |
+| js/statistiques.js   | Calculer                      | avoir d'effet de bord     |
+| js/vue.js            | Produire du HTML              | calculer quoi que ce soit |
+
+<span class="cm">## Règles métier — à ne pas casser</span>
+
+1. Seul un contact au statut `client` compte dans le chiffre d'affaires.
+   Un prospect peut porter un montant : c'est une ESTIMATION, pas un revenu.
+2. Un `client` doit avoir un montant supérieur à zéro.
+3. Deux contacts ne peuvent pas partager la même adresse e-mail.
+4. Un contact `inactif` n'apparaît jamais dans la liste « à rappeler » :
+   il a dit non, on n'insiste pas.
+
+<span class="cm">## Ce qu'il ne faut pas faire ici</span>
+
+- Ajouter une dépendance npm, un bundler, TypeScript ou un framework.
+- Renommer les fonctions publiques : index.html et les tests s'y réfèrent.
+- Utiliser innerHTML avec une valeur non échappée.</pre>
+<div class="note">Les quatre règles métier sont le cœur du fichier. Aucune ne se devine en lisant le code : ce sont des décisions du métier. <b>C'est exactement ce qu'un assistant ne peut pas inventer.</b></div>
+<div class="amorce">&#128172; Quelles seraient les quatre règles métier de votre projet actuel ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Hiérarchie</div>
+<h2 class="slide-title">Quatre niveaux de mémoire, du plus large au plus précis</h2>
+<table class="cmp"><tr><th>Emplacement</th><th>Portée</th><th>Versionné ?</th><th>Ce qu'on y met</th></tr><tr><td><code class="inline">~/.claude/CLAUDE.md</code></td><td>Vous, tous projets</td><td>Non</td><td>Vos préférences personnelles : « réponds en français », « pas d'emoji »</td></tr><tr><td><code class="inline">./CLAUDE.md</code></td><td>Le projet</td><td><b>Oui</b></td><td>Architecture, conventions, règles métier, interdits</td></tr><tr><td><code class="inline">./CLAUDE.local.md</code></td><td>Vous, ce projet</td><td>Non</td><td>Vos chemins, vos raccourcis, ce qui ne regarde que vous</td></tr><tr><td><code class="inline">./sous-dossier/CLAUDE.md</code></td><td>Ce sous-dossier</td><td>Oui</td><td>Les particularités d'un module : utile dans un monorepo</td></tr></table>
+<div class="note"><code class="inline">/memory</code> ouvre ces fichiers pour édition. Une ligne commençant par <code class="inline">#</code> dans le chat propose de l'ajouter directement à la mémoire.</div>
+<div class="amorce">&#128172; Que mettriez-vous dans votre mémoire personnelle, valable sur tous vos projets ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Alimenter</div>
+<h2 class="slide-title">Trois façons de lui donner ce qu'il n'a pas</h2>
+<ul class="points"><li><code class="inline">@chemin/fichier.js</code> — mentionner un fichier dans votre message. L'autocomplétion s'ouvre dès le <code class="inline">@</code>.</li><li><code class="inline">!commande</code> — lancer une commande shell et injecter sa sortie dans la conversation. <code class="inline">!git log --oneline -20</code> lui donne l'histoire récente en une ligne.</li><li><b>Coller une image</b> — <code class="inline">Ctrl+V</code> : une capture d'écran d'un bug, d'une maquette, d'un tableau blanc. Il la lit.</li><li><code class="inline">/add-dir ../autre-projet</code> — ajouter un second dossier à la session, sans quitter celle-ci.</li></ul>
+<div class="note">Le réflexe qui change tout : au lieu de décrire une erreur, <b>lui donner l'erreur</b>. <code class="inline">!node run-tests.js</code> vaut mieux que « les tests plantent ».</div>
+<div class="amorce">&#128172; Combien de fois avez-vous paraphrasé un message d'erreur au lieu de le coller ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Fenêtre de contexte</div>
+<h2 class="slide-title">Gérer la mémoire d'une longue session</h2>
+<ul class="points"><li><code class="inline">/context</code> — voir ce qui occupe la mémoire : les fichiers lus, l'historique, les outils. Le premier réflexe quand les réponses se dégradent.</li><li><code class="inline">/compact</code> — résumer la conversation pour libérer de la place. On peut guider : <code class="inline">/compact garde les décisions d'architecture</code>.</li><li><code class="inline">/clear</code> — repartir de zéro. Le <code class="inline">CLAUDE.md</code> reste, l'historique disparaît. À faire <b>entre deux tâches sans rapport</b>.</li><li><code class="inline">/rewind</code> — revenir en arrière, dans le code <b>et</b> dans la conversation. Le filet de sécurité qu'on oublie d'utiliser.</li></ul>
+<div class="warn">Le symptôme classique d'un contexte saturé : il « oublie » une consigne donnée vingt minutes plus tôt, ou recommence une modification déjà faite. Ce n'est pas le modèle qui faiblit, c'est la mémoire qui déborde.</div>
+<div class="amorce">&#128172; Que faites-vous aujourd'hui quand une conversation devient confuse ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">3</div>
+<div class="section-tag">Module 3</div>
+<h2 class="section-title">Décider avant de laisser écrire</h2>
+<p class="section-sub">Le mode plan et les modes de permission : les deux réglages qui séparent l'outil utile de l'outil dangereux.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">Mode plan</div>
+<h2 class="slide-title">Faire décrire avant de faire écrire</h2>
+<h3 class="subtitle"><code class="inline">/plan</code>, ou <code class="inline">Shift+Tab</code> jusqu'au mode « plan ». Il explore, il réfléchit, il propose — et il n'écrit <b>aucun fichier</b> tant que vous n'avez pas approuvé.</h3>
+<ul class="points"><li>Utilisez-le pour <b>toute tâche de plus de dix minutes</b>, sans exception.</li><li>Lisez le plan comme vous liriez celui d'un collègue : où se trompe-t-il de fichier ? Qu'a-t-il oublié ? Qu'a-t-il ajouté qu'on ne demandait pas ?</li><li>Corrigez le plan <b>dans le chat</b>, avant d'approuver. Corriger un plan coûte trois lignes ; corriger trois cents lignes de code coûte une heure.</li><li>Un bon plan nomme les fichiers touchés, les tests à ajouter, et ce qu'il ne va <b>pas</b> faire.</li></ul>
+<div class="note">C'est le geste qui distingue les gens qui gardent le contrôle de leur base de code de ceux qui la subissent. Il ne coûte que deux minutes.</div>
+<div class="amorce">&#128172; Approuveriez-vous le plan d'un stagiaire sans le lire ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Permissions</div>
+<h2 class="slide-title">Les modes, et quand utiliser chacun</h2>
+<table class="cmp"><tr><th>Mode</th><th>Comportement</th><th>Quand</th></tr><tr><td><b>default</b></td><td>Demande avant chaque écriture et chaque commande</td><td>Le premier jour, et sur un dépôt que vous ne connaissez pas</td></tr><tr><td><b>acceptEdits</b></td><td>Écrit les fichiers sans demander, demande pour les commandes</td><td>Le mode de travail courant, quand git vous protège</td></tr><tr><td><b>plan</b></td><td>N'écrit rien du tout</td><td>Exploration, conception, revue</td></tr><tr><td><b>bypassPermissions</b></td><td>Ne demande plus rien</td><td><b>Uniquement</b> dans un conteneur jetable ou une machine virtuelle</td></tr></table>
+<ul class="points"><li><code class="inline">Shift+Tab</code> fait tourner les modes, sans quitter la session.</li><li><code class="inline">/permissions</code> ouvre les règles fines : autoriser <code class="inline">Bash(node run-tests.js)</code> une fois pour toutes, interdire <code class="inline">Bash(git push:*)</code> définitivement.</li></ul>
+<div class="warn"><code class="inline">--dangerously-skip-permissions</code> porte ce nom pour une raison. Sur votre machine de travail, avec vos clés SSH et vos accès en production, ne l'utilisez pas.</div>
+<div class="amorce">&#128172; Dans quel mode passeriez-vous vos deux premières semaines ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · MiniCRM</div>
+<h2 class="slide-title code-title">Les permissions, écrites une fois pour l'équipe</h2>
+<div class="file-path">codebase_minicrm/.claude/settings.json</div>
+<pre class="code">{
+  "permissions": {
+<span class="cm">    // Ce que Claude peut faire sans demander à chaque fois.</span>
+    "allow": [
+      "Bash(node run-tests.js)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Read", "Grep", "Glob"
+    ],
+
+<span class="cm">    // Ce qui reste TOUJOURS interdit, même si on approuve tout le reste.</span>
+<span class="cm">    // Une règle « deny » gagne toujours contre une règle « allow ».</span>
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push:*)",
+      "Bash(npm install:*)",
+      "Read(./.env)",
+      "Read(./**/*.pem)"
+    ]
+  }
+}</pre>
+<div class="note"><code class="inline">.claude/settings.json</code> est <b>versionné</b> : il vaut pour toute l'équipe. Vos préférences personnelles vont dans <code class="inline">.claude/settings.local.json</code>, qui ne l'est pas.</div>
+<div class="amorce">&#128172; Quelles trois commandes mettriez-vous en « deny » sur votre dépôt principal ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Jugement</div>
+<h2 class="slide-title">Trois questions avant d'accepter une modification</h2>
+<ul class="points"><li><b>Est-ce que je comprends chaque ligne ?</b> Si non, demandez une explication avant d'accepter. Du code qu'on ne comprend pas est du code qu'on ne saura pas réparer à 3 h du matin.</li><li><b>Est-ce que ça fait uniquement ce que j'ai demandé ?</b> Le travers le plus fréquent est d'en faire trop : renommer au passage, « améliorer » une fonction voisine, ajouter une abstraction dont personne n'a besoin.</li><li><b>Est-ce que les tests couvrent la modification ?</b> Pas « est-ce que les tests passent » — <b>est-ce qu'ils testent ce qui vient de changer</b>.</li></ul>
+<div class="note"><code class="inline">/diff</code> avant chaque commit, sans exception. Trente secondes de lecture évitent des semaines de dette.</div>
+<div class="amorce">&#128172; Laquelle de ces trois questions sautez-vous le plus souvent ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">4</div>
+<div class="section-tag">Module 4</div>
+<h2 class="section-title">Les commandes</h2>
+<p class="section-sub">Une cinquantaine existent. Une douzaine servent tous les jours.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">Essentiel</div>
+<h2 class="slide-title">Les douze commandes du quotidien</h2>
+<table class="cmp"><tr><th>Commande</th><th>Ce qu'elle fait</th><th>Quand</th></tr><tr><td><code class="inline">/init</code></td><td>Crée le CLAUDE.md du projet</td><td>Une fois, au début</td></tr><tr><td><code class="inline">/plan</code></td><td>Entre en mode plan</td><td>Avant toute tâche sérieuse</td></tr><tr><td><code class="inline">/context</code></td><td>Montre ce qui occupe la mémoire</td><td>Quand ça se dégrade</td></tr><tr><td><code class="inline">/compact</code></td><td>Résume pour libérer de la place</td><td>Longue session</td></tr><tr><td><code class="inline">/clear</code></td><td>Repart de zéro</td><td>Entre deux tâches sans rapport</td></tr><tr><td><code class="inline">/diff</code></td><td>Montre les modifications</td><td>Avant chaque commit</td></tr><tr><td><code class="inline">/rewind</code></td><td>Annule code et conversation</td><td>Quand ça part de travers</td></tr><tr><td><code class="inline">/code-review</code></td><td>Relit le diff ou une PR</td><td>Avant de proposer</td></tr><tr><td><code class="inline">/security-review</code></td><td>Cherche les failles du diff</td><td>Avant de fusionner</td></tr><tr><td><code class="inline">/model</code></td><td>Change de modèle</td><td>Tâche simple : un petit modèle</td></tr><tr><td><code class="inline">/usage</code></td><td>Consommation et coût</td><td>En fin de journée</td></tr><tr><td><code class="inline">/resume</code></td><td>Reprend une session précédente</td><td>Le lendemain matin</td></tr></table>
+<div class="note">Le récapitulatif complet — <b>50 commandes</b>, avec les raccourcis clavier et les options de la ligne de commande — est dans le fichier <code class="inline">Recap_50_commandes_Claude_Code.html</code> du dossier.</div>
+<div class="amorce">&#128172; Laquelle de ces douze ne connaissiez-vous pas ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Saisie</div>
+<h2 class="slide-title">Ce qui n'est pas une commande, et qu'on utilise autant</h2>
+<div class="two-col"><div class="col"><h4>Dans le message</h4><ul class="points"><li><code class="inline">@</code> — mentionner un fichier, avec autocomplétion</li><li><code class="inline">!</code> en début de ligne — lancer une commande shell</li><li><code class="inline">#</code> en début de ligne — ajouter à la mémoire</li><li><code class="inline">Ctrl+V</code> — coller une capture d'écran</li></ul></div><div class="col"><h4>Au clavier</h4><ul class="points"><li><code class="inline">Shift+Tab</code> — changer de mode de permission</li><li><code class="inline">Échap</code> — l'interrompre poliment</li><li><code class="inline">Échap Échap</code> — revenir en arrière</li><li><code class="inline">Ctrl+O</code> — afficher la transcription</li><li><code class="inline">Ctrl+R</code> — chercher dans l'historique</li><li><code class="inline">Ctrl+J</code> — passer à la ligne sans envoyer</li></ul></div></div>
+<div class="note"><code class="inline">Échap</code> est la touche la plus utile de toutes : elle l'arrête <b>sans perdre le contexte</b>. Vous corrigez le tir et il repart.</div>
+<div class="amorce">&#128172; Que faites-vous aujourd'hui quand vous voyez qu'il part dans la mauvaise direction ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Compétences</div>
+<h2 class="slide-title">Écrire vos propres commandes</h2>
+<h3 class="subtitle">Une <b>compétence</b> (skill) est un fichier markdown avec un en-tête. Elle devient une commande <code class="inline">/nom</code>, et l'assistant peut aussi l'invoquer tout seul quand la situation s'y prête.</h3>
+<ul class="points"><li><code class="inline">.claude/skills/nom/SKILL.md</code> — dans le projet, versionné, partagé avec l'équipe.</li><li><code class="inline">~/.claude/skills/nom/SKILL.md</code> — chez vous, sur tous vos projets.</li><li>L'en-tête déclare le <code class="inline">name</code>, la <code class="inline">description</code> (c'est elle qui décide quand la compétence est utile), et éventuellement <code class="inline">allowed-tools</code>.</li><li><code class="inline">$ARGUMENTS</code>, <code class="inline">$0</code>, <code class="inline">$1</code> reçoivent ce que vous tapez après la commande.</li><li><code class="inline">!`commande`</code> exécute une commande <b>avant</b> l'envoi et injecte sa sortie : la compétence arrive avec les données déjà là.</li></ul>
+<div class="note">C'est la fonctionnalité la plus rentable de l'outil : tout ce que vous répétez trois fois par semaine mérite une compétence.</div>
+<div class="amorce">&#128172; Quelle consigne retapez-vous le plus souvent, mot pour mot ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · MiniCRM</div>
+<h2 class="slide-title code-title">La compétence /verifier, en entier</h2>
+<div class="file-path">codebase_minicrm/.claude/skills/verifier/SKILL.md</div>
+<pre class="code">---
+name: verifier
+description: Vérifie l'état du projet avant de proposer une modification.
+allowed-tools: Bash(node run-tests.js) Bash(git status) Bash(git diff:*) Read Grep
+---
+
+<span class="cm">## Contexte</span>
+
+<span class="cm">### État de git</span>
+!`git status --short`
+
+<span class="cm">### Résultat des tests</span>
+```!
+node run-tests.js 2&gt;&amp;1 | tail -5
+```
+
+<span class="cm">## Ce qu'il faut faire</span>
+
+Analyse ce qui précède et réponds en quatre points, sans préambule :
+
+1. **Tests** : combien passent, combien échouent, lequel corriger d'abord.
+2. **Portée** : les fichiers modifiés relèvent-ils d'une seule intention ?
+3. **Règles métier** : le diff touche-t-il l'une des cinq règles de CLAUDE.md ?
+4. **Verdict** : `PRÊT À VALIDER` ou `À CORRIGER`, en une ligne.
+
+N'écris rien d'autre. Ne modifie aucun fichier.</pre>
+<div class="note">Les commandes entre <code class="inline">!` `</code> tournent <b>avant</b> l'envoi : l'assistant reçoit le vrai état de git et le vrai résultat des tests, pas une demande d'aller les chercher.</div>
+<div class="amorce">&#128172; Quelles données votre compétence à vous devrait-elle rassembler automatiquement ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">5</div>
+<div class="section-tag">Module 5</div>
+<h2 class="section-title">Sous-agents et parallélisme</h2>
+<p class="section-sub">Déléguer une partie du travail à une session isolée, qui ne pollue pas votre contexte.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">Sous-agents</div>
+<h2 class="slide-title">Pourquoi déléguer plutôt que tout faire dans la même session</h2>
+<ul class="points"><li><b>Le contexte reste propre.</b> Une exploration qui lit quarante fichiers remplit la mémoire. Dans un sous-agent, seul le <b>résultat</b> revient.</li><li><b>Le rôle est différent.</b> Un relecteur ne doit pas avoir écrit le code qu'il relit : il verrait ce qu'il a voulu faire, pas ce qu'il a fait.</li><li><b>Les outils sont restreints.</b> Un sous-agent d'exploration en lecture seule ne peut rien casser, même en cas de mauvaise interprétation.</li><li><b>Ça tourne en parallèle.</b> Plusieurs sous-agents avancent pendant que vous continuez à travailler.</li></ul>
+<table class="cmp"><tr><th>Commande</th><th>Effet</th></tr><tr><td><code class="inline">/agents</code></td><td>Créer et gérer les sous-agents du projet</td></tr><tr><td><code class="inline">@nom-de-lagent</code></td><td>L'appeler dans un message</td></tr><tr><td><code class="inline">/subtask</code></td><td>Confier une tâche annexe à un sous-agent</td></tr><tr><td><code class="inline">/tasks</code></td><td>Voir les travaux de fond en cours</td></tr><tr><td><code class="inline">/background</code></td><td>Détacher la session en tâche de fond</td></tr></table>
+<div class="amorce">&#128172; Quelle partie de votre travail confieriez-vous à un relecteur qui n'a pas écrit le code ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · MiniCRM</div>
+<h2 class="slide-title code-title">Le sous-agent relecteur</h2>
+<div class="file-path">codebase_minicrm/.claude/agents/relecteur.md</div>
+<pre class="code">---
+name: relecteur
+description: Relit une modification avec l'oeil d'un développeur senior.
+tools: Read, Grep, Glob, Bash
+model: sonnet
+---
+
+Tu es un développeur senior qui relit le code d'un collègue sur MiniCRM.
+Les règles du projet sont dans CLAUDE.md. Lis-le en premier.
+
+<span class="cm">## Ce que tu cherches, dans cet ordre</span>
+
+1. Une RÈGLE MÉTIER cassée. C'est le seul défaut qui coûte vraiment cher :
+   il ne fait pas planter le programme, il donne un chiffre faux.
+2. Une valeur non échappée qui entre dans du HTML.
+3. Une fonction placée dans la mauvaise couche.
+4. Un cas limite non testé : liste vide, null, division par zéro,
+   date invalide, chaîne avec accent ou apostrophe.
+5. Un commentaire qui répète le code au lieu d'expliquer le pourquoi.
+
+<span class="cm">## Comment tu réponds</span>
+
+Une liste, du plus grave au moins grave. Pour chaque point : le fichier
+et la ligne, le problème en une phrase, la correction en une phrase.
+
+Si tu ne trouves rien de sérieux, dis-le en une ligne. Ne remplis pas.
+Ne modifie aucun fichier : tu relis, tu ne corriges pas.</pre>
+<div class="note">Deux détails qui comptent : <code class="inline">tools</code> ne contient ni <code class="inline">Edit</code> ni <code class="inline">Write</code> — il <b>ne peut pas</b> corriger. Et « ne remplis pas » évite la liste de dix remarques cosmétiques qui noie la vraie.</div>
+<div class="amorce">&#128172; Pourquoi interdire au relecteur de corriger lui-même ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">6</div>
+<div class="section-tag">Module 6</div>
+<h2 class="section-title">Automatiser</h2>
+<p class="section-sub">Hooks, MCP, Git : faire entrer l'assistant dans votre chaîne de travail.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">Hooks</div>
+<h2 class="slide-title">Déclencher une commande sur un événement</h2>
+<h3 class="subtitle">Un <b>hook</b> est une commande shell lancée automatiquement à un moment précis de la session. Ce n'est pas l'assistant qui décide : c'est votre configuration.</h3>
+<table class="cmp"><tr><th>Événement</th><th>Le cas d'usage typique</th></tr><tr><td><code class="inline">PostToolUse</code></td><td>Relancer les tests ou le formateur après chaque écriture</td></tr><tr><td><code class="inline">PreToolUse</code></td><td>Refuser une commande dangereuse avant qu'elle ne parte</td></tr><tr><td><code class="inline">SessionStart</code></td><td>Afficher l'état du dépôt, rappeler la branche courante</td></tr><tr><td><code class="inline">Stop</code></td><td>Journaliser ce qui a été fait, prévenir l'équipe</td></tr><tr><td><code class="inline">UserPromptSubmit</code></td><td>Injecter du contexte à chaque message</td></tr></table>
+<div class="note"><code class="inline">/hooks</code> affiche les hooks actifs. Ils se configurent dans <code class="inline">.claude/settings.json</code>, donc ils sont versionnés et partagés.</div>
+<div class="amorce">&#128172; Quel geste répétez-vous manuellement après chaque modification de fichier ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · MiniCRM</div>
+<h2 class="slide-title code-title">Le hook qui relance les tests, tout seul</h2>
+<div class="file-path">codebase_minicrm/.claude/settings.json</div>
+<pre class="code">{
+  "hooks": {
+    "PostToolUse": [
+      {
+<span class="cm">        // Ce hook se déclenche après chaque Edit ou Write.</span>
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node run-tests.js &gt; /dev/null 2&gt;&amp;1 &amp;&amp; echo 'Tests au vert.' || echo 'ATTENTION : des tests sont en échec.'"
+          }
+        ]
+      }
+    ]
+  }
+}</pre>
+<div class="note">Effet concret : l'assistant modifie un fichier, voit immédiatement « ATTENTION », et corrige <b>avant</b> de vous rendre la main. Sans le hook, il vous rendrait un code cassé et vous le découvririez plus tard.</div>
+<div class="amorce">&#128172; Ce hook rend-il les tests plus utiles, ou rend-il l'assistant plus autonome ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">MCP</div>
+<h2 class="slide-title">Brancher vos systèmes</h2>
+<h3 class="subtitle">Le protocole vu au jour 3. Côté Claude Code, il tient en trois commandes.</h3>
+<div class="file-path">terminal</div><pre class="code"><span class="cm"># Ajouter un serveur, pour vous seulement</span>
+claude mcp add rag-local -- python chemin/vers/serveur_mcp.py
+
+<span class="cm"># Voir l'état des serveurs, dans une session</span>
+/mcp
+
+<span class="cm"># Déboguer quand ça ne se connecte pas</span>
+claude --debug=mcp</pre>
+<ul class="points"><li>Pour <b>partager</b> un serveur avec l'équipe : un fichier <code class="inline">.mcp.json</code> à la racine du dépôt, versionné.</li><li>Ce que ça change : l'assistant interroge votre base documentaire, votre suivi de tickets, votre supervision — <b>sans que vous copiiez-colliez quoi que ce soit</b>.</li><li>Ce que ça ne change pas : la prudence. Un outil MCP en écriture est un outil qui peut agir sur vos systèmes.</li></ul>
+<div class="note">Le fichier <code class="inline">.mcp.json</code> de MiniCRM pointe déjà vers le serveur RAG que vous avez construit au jour 3.</div>
+<div class="amorce">&#128172; Quel système interne brancheriez-vous en premier ? Et en lecture seule ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Git et intégration</div>
+<h2 class="slide-title">Là où l'outil rend le plus de temps</h2>
+<div class="two-col"><div class="col"><h4>Au quotidien</h4><ul class="points"><li>« commit ce travail » — il lit le diff et rédige le message</li><li><code class="inline">/code-review</code> — relit le diff avant de proposer</li><li><code class="inline">/security-review</code> — cherche les failles introduites</li><li>« ouvre une PR » — il rédige la description à partir des commits</li><li><code class="inline">/rewind</code> — annule sans passer par git reset</li></ul></div><div class="col"><h4>En automatique</h4><ul class="points"><li><code class="inline">/install-github-app</code> — il relit vos PR</li><li><code class="inline">claude -p "..."</code> — sans interface, pour un script</li><li><code class="inline">--output-format json</code> — sortie exploitable</li><li><code class="inline">--max-turns 3</code> — plafond de sécurité</li><li><code class="inline">--max-budget-usd 2</code> — plafond de dépense</li></ul></div></div>
+<div class="file-path">intégration continue</div><pre class="code"><span class="cm"># Relire automatiquement chaque PR, sans interaction</span>
+claude -p "Relis ce diff et signale uniquement les vrais problèmes" \
+  --output-format json \
+  --max-turns 3 \
+  --allowedTools "Read" "Grep" "Bash(git diff:*)" </pre>
+<div class="amorce">&#128172; Combien de temps votre équipe passe-t-elle en revue de code chaque semaine ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">7</div>
+<div class="section-tag">Module 7</div>
+<h2 class="section-title">Pratique</h2>
+<p class="section-sub">Trois exercices sur MiniCRM. Le guide pas à pas est dans Exercices_guides_Claude_Code.html.</p>
+</section>
+<section class="slide slide-exercice">
+<div class="exo-tag">&#128295; Travaux pratiques</div>
+<h2 class="exo-title">Prendre en main MiniCRM</h2>
+<div class="exo-duree">45 minutes · seul · dossier &lt;code class="inline"&gt;codebase_minicrm/&lt;/code&gt;</div>
+<ol class="exo-steps"><li>Ouvrez un terminal <b>dans</b> le dossier et lancez <code class="inline">claude</code>.</li><li><code class="inline">/status</code> puis <code class="inline">/context</code> : que voit-il déjà, sans que vous ayez rien demandé ?</li><li>Demandez : « explique-moi l'architecture de ce projet en cinq lignes ». Comparez sa réponse au <code class="inline">CLAUDE.md</code>.</li><li>Renommez temporairement <code class="inline">CLAUDE.md</code> en <code class="inline">CLAUDE.off</code>, faites <code class="inline">/clear</code>, reposez la <b>même</b> question. <b>Notez la différence.</b></li><li>Remettez le fichier en place.</li><li><code class="inline">/plan</code> puis : « ajoute une flèche de tri sur la colonne active du tableau » (sujet A1). Lisez le plan, <b>corrigez-le</b>, approuvez.</li><li><code class="inline">/diff</code>, puis <code class="inline">/verifier</code>.</li></ol>
+<div class="exo-livrable"><b>Livrable :</b> le plan corrigé (copié dans votre fiche), la fonctionnalité qui marche, les 90 tests au vert, et deux phrases sur ce que le <code class="inline">CLAUDE.md</code> a changé.</div>
+
+</section>
+<section class="slide slide-exercice">
+<div class="exo-tag">&#128295; Travaux pratiques</div>
+<h2 class="exo-title">Attaquer la dette technique, proprement</h2>
+<div class="exo-duree">1 h 15 · en binôme · &lt;code class="inline"&gt;DETTE_TECHNIQUE.md&lt;/code&gt;</div>
+<ol class="exo-steps"><li>Lisez <code class="inline">DETTE_TECHNIQUE.md</code> et choisissez <b>deux</b> sujets. Deux, pas six.</li><li>Pour chacun : <code class="inline">/plan</code>, lecture, correction, approbation.</li><li>Après chaque sujet : <code class="inline">/diff</code>, puis <code class="inline">@relecteur relis ce diff</code>.</li><li><b>Comparez</b> ce que dit le relecteur à ce que vous aviez vu vous-même. Qui a trouvé quoi ?</li><li>Faites un commit par sujet. Laissez-le rédiger le message, puis relisez-le.</li><li>Créez votre <b>propre compétence</b> : <code class="inline">.claude/skills/commit-propre/SKILL.md</code>, qui lance les tests, montre le diff et propose un message de commit.</li><li>Testez-la : <code class="inline">/commit-propre</code>.</li></ol>
+<div class="exo-livrable"><b>Livrable :</b> deux sujets traités, deux commits propres, une compétence maison qui fonctionne, et la liste de ce que le relecteur a vu et que vous aviez manqué.</div>
+
+</section>
+<section class="slide slide-exercice">
+<div class="exo-tag">&#128295; Travaux pratiques</div>
+<h2 class="exo-title">Automatiser et brancher</h2>
+<div class="exo-duree">1 heure · en binôme</div>
+<ol class="exo-steps"><li>Ouvrez <code class="inline">.claude/settings.json</code> et lisez le hook <code class="inline">PostToolUse</code> déjà en place.</li><li>Désactivez-le, demandez une modification qui casse un test, observez. Réactivez-le, refaites la même demande. <b>Notez la différence de comportement.</b></li><li>Ajoutez un hook <code class="inline">SessionStart</code> qui affiche la branche git courante et le nombre de fichiers modifiés.</li><li>Branchez le serveur MCP du jour 3 : <code class="inline">claude mcp add rag-local -- python ...</code>, puis <code class="inline">/mcp</code>.</li><li>Posez une question dont la réponse est <b>uniquement</b> dans la base documentaire. Vérifiez qu'il cite le fichier source.</li><li>Créez un sous-agent <code class="inline">testeur</code> qui écrit des tests et n'a <b>pas</b> le droit de modifier <code class="inline">js/</code>.</li><li>Lancez enfin <code class="inline">claude -p "liste les fonctions sans test" --allowedTools Read Grep</code> : le mode sans interface, celui de l'intégration continue.</li></ol>
+<div class="exo-livrable"><b>Livrable :</b> deux hooks actifs, un serveur MCP branché et interrogé, un sous-agent aux outils restreints, et une commande non interactive qui fonctionne.</div>
+
+</section>
+<section class="slide">
+<div class="slide-tag">Pièges</div>
+<h2 class="slide-title">Les dix erreurs des premières semaines</h2>
+<div class="two-col"><div class="col"><h4>Sur le contexte</h4><ul class="points"><li>Lancer <code class="inline">claude</code> hors du projet</li><li>Ne jamais écrire de <code class="inline">CLAUDE.md</code></li><li>Garder une session ouverte toute la journée</li><li>Décrire une erreur au lieu de la coller</li><li>Enchaîner deux tâches sans <code class="inline">/clear</code></li></ul></div><div class="col"><h4>Sur le contrôle</h4><ul class="points"><li>Sauter le mode plan « pour aller plus vite »</li><li>Accepter un diff sans le lire</li><li>Travailler sans tests, puis s'étonner</li><li>Demander cinq choses dans un seul message</li><li>Passer en <code class="inline">bypassPermissions</code> par confort</li></ul></div></div>
+<div class="warn">Neuf de ces dix erreurs ont la même cause : vouloir gagner deux minutes. Elles en coûtent chacune une heure.</div>
+<div class="amorce">&#128172; Laquelle avez-vous déjà commise aujourd'hui ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Limites</div>
+<h2 class="slide-title">Ce qu'il ne faut pas lui confier</h2>
+<ul class="points"><li><b>Une décision d'architecture qui engage deux ans.</b> Il argumente très bien en faveur de ce que vous venez de suggérer. Ce n'est pas un contradicteur.</li><li><b>Du code que personne de votre équipe ne saura relire.</b> Si le seul relecteur possible est l'assistant lui-même, vous avez créé une dépendance, pas un gain.</li><li><b>Ce qui touche à de l'argent, à de la santé ou à du droit</b>, sans relecture humaine ligne à ligne.</li><li><b>Vos secrets.</b> Un <code class="inline">.env</code> lu est un <code class="inline">.env</code> parti. Mettez-le en « deny ».</li><li><b>La production.</b> Aucun agent ne devrait avoir un accès en écriture à votre production. Aucun.</li></ul>
+<div class="note">La bonne question n'est jamais « est-ce qu'il en est capable ? », mais <b>« qui répond si c'est faux ? »</b>. La réponse est toujours vous.</div>
+<div class="amorce">&#128172; Sur quel sujet de votre travail refuseriez-vous par principe de l'utiliser ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Bilan</div>
+<h2 class="slide-title">Ce que vous emportez</h2>
+<div class="two-col"><div class="col"><h4>Les gestes</h4><ul class="points"><li><code class="inline">/plan</code> avant toute tâche sérieuse</li><li><code class="inline">/diff</code> avant chaque commit</li><li><code class="inline">/clear</code> entre deux sujets</li><li>Coller l'erreur plutôt que la décrire</li><li><code class="inline">Échap</code> dès qu'il dérive</li></ul></div><div class="col"><h4>Les fichiers</h4><ul class="points"><li><code class="inline">CLAUDE.md</code> — une page, à jour</li><li><code class="inline">.claude/settings.json</code> — permissions et hooks</li><li><code class="inline">.claude/skills/</code> — ce que vous répétez</li><li><code class="inline">.claude/agents/</code> — vos relecteurs</li><li><code class="inline">.mcp.json</code> — vos systèmes</li></ul></div></div>
+<div class="note">Les cinq fichiers de droite se versionnent. C'est ce qui transforme un outil personnel en <b>outil d'équipe</b> — et c'est là que le gain devient réel.</div>
+<div class="amorce">&#128172; Lequel de ces cinq fichiers créerez-vous en premier, demain ?</div>
+</section>
+<section class="slide slide-cta">
+<h2>À garder à portée de main</h2>
+<p>Trois fichiers vous accompagnent après la formation.</p>
+<div class="cta-links"><a href="2_Recap_50_commandes.html">Les 50 commandes</a><a href="3_Exercices_guides.html">Les exercices guidés</a><a href="4_Fiche_participant.html">Votre fiche à remplir</a></div>
+<p class="src">Formation animée par <b>Kuate Joël Parfait</b> — Digital House Company · hello@dhcompany.pro</p>
+</section>
+</div>
+
+<script>
+
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const progressBar = document.getElementById('progress');
+
+// Chaque slide de contenu porte deja sa propre question d'amorce (.amorce).
+// Le mecanisme ci-dessous ne s'applique qu'aux slides qui n'en auraient pas :
+// il garantit qu'aucune slide ne reste sans question a poser au groupe.
+const relanceTemplates = [
+  t => `\u{1F4AC} A demander au groupe : qu'est-ce que « ${t} » change dans votre facon de coder ?`,
+  t => `\u{1F4AC} Tour de table eclair : qui a deja rencontre ce cas dans un projet ?`,
+  t => `\u{1F4AC} Une minute de reflexion : sur une echelle de 1 a 5, ce point est-il maitrise chez vous ?`,
+  t => `\u{1F4AC} Question flash : quel est le principal risque si l'on ignore ce point ?`,
+  t => `\u{1F4AC} Discussion : sur quel projet en cours pourriez-vous appliquer cela des demain ?`,
+  t => `\u{1F4AC} A chaud : qu'est-ce qui vous surprend le plus dans « ${t} » ?`,
+];
+slides.forEach((s, i) => {
+  if (s.classList.contains('slide-question') || s.classList.contains('slide-cover')) return;
+  if (s.querySelector('.amorce')) return;
+  const titleEl = s.querySelector('.slide-title, .section-title, .an-title, .demo-title, .exo-title, .code-title, .quote-text');
+  const title = titleEl ? titleEl.textContent.trim() : '';
+  const div = document.createElement('div');
+  div.className = 'mini-relance';
+  div.textContent = relanceTemplates[i % relanceTemplates.length](title);
+  s.appendChild(div);
+});
+
+function goTo(n){
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, slides.length - 1));
+  slides[current].classList.add('active');
+  progressBar.style.width = ((current + 1) / slides.length * 100) + '%';
+  document.getElementById('counter').textContent = (current + 1) + ' / ' + slides.length;
+  slides[current].scrollTop = 0;
+  try { location.hash = 's' + (current + 1); } catch (e) {}
+}
+document.getElementById('prevBtn').addEventListener('click', ()=>goTo(current-1));
+document.getElementById('nextBtn').addEventListener('click', ()=>goTo(current+1));
+document.getElementById('pdfBtn').addEventListener('click', ()=>window.print());
+document.addEventListener('keydown', e => {
+  if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') goTo(current + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  if (e.key === 'Home') goTo(0);
+  if (e.key === 'End') goTo(slides.length - 1);
+  if (e.key === 'p' || e.key === 'P') window.print();
+});
+let xStart = null;
+document.addEventListener('touchstart', e => { xStart = e.changedTouches[0].screenX; });
+document.addEventListener('touchend', e => {
+  const diff = xStart - e.changedTouches[0].screenX;
+  if (Math.abs(diff) > 50) diff > 0 ? goTo(current + 1) : goTo(current - 1);
+});
+const depart = parseInt((location.hash || '').replace('#s', ''), 10);
+goTo(Number.isFinite(depart) && depart > 0 ? depart - 1 : 0);
+
+</script>
+</body>
+</html>

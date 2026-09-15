@@ -1,0 +1,11 @@
+{
+  "// ": "Serveurs MCP disponibles pour le mode agent de Copilot Chat.",
+  "// 2": "Celui-ci pointe vers le serveur RAG construit au jour 3.",
+  "servers": {
+    "rag-local": {
+      "type": "stdio",
+      "command": "python",
+      "args": ["../../../Jour3_LLM_et_RAG_local/codebase/exercice_7_mcp/serveur_mcp.py"]
+    }
+  }
+}

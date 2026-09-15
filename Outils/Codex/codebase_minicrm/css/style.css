@@ -1,0 +1,179 @@
+/**
+ * style.css — la présentation de MiniCRM.
+ * ---------------------------------------------------------------------------
+ * Les couleurs sont déclarées UNE fois, en variables CSS. Changer la charte
+ * de l'application, c'est modifier ces sept lignes et rien d'autre.
+ * ---------------------------------------------------------------------------
+ */
+
+:root{
+  --accent:#0E8C86;
+  --accent2:#0B6E68;
+  --navy:#0B2D48;
+  --text:#16212B;
+  --text2:#4B5C63;
+  --card:#EAF4F3;
+  --border:#D7E6E4;
+  --fond:#F2F7F7;
+  --good:#1F9D67;
+  --warn:#B9740A;
+  --bad:#C1443B;
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+
+body{
+  font-family:system-ui,-apple-system,'Segoe UI',sans-serif;
+  background:var(--fond);
+  color:var(--text);
+  line-height:1.55;
+}
+
+/* --- L'en-tête ---------------------------------------------------------- */
+.entete{
+  background:var(--navy);
+  color:#fff;
+  padding:.9rem 1.6rem;
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  flex-wrap:wrap;
+}
+.marque{ font-weight:800; font-size:1.15rem; letter-spacing:.02em; }
+.actions-entete{ margin-left:auto; display:flex; gap:.6rem; }
+
+/* --- Les boutons -------------------------------------------------------- */
+button{
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  padding:.5rem 1rem;
+  font-family:inherit;
+  font-size:.88rem;
+  font-weight:600;
+  cursor:pointer;
+}
+button:hover{ background:var(--accent2); }
+button.ghost{ background:transparent; border:1px solid rgba(255,255,255,.35); }
+button.ghost:hover{ background:rgba(255,255,255,.12); }
+button.mini{ padding:.28rem .6rem; font-size:.78rem; }
+button.mini.danger{ background:transparent; color:var(--bad); border:1px solid var(--border); }
+button.mini.danger:hover{ background:#FDEDEC; }
+
+/* --- La mise en page ---------------------------------------------------- */
+.page{ max-width:1150px; margin:0 auto; padding:1.6rem 1.2rem 4rem; }
+
+.resume{ display:flex; gap:.9rem; flex-wrap:wrap; margin-bottom:1.3rem; }
+.kpi{
+  flex:1; min-width:140px;
+  background:#fff; border:1px solid var(--border); border-radius:11px;
+  padding:.9rem 1.1rem;
+}
+.kpi b{ display:block; font-size:1.5rem; color:var(--navy); line-height:1.2; }
+.kpi span{ font-size:.78rem; color:var(--text2); }
+
+.barre-filtres{ display:flex; gap:.7rem; flex-wrap:wrap; align-items:center; margin-bottom:1.2rem; }
+.barre-filtres input, .barre-filtres select{
+  padding:.5rem .7rem; border:1px solid var(--border); border-radius:8px;
+  font-family:inherit; font-size:.9rem; background:#fff; color:var(--text);
+}
+.barre-filtres input{ flex:1; min-width:220px; }
+.compteur{ font-size:.82rem; color:var(--text2); margin-left:auto; }
+
+.bloc{
+  background:#fff; border:1px solid var(--border); border-radius:11px;
+  padding:1.1rem 1.2rem; margin-bottom:1.2rem;
+}
+.bloc h2{
+  font-size:.85rem; color:var(--accent2); text-transform:uppercase;
+  letter-spacing:.08em; margin-bottom:.8rem;
+}
+.sous-titre{ text-transform:none; letter-spacing:0; color:var(--text2); font-weight:400; }
+
+.colonnes{ display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+
+/* --- Le tableau --------------------------------------------------------- */
+table.contacts{ border-collapse:collapse; width:100%; font-size:.9rem; }
+table.contacts th{
+  text-align:left; padding:.5rem .7rem; border-bottom:2px solid var(--border);
+  color:var(--accent2); font-size:.78rem; text-transform:uppercase; letter-spacing:.06em;
+}
+table.contacts th[data-tri]{ cursor:pointer; user-select:none; }
+table.contacts th[data-tri]:hover{ color:var(--navy); }
+table.contacts td{ padding:.55rem .7rem; border-bottom:1px solid var(--border); color:var(--text2); }
+table.contacts td b{ color:var(--text); display:block; }
+table.contacts tr:hover td{ background:#FAFDFD; }
+.num{ text-align:right; font-variant-numeric:tabular-nums; }
+.sous{ display:block; font-size:.78rem; color:#7E9490; }
+td.actions{ text-align:right; white-space:nowrap; }
+
+.etiq{
+  display:inline-block; padding:.12rem .6rem; border-radius:20px;
+  font-size:.74rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+}
+.etiq.prospect{ background:#FFF6E8; color:var(--warn); }
+.etiq.client{ background:#EEF9F3; color:var(--good); }
+.etiq.inactif{ background:#F0F2F3; color:var(--text2); }
+
+.vide{
+  padding:1.6rem; text-align:center; color:var(--text2); font-size:.92rem;
+  background:#FAFDFD; border:1px dashed var(--border); border-radius:9px;
+}
+
+ul.dormants{ list-style:none; }
+ul.dormants li{
+  padding:.5rem 0; border-bottom:1px solid var(--border); font-size:.9rem; color:var(--text2);
+}
+ul.dormants li b{ color:var(--text); }
+
+/* --- Le formulaire ------------------------------------------------------ */
+.voile{
+  position:fixed; inset:0; background:rgba(11,45,72,.45);
+  display:flex; align-items:flex-start; justify-content:center;
+  padding:3vh 1rem; overflow-y:auto; z-index:50;
+}
+.formulaire{
+  background:#fff; border-radius:13px; padding:1.5rem 1.6rem;
+  width:100%; max-width:640px;
+}
+.formulaire h2{ font-size:1.2rem; color:var(--navy); margin-bottom:1.1rem; }
+
+.grille-form{ display:grid; grid-template-columns:1fr 1fr; gap:.9rem; }
+.champ{ display:flex; flex-direction:column; gap:.25rem; }
+.champ.large{ grid-column:1 / -1; }
+.champ label{ font-size:.78rem; color:var(--text2); font-weight:600; }
+.champ input, .champ select, .champ textarea{
+  padding:.5rem .65rem; border:1px solid var(--border); border-radius:7px;
+  font-family:inherit; font-size:.9rem; background:#fff; color:var(--text);
+}
+.champ input:focus, .champ select:focus, .champ textarea:focus{
+  outline:2px solid var(--accent); outline-offset:-1px;
+}
+.champ .en-erreur{ border-color:var(--bad); background:#FFFAFA; }
+.erreur-champ{ font-size:.76rem; color:var(--bad); }
+
+.actions-form{ display:flex; gap:.7rem; margin-top:1.2rem; }
+.actions-form button.ghost{ background:#fff; color:var(--accent2); border:1px solid var(--border); }
+
+/* --- Le message temporaire ---------------------------------------------- */
+.annonce{
+  position:fixed; bottom:1.4rem; left:50%; transform:translateX(-50%);
+  background:var(--navy); color:#fff; padding:.6rem 1.2rem; border-radius:20px;
+  font-size:.86rem; z-index:60; box-shadow:0 4px 14px rgba(11,45,72,.28);
+}
+/* [hidden] est ignoré par certains navigateurs quand un display est posé
+   ailleurs. Cette règle rend l'attribut fiable. */
+[hidden]{ display:none !important; }
+
+/* --- Mobile -------------------------------------------------------------- */
+@media (max-width:820px){
+  .colonnes{ grid-template-columns:1fr; }
+  .grille-form{ grid-template-columns:1fr; }
+  .page{ padding:1.1rem .8rem 3rem; }
+  /* Un tableau ne se réduit pas : on le laisse défiler horizontalement,
+     dans son propre conteneur. La page, elle, ne défile jamais de côté. */
+  #liste, #sources{ overflow-x:auto; }
+  table.contacts{ min-width:640px; }
+  .compteur{ margin-left:0; width:100%; }
+}
