@@ -1,0 +1,20 @@
+# Bibliothèques nécessaires à la formation.
+# Installation : pip install -r requirements.txt
+
+# --- Indispensables (tous les exercices) ---
+requests==2.32.3          # pour parler à une API par le réseau (HTTP)
+python-dotenv==1.0.1      # pour lire le fichier .env qui contient les clés
+pytest==8.3.3             # pour lancer les tests automatiques
+
+# --- Exercice 4 : application web ---
+flask==3.0.3              # micro-framework web : quelques lignes = un site
+
+# --- Exercices 5 et 6 : embeddings et RAG ---
+# numpy sert à faire des calculs sur des listes de nombres (les vecteurs)
+numpy==2.1.1
+
+# --- Optionnel (à installer seulement si vous avez une bonne machine) ---
+# openai==1.51.0                     # client officiel OpenAI / LM Studio
+# sentence-transformers==3.1.1       # embeddings locaux de qualité
+# chromadb==0.5.5                    # base de données vectorielle
+# langchain==0.3.0                   # chaînage de composants IA

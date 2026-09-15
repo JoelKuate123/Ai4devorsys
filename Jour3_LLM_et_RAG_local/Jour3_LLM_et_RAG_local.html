@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jour 3 — Les LLM et les outils de développement IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF;
+  --bg2:#F2F7F7;
+  --accent:#0E8C86;
+  --accent2:#0B6E68;
+  --navy:#0B2D48;
+  --navy2:#08202F;
+  --text:#16212B;
+  --text2:#4B5C63;
+  --card:#EAF4F3;
+  --border:#D7E6E4;
+  --good:#1F9D67;
+  --warn:#B9740A;
+  --bad:#C1443B;
+  --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
+.deck{position:relative;width:100vw;height:100vh;}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;padding:5.5vh 8vw;opacity:0;transition:opacity .25s ease;overflow-y:auto;}
+.slide.active{display:flex;opacity:1;}
+.slide-tag{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;}
+.slide-title{font-size:2.1rem;font-weight:800;margin-bottom:1.2rem;line-height:1.22;max-width:94%;color:var(--navy);}
+.slide h3.subtitle{font-size:1.15rem;font-weight:400;color:var(--text2);margin-bottom:1rem;}
+ul.points{list-style:none;max-width:88%;}
+ul.points li{font-size:1.1rem;line-height:1.5;margin-bottom:.7rem;padding-left:1.7rem;position:relative;color:var(--text2);}
+ul.points li::before{content:"\203A";position:absolute;left:0;color:var(--accent2);font-weight:700;font-size:1.3rem;}
+ul.points li b, ul.points li strong{color:var(--text);font-weight:700;}
+ul.points ul{list-style:none;margin-top:.4rem;}
+ul.points ul li{font-size:.98rem;margin-bottom:.3rem;}
+ul.points ul li::before{content:"\2013";font-size:1rem;}
+.note{margin-top:1.2rem;padding:.85rem 1.2rem;background:var(--card);border-left:4px solid var(--accent);border-radius:6px;font-size:.98rem;color:var(--text2);max-width:88%;}
+.note b{color:var(--accent2);}
+.warn{margin-top:1.2rem;padding:.85rem 1.2rem;background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;font-size:.98rem;color:var(--text2);max-width:88%;}
+.warn b{color:var(--warn);}
+.src{margin-top:.9rem;font-size:.85rem;color:var(--text2);max-width:88%;}
+.src a{color:var(--accent2);text-decoration:none;border-bottom:1px dotted var(--accent2);}
+.src a:hover{color:var(--navy);}
+.slide-cover{align-items:flex-start;background:radial-gradient(circle at 80% 20%, #E3F2F1 0%, var(--bg) 60%);}
+.cover-org{font-size:.92rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent2);margin-bottom:1.6rem;}
+.cover-title{font-size:3rem;font-weight:800;max-width:88%;line-height:1.16;margin-bottom:1rem;color:var(--navy);}
+.cover-sub{font-size:1.25rem;color:var(--text2);max-width:78%;margin-bottom:2rem;}
+.cover-meta{display:flex;gap:2.2rem;flex-wrap:wrap;font-size:.95rem;color:var(--text2);}
+.cover-meta span b{color:var(--navy);display:block;font-size:1.05rem;}
+.cover-contact{position:absolute;bottom:6vh;left:8vw;font-size:.95rem;color:var(--accent2);}
+.slide-divider{align-items:center;text-align:center;background:linear-gradient(135deg, var(--bg) 0%, #E7F3F2 100%);}
+.section-tag{font-size:1rem;letter-spacing:.2em;text-transform:uppercase;color:var(--accent2);margin-bottom:1rem;}
+.section-title{font-size:2.7rem;font-weight:800;max-width:84%;line-height:1.2;margin-bottom:1rem;color:var(--navy);}
+.section-sub{font-size:1.1rem;color:var(--text2);max-width:70%;}
+.section-num{font-size:5.2rem;font-weight:800;color:var(--border);position:absolute;top:6vh;right:8vw;}
+.slide-question{background:linear-gradient(135deg,#FFF8ED 0%, var(--bg) 100%);border-top:6px solid var(--warn);}
+.q-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--warn);font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+.q-question{font-size:1.55rem;font-weight:700;margin-bottom:1.2rem;max-width:90%;color:var(--navy);line-height:1.35;}
+.q-hint{font-size:1.02rem;color:var(--text2);max-width:86%;line-height:1.5;}
+.q-footer{margin-top:1.2rem;font-size:.92rem;color:var(--text2);font-style:italic;}
+.slide-anecdote{background:linear-gradient(135deg,#F0F8F7 0%, var(--bg) 100%);border-top:6px solid var(--accent);}
+.an-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+.an-title{font-size:1.6rem;font-weight:700;margin-bottom:.9rem;max-width:90%;color:var(--navy);}
+.an-body{font-size:1.05rem;color:var(--text2);max-width:88%;line-height:1.55;}
+.an-body b{color:var(--text);}
+.slide-quote{align-items:center;text-align:center;background:linear-gradient(135deg,var(--navy) 0%, var(--navy2) 100%);color:#fff;}
+.slide-quote .mini-relance{color:#B9D6D3;border-top-color:#2A4C63;}
+.q-mark{font-size:3.6rem;color:var(--accent);line-height:1;margin-bottom:.5rem;font-family:Georgia,serif;}
+.quote-text{font-size:1.8rem;font-weight:600;max-width:80%;line-height:1.4;margin-bottom:1.2rem;}
+.quote-author{font-size:1.05rem;color:#B9D6D3;}
+.quote-author b{color:#fff;}
+.slide-demo{background:linear-gradient(135deg,#EAF4FE 0%, var(--bg) 100%);border-top:6px solid #2E7DD1;}
+.demo-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:#2E7DD1;font-weight:700;margin-bottom:1rem;}
+.demo-title{font-size:1.6rem;font-weight:700;margin-bottom:.7rem;color:var(--navy);}
+.demo-link{display:inline-block;margin-top:.5rem;background:#2E7DD1;color:#fff;padding:.55rem 1.1rem;border-radius:8px;text-decoration:none;font-weight:600;font-size:.98rem;}
+.slide-exercice{background:linear-gradient(135deg,#F0F8F7 0%, var(--bg) 100%);border-top:6px solid var(--accent);}
+.exo-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--accent2);font-weight:700;margin-bottom:1rem;}
+.exo-title{font-size:1.8rem;font-weight:700;margin-bottom:.5rem;color:var(--navy);}
+.exo-duree{font-size:.98rem;color:var(--text2);margin-bottom:1.1rem;}
+.exo-steps{max-width:88%;padding-left:1.3rem;}
+.exo-steps li{font-size:1.05rem;color:var(--text2);margin-bottom:.55rem;line-height:1.45;}
+.exo-livrable{margin-top:1.2rem;padding:.85rem 1.1rem;background:var(--card);border-radius:8px;font-size:1rem;border-left:4px solid var(--good);}
+.slide-cta{align-items:center;text-align:center;background:radial-gradient(circle at 50% 30%, #E3F2F1 0%, var(--bg) 70%);}
+.slide-cta h2{font-size:2.4rem;font-weight:800;margin-bottom:1rem;color:var(--navy);}
+.slide-cta p{font-size:1.2rem;color:var(--text2);margin-bottom:1.6rem;}
+.cta-links{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem;}
+.cta-links a{color:var(--accent2);text-decoration:none;font-size:1.05rem;font-weight:600;border-bottom:2px solid var(--accent);padding-bottom:2px;}
+table.cmp{border-collapse:collapse;max-width:96%;margin-top:.9rem;}
+table.cmp th, table.cmp td{border:1px solid var(--border);padding:.55rem .85rem;font-size:.95rem;text-align:left;}
+table.cmp th{background:var(--card);color:var(--accent2);}
+table.cmp td{color:var(--text2);}
+table.cmp td b{color:var(--text);}
+.two-col{display:flex;gap:2.2rem;max-width:96%;}
+.two-col .col{flex:1;}
+.two-col h4{color:var(--accent2);font-size:1.02rem;margin-bottom:.5rem;}
+.three-col{display:flex;gap:1.6rem;max-width:96%;}
+.three-col .col{flex:1;background:var(--card);border-radius:8px;padding:1rem 1.1rem;}
+.three-col h4{color:var(--accent2);font-size:1rem;margin-bottom:.45rem;}
+.three-col p{font-size:.93rem;color:var(--text2);line-height:1.45;}
+.schema-box{margin-top:1.1rem;max-width:94%;}
+.schema-box svg{max-width:100%;height:auto;}
+.slide-code{background:linear-gradient(135deg,#F4F8F8 0%, var(--bg) 100%);border-top:6px solid var(--navy);}
+.code-tag{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:.8rem;}
+pre.code{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1.1rem 1.3rem;font-family:'JetBrains Mono',Consolas,monospace;font-size:.86rem;line-height:1.55;overflow-x:auto;max-width:96%;white-space:pre;}
+pre.code .cm{color:#7FB3AE;}
+pre.code .kw{color:#7FC7FF;font-weight:600;}
+pre.code .st{color:#F2C57C;}
+pre.code .fn{color:#9FE3D0;}
+.file-path{font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--accent2);margin-bottom:.5rem;}
+code.inline{font-family:'JetBrains Mono',monospace;background:var(--card);color:var(--accent2);padding:.1rem .35rem;border-radius:4px;font-size:.9em;}
+.progress-wrap{position:fixed;top:0;left:0;width:100%;height:4px;background:var(--border);z-index:50;}
+#progress{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--navy));transition:width .2s ease;}
+#counter{position:fixed;bottom:1.3vh;right:2vw;font-size:.78rem;color:var(--text2);z-index:50;letter-spacing:.05em;}
+.navbtn{position:fixed;top:50%;transform:translateY(-50%);z-index:50;background:var(--card);border:1px solid var(--border);color:var(--navy);width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.15rem;display:flex;align-items:center;justify-content:center;opacity:.6;transition:opacity .2s;}
+.navbtn:hover{opacity:1;}
+#prevBtn{left:1.2vw;} #nextBtn{right:1.2vw;}
+.brand-mark{position:fixed;bottom:1.3vh;left:2vw;font-size:.7rem;color:#9FBDBA;letter-spacing:.1em;z-index:50;}
+.pdf-btn{position:fixed;top:1.3vh;right:2vw;z-index:60;background:var(--accent);color:#FFFFFF;border:none;border-radius:8px;padding:.5rem 1rem;font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:.4rem;box-shadow:0 2px 8px rgba(11,45,72,.25);transition:background .2s;}
+.pdf-btn:hover{background:var(--accent2);}
+.amorce{margin-top:1.1rem;padding-top:.7rem;border-top:1px dashed var(--border);font-size:.93rem;color:var(--accent2);font-style:italic;max-width:88%;}
+.mini-relance{margin-top:1.1rem;padding-top:.7rem;border-top:1px dashed var(--border);font-size:.9rem;color:var(--accent2);font-style:italic;max-width:88%;}
+@media print{
+  .navbtn,#counter,.progress-wrap,.brand-mark,.pdf-btn{display:none !important;}
+  body{overflow:visible;}
+  .slide{position:relative;display:flex !important;opacity:1 !important;page-break-after:always;height:100vh;}
+}
+@media (max-width:900px){
+  .slide{padding:4vh 5vw 12vh;justify-content:flex-start;}
+  .cover-title{font-size:2rem;}
+  .slide-title{font-size:1.45rem;}
+  .section-title{font-size:1.7rem;}
+  .section-num{font-size:3rem;top:3vh;right:5vw;}
+  .two-col,.three-col{flex-direction:column;gap:1rem;}
+  ul.points,.note,.warn,.src,.amorce,.mini-relance,.exo-steps{max-width:100%;}
+  ul.points li{font-size:1rem;}
+  .q-question{font-size:1.25rem;}
+  .quote-text{font-size:1.35rem;max-width:100%;}
+  pre.code{font-size:.68rem;padding:.8rem .9rem;}
+  table.cmp{display:block;overflow-x:auto;max-width:100%;}
+  .pdf-btn,.navbtn{display:none;}
+  .brand-mark{max-width:60%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+  .cover-contact{position:static;margin-top:1.5rem;}
+}
+</style>
+</head>
+<body>
+<div class="progress-wrap"><div id="progress"></div></div>
+<button class="navbtn" id="prevBtn">&lsaquo;</button>
+<button class="navbtn" id="nextBtn">&rsaquo;</button>
+<button class="pdf-btn" id="pdfBtn" title="Raccourci clavier : P">&#11015; Exporter en PDF</button>
+<div id="counter">1 / 1</div>
+<div class="brand-mark">IA POUR LES DÉVELOPPEURS · JOUR 3 · DIGITAL HOUSE COMPANY</div>
+
+<div class="deck">
+<!-- SLIDES_START -->
+<section class="slide slide-cover active">
+  <div class="cover-org">Formation professionnelle · Jour 3 sur 3</div>
+  <div class="cover-title">Les LLM en profondeur et les outils pour développer avec l'IA</div>
+  <div class="cover-sub">Jour 3 — Faire tourner un modèle chez soi, et l'ouvrir sur ses documents</div>
+  <div class="cover-meta">
+    <span><b>Modules</b>5 et 6</span>
+    <span><b>Exercices</b>Embeddings · RAG local</span>
+    <span><b>Langage</b>Python</span>
+    <span><b>Durée</b>7 heures</span>
+  </div>
+  <div class="cover-contact">Kuate Joël Parfait — Digital House Company — hello@dhcompany.pro</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Réveil</div>
+<h2 class="slide-title">Où nous en sommes</h2>
+<div class="two-col"><div class="col"><h4>Ce qui est derrière nous</h4><ul class="points"><li>Ce qu'est un LLM, un token, un embedding</li><li>Copilot dans l'éditeur, et ses limites</li><li>Six techniques de prompt, écrites comme des fonctions</li><li>Le coût réel d'un appel, et le rapport de 1 à 46</li><li>Une application web qui tourne et qu'on peut déployer</li></ul></div><div class="col"><h4>Ce qui nous attend</h4><ul class="points"><li>Les réglages d'un LLM : température, top_p</li><li>Installer un modèle sur sa propre machine</li><li>Le RAG : répondre à partir de VOS documents</li><li>MCP : brancher un assistant sur vos systèmes</li><li>Les outils : Hugging Face, LangChain, LM Studio</li></ul></div></div>
+<div class="warn"><b>Changement de langage aujourd'hui.</b> Les jours 1 et 2 étaient en HTML/CSS/JavaScript, sans rien installer. Le jour 3 est en <b>Python</b>, pour trois raisons précises : un RAG lit des fichiers sur le disque, un serveur MCP parle par l'entrée standard d'un processus, et l'écosystème de l'IA (transformers, datasets, LangChain) est en Python. L'interface, elle, reste en HTML/CSS/JS.</div>
+<div class="amorce">&#128172; Qui a réussi à installer Python et à faire passer <code class="inline">pytest -q</code> hier soir ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Journée 3</div>
+<h2 class="slide-title">Au programme aujourd'hui</h2>
+<div class="two-col"><div class="col"><h4>Matin — les LLM</h4><ul class="points"><li>Architecture, température, top_p</li><li>Summarization, classification, extraction</li><li>GGUF et quantification</li><li>Installer un modèle local — LM Studio</li><li>Embeddings, cosinus, réduction de dimension</li><li><b>Exercice 5</b> — la spécification RAG et les embeddings</li></ul></div><div class="col"><h4>Après-midi — les outils</h4><ul class="points"><li>API OpenAI, Hugging Face, LangChain</li><li>Découpage, recherche hybride, reclassement</li><li>Appel d'outils et agents</li><li><b>Exercice 6</b> — un « ChatGPT » local sur vos documents</li><li><b>Exercice 7</b> — un serveur MCP, de zéro</li><li>Les trois formations outils du dossier</li></ul></div></div>
+<div class="note">Deux exercices de synthèse aujourd'hui, plus un nouveau : le module <b>MCP</b>, qui relie tout ce que vous avez construit aux assistants que vous utiliserez demain.</div>
+<div class="amorce">&#128172; Après cette journée, quel est le premier document interne que vous aimeriez indexer ?</div>
+</section>
+<section class="slide slide-divider">
+  <div class="section-num">05</div>
+  <div class="section-tag">Module 5</div>
+  <h1 class="section-title">Les LLM</h1>
+  <p class="section-sub">Architecture, réglages, formats, et la mécanique du RAG</p>
+  <div class="schema-box" style="max-width:190px;margin-left:auto;margin-right:auto;">
+    <svg viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="30" r="6" fill="#0E8C86"/><circle cx="24" cy="50" r="6" fill="#0E8C86"/><circle cx="24" cy="70" r="6" fill="#0E8C86"/>
+      <circle cx="70" cy="24" r="6" fill="#0B2D48"/><circle cx="70" cy="44" r="6" fill="#0B2D48"/><circle cx="70" cy="64" r="6" fill="#0B2D48"/><circle cx="70" cy="84" r="6" fill="#0B2D48"/>
+      <circle cx="116" cy="40" r="6" fill="#0E8C86"/><circle cx="116" cy="62" r="6" fill="#0E8C86"/>
+      <g stroke="#D7E6E4" stroke-width="1.2">
+        <line x1="30" y1="30" x2="64" y2="24"/><line x1="30" y1="30" x2="64" y2="44"/><line x1="30" y1="50" x2="64" y2="44"/><line x1="30" y1="50" x2="64" y2="64"/><line x1="30" y1="70" x2="64" y2="64"/><line x1="30" y1="70" x2="64" y2="84"/>
+        <line x1="76" y1="24" x2="110" y2="40"/><line x1="76" y1="44" x2="110" y2="40"/><line x1="76" y1="64" x2="110" y2="62"/><line x1="76" y1="84" x2="110" y2="62"/>
+      </g>
+    </svg>
+  </div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Architecture</div>
+  <h2 class="slide-title">Ce qu'il y a dans un LLM</h2>
+  <ul class="points">
+    <li><b>Un tokeniseur</b> : découpe le texte en tokens et les convertit en numéros.</li>
+    <li><b>Une table d'embeddings</b> : chaque numéro de token devient un vecteur de nombres.</li>
+    <li><b>N couches de transformer</b>, empilées : chacune contient un bloc d'attention et un petit réseau de neurones.</li>
+    <li><b>Une couche de sortie</b> : produit un score pour chacun des dizaines de milliers de tokens possibles.</li>
+    <li><b>Un échantillonneur</b> : choisit le token suivant parmi les mieux notés. C'est là qu'agissent température et top_p.</li>
+  </ul>
+  <div class="note">Le nombre de <b>paramètres</b> (7B, 70B, 400B) compte les nombres stockés dans ces couches. Plus il y en a, plus le modèle capte de nuances — et plus il consomme de mémoire et d'électricité.</div>
+  <div class="amorce">💬 Sur ces cinq briques, laquelle contrôlez-vous depuis votre code ? Une seule.</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Réglages</div>
+  <h2 class="slide-title">La température : le seul bouton que vous tournerez vraiment</h2>
+  <ul class="points">
+    <li>À chaque étape, le modèle a une liste de tokens candidats avec leur probabilité.</li>
+    <li>La <b>température</b> déforme cette liste : basse, elle accentue les écarts ; haute, elle les aplatit.</li>
+    <li><b>Température 0</b> : le modèle prend toujours le token le plus probable. Résultat quasi reproductible.</li>
+    <li><b>Température 1</b> : distribution d'origine. Réponses variées, plus créatives.</li>
+    <li><b>Température &gt; 1,5</b> : le modèle part dans des directions improbables. En pratique, inexploitable.</li>
+  </ul>
+  <div class="warn">Même à température 0, la reproductibilité <b>n'est pas garantie</b> : l'ordre des calculs sur GPU et les mises à jour du modèle côté fournisseur peuvent changer le résultat. Ne construisez jamais une logique métier sur l'hypothèse d'une sortie identique.</div>
+  <div class="amorce">💬 Vous générez un identifiant de dossier avec un LLM à température 0. Quel est le problème ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Réglages</div>
+  <h2 class="slide-title">Quelle température pour quel usage</h2>
+  <table class="cmp">
+    <tr><th>Température</th><th>Usage</th><th>Exemple concret</th></tr>
+    <tr><td><b>0 à 0,2</b></td><td>Extraction, classification, code</td><td>Classer un ticket, extraire une date, générer du SQL</td></tr>
+    <tr><td><b>0,3 à 0,5</b></td><td>Résumé, reformulation, documentation</td><td>Résumer un compte rendu, rédiger une docstring</td></tr>
+    <tr><td><b>0,6 à 0,9</b></td><td>Rédaction, idéation</td><td>Écrire un texte de présentation, proposer des noms</td></tr>
+    <tr><td><b>1,0 et plus</b></td><td>Créativité assumée, self-consistency</td><td>Générer des variantes délibérément différentes</td></tr>
+  </table>
+  <ul class="points">
+    <li><b>top_p</b> (échantillonnage par noyau) : ne garde que les tokens dont les probabilités cumulées atteignent p. À 0,9, on écarte la longue traîne des choix improbables.</li>
+    <li>Conseil : <b>réglez la température, laissez top_p par défaut</b>. Modifier les deux ensemble rend le comportement difficile à prévoir.</li>
+  </ul>
+  <div class="amorce">💬 Quelle température mettriez-vous pour le classifieur de titres écrit hier ? Et pourquoi pas 0,7 ?</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · rappel</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">La température dans notre client</h2>
+  <div class="file-path">commun/llm_client.py</div>
+<pre class="code"><span class="kw">def</span> <span class="fn">demander</span>(prompt, systeme=<span class="kw">None</span>, temperature=<span class="st">0.7</span>,
+             format_json=<span class="kw">False</span>, modele=<span class="kw">None</span>):
+    ...
+    corps = {
+        <span class="st">"model"</span>: modele,
+        <span class="st">"messages"</span>: messages,
+        <span class="st">"temperature"</span>: temperature,
+    }
+
+    <span class="cm"># Si on veut du JSON, on l'indique au serveur.</span>
+    <span class="cm"># Attention : tous les modèles locaux ne savent pas le faire.</span>
+    <span class="kw">if</span> format_json:
+        corps[<span class="st">"response_format"</span>] = {<span class="st">"type"</span>: <span class="st">"json_object"</span>}
+
+
+<span class="cm"># Usages dans nos exercices :</span>
+<span class="fn">demander</span>(prompt, temperature=<span class="st">0.1</span>)   <span class="cm"># classifieur : on veut la stabilité</span>
+<span class="fn">demander</span>(prompt, temperature=<span class="st">0.3</span>)   <span class="cm"># spécification : rigueur</span>
+<span class="fn">demander</span>(prompt, temperature=<span class="st">0.4</span>)   <span class="cm"># page web : un peu de créativité</span>
+<span class="fn">demander</span>(prompt, temperature=<span class="st">0.1</span>)   <span class="cm"># RAG : fidélité aux documents</span></pre>
+  <div class="amorce">💬 Trois de nos quatre usages sont à température basse. Qu'est-ce que cela dit des usages professionnels réels ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Fonctionnalités</div>
+  <h2 class="slide-title">Les trois tâches où un LLM est irremplaçable</h2>
+  <div class="three-col">
+    <div class="col">
+      <h4>Summarization</h4>
+      <p>Résumer un texte long. Précisez toujours <b>la longueur cible</b> et <b>l'angle</b> : « en cinq puces, pour un directeur financier ». Sans angle, le résumé est plat.</p>
+    </div>
+    <div class="col">
+      <h4>Classification</h4>
+      <p>Ranger un texte dans des catégories. Donnez la <b>liste fermée</b> des catégories, une définition de chacune, et un exemple. Sortie en JSON.</p>
+    </div>
+    <div class="col">
+      <h4>Extraction</h4>
+      <p>Sortir des champs structurés d'un texte libre : dates, montants, noms, références. C'est l'usage le plus rentable en entreprise.</p>
+    </div>
+  </div>
+  <div class="note">Ces trois tâches ont un point commun : <b>l'entrée est du texte que vous possédez</b>. Le modèle ne fabrique pas d'information, il la réorganise. C'est là qu'il est le plus fiable et le moins cher.</div>
+  <div class="amorce">💬 Laquelle de ces trois tâches représente le plus de temps humain perdu chez vous ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Extraction</div>
+  <h2 class="slide-title">Extraire des données d'un texte libre : le cas type</h2>
+  <ul class="points">
+    <li>Entrée : un e-mail, un compte rendu, un PDF de facture, une réclamation.</li>
+    <li>Sortie voulue : un objet JSON avec des champs typés, prêt à insérer en base.</li>
+    <li>Trois règles qui font la différence : <b>liste fermée des champs</b>, <b>null si absent</b>, <b>jamais d'invention</b>.</li>
+    <li>Ajoutez un champ <code class="inline">confiance</code> : il vous permet de router vers un humain les cas douteux.</li>
+    <li>Et un champ <code class="inline">citation</code> : le passage exact du texte d'où vient l'information. C'est votre traçabilité.</li>
+  </ul>
+  <div class="note">Le champ <code class="inline">citation</code> est un excellent réflexe : si le modèle ne peut pas citer le passage, c'est presque toujours qu'il a inventé la valeur.</div>
+  <div class="amorce">💬 Quel document de votre organisation aimeriez-vous transformer en JSON dès cet après-midi ?</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · rappel</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">Obtenir un dictionnaire Python, pas du texte</h2>
+  <div class="file-path">commun/llm_client.py</div>
+<pre class="code"><span class="kw">def</span> <span class="fn">demander_json</span>(prompt, systeme=<span class="kw">None</span>, temperature=<span class="st">0.2</span>):
+    <span class="st">"""Comme demander(), mais renvoie un dictionnaire Python."""</span>
+
+    texte = <span class="fn">demander</span>(prompt, systeme=systeme,
+                     temperature=temperature, format_json=<span class="kw">True</span>)
+
+    <span class="cm"># Les modèles ajoutent souvent ``` autour du JSON. On les enlève.</span>
+    texte = texte.<span class="fn">strip</span>()
+    <span class="kw">if</span> texte.<span class="fn">startswith</span>(<span class="st">"```"</span>):
+        lignes = texte.<span class="fn">split</span>(<span class="st">"\n"</span>)
+        texte = <span class="st">"\n"</span>.<span class="fn">join</span>(lignes[<span class="st">1</span>:-<span class="st">1</span>])   <span class="cm"># on retire 1re et dernière ligne</span>
+
+    <span class="kw">try</span>:
+        <span class="kw">return</span> json.<span class="fn">loads</span>(texte)
+    <span class="kw">except</span> json.JSONDecodeError:
+        <span class="cm"># On renvoie une erreur exploitable plutôt que de planter</span>
+        <span class="kw">return</span> {<span class="st">"erreur"</span>: <span class="st">"réponse non parsable"</span>, <span class="st">"texte_brut"</span>: texte}</pre>
+  <div class="note">Le bloc <code class="inline">try / except</code> final n'est pas de la paranoïa : un modèle produit du JSON invalide plusieurs fois sur mille. À l'échelle d'un service, cela arrive tous les jours.</div>
+  <div class="amorce">💬 Que devrait faire votre application quand elle reçoit ce dictionnaire d'erreur ? Réessayer ? Alerter ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Formats</div>
+  <h2 class="slide-title">Étude du fichier GGUF</h2>
+  <ul class="points">
+    <li>Un fichier GGUF contient <b>deux choses</b> : les tenseurs (les poids) et les métadonnées.</li>
+    <li>Les métadonnées comprennent : l'architecture, le tokeniseur complet, le <b>gabarit de conversation</b>, la longueur de contexte.</li>
+    <li>C'est ce qui le rend autonome : <b>un seul fichier suffit</b> pour faire tourner le modèle. Pas de dépendances éparpillées.</li>
+    <li>Le gabarit de conversation est essentiel : il dit comment écrire les rôles system, user et assistant pour ce modèle précis.</li>
+    <li>Créé pour <code class="inline">llama.cpp</code>, il est aujourd'hui lu par LM Studio, Ollama, GPT4All, et des bibliothèques Python.</li>
+  </ul>
+  <div class="src">Source : <a href="https://huggingface.co/docs/hub/gguf" target="_blank" rel="noopener">Hugging Face — GGUF</a></div>
+  <div class="amorce">💬 Un modèle mal servi (mauvais gabarit de conversation) donne des réponses étranges. Comment le diagnostiqueriez-vous ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Formats</div>
+  <h2 class="slide-title">Choisir sa quantification en fonction de sa machine</h2>
+  <table class="cmp">
+    <tr><th>Votre machine</th><th>Modèle conseillé</th><th>Quantification</th><th>À quoi s'attendre</th></tr>
+    <tr><td>Portable, 8 Go de RAM</td><td>3B</td><td>Q4_K_M</td><td>Correct pour classer et extraire</td></tr>
+    <tr><td>Portable, 16 Go</td><td>7B ou 8B</td><td>Q4_K_M</td><td>Bon usage général, réponses lentes sur CPU</td></tr>
+    <tr><td>Poste fixe, 32 Go</td><td>14B</td><td>Q4_K_M / Q5_K_M</td><td>Très bon, RAG confortable</td></tr>
+    <tr><td>Avec GPU 12 Go et plus</td><td>14B à 32B</td><td>Q4_K_M</td><td>Rapide, utilisable en interactif</td></tr>
+  </table>
+  <div class="note">Repère de calcul : la taille du fichier en Q4_K_M vaut environ <b>0,6 fois le nombre de milliards de paramètres, en gigaoctets</b>. Un modèle 7B pèse donc environ 4,4 Go — et il lui faut un peu plus de RAM libre que cela.</div>
+  <div class="amorce">💬 Regardez votre machine : quel modèle pouvez-vous faire tourner cet après-midi ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Le marché</div>
+  <h2 class="slide-title">Modèles ouverts et modèles fermés</h2>
+  <div class="two-col">
+    <div class="col">
+      <h4>Modèles fermés (API)</h4>
+      <ul class="points">
+        <li>GPT, Claude, Gemini</li>
+        <li>Qualité maximale du moment</li>
+        <li>Aucun accès aux poids</li>
+        <li>Le fournisseur peut modifier ou retirer le modèle</li>
+        <li>Vos données transitent chez lui</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Modèles ouverts (téléchargeables)</h4>
+      <ul class="points">
+        <li>Llama, Mistral, Qwen, Gemma, Phi</li>
+        <li>Poids téléchargeables, exécution locale</li>
+        <li>Version figée : reproductible dans le temps</li>
+        <li><b>Attention aux licences</b> : ouvert ≠ libre</li>
+        <li>Rien ne sort de votre réseau</li>
+      </ul>
+    </div>
+  </div>
+  <div class="warn">Vérifiez toujours la licence avant un usage commercial : certaines imposent des restrictions selon le nombre d'utilisateurs, l'usage, ou interdisent d'entraîner d'autres modèles avec les sorties.</div>
+  <div class="amorce">💬 « Version figée, reproductible dans le temps » : pourquoi est-ce un argument décisif dans un secteur réglementé ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Local</div>
+  <h2 class="slide-title">Pourquoi installer un LLM sur sa machine</h2>
+  <ul class="points">
+    <li><b>Confidentialité totale</b> : aucune donnée ne quitte le poste. C'est souvent le seul argument qui compte.</li>
+    <li><b>Coût nul au token</b> : vous pouvez traiter un million de documents sans regarder la facture.</li>
+    <li><b>Fonctionnement hors ligne</b> : utile en déplacement, sur un site isolé, ou derrière un réseau fermé.</li>
+    <li><b>Reproductibilité</b> : le modèle ne change pas sous vos pieds. Votre test d'il y a six mois vaut encore.</li>
+    <li><b>Apprentissage</b> : voir le modèle charger, occuper la mémoire et ralentir démystifie complètement la technologie.</li>
+  </ul>
+  <div class="note">Ce que vous perdez : de la qualité brute, et de la vitesse sur un poste sans carte graphique. Pour classer, extraire ou faire du RAG documentaire, <b>c'est très souvent suffisant</b>.</div>
+  <div class="amorce">💬 Dans votre organisation, quel projet est aujourd'hui bloqué uniquement pour des raisons de confidentialité ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">LM Studio</div>
+  <h2 class="slide-title">LM Studio : télécharger, tester, servir</h2>
+  <ul class="points">
+    <li>Application de bureau, gratuite, pour Windows, macOS et Linux.</li>
+    <li><b>Onglet Discover</b> : rechercher et télécharger un modèle GGUF depuis Hugging Face, sans ligne de commande.</li>
+    <li><b>Onglet Chat</b> : discuter avec le modèle pour l'évaluer, et régler température et longueur de contexte.</li>
+    <li><b>Onglet Developer</b> : démarrer un <b>serveur local</b> compatible avec le format d'API d'OpenAI.</li>
+    <li>Le serveur écoute par défaut sur <code class="inline">http://localhost:1234/v1</code>.</li>
+  </ul>
+  <div class="src">Source : <a href="https://lmstudio.ai/docs/app/api/endpoints/openai" target="_blank" rel="noopener">LM Studio — endpoints compatibles OpenAI</a></div>
+  <div class="amorce">💬 Un serveur local qui parle le même langage qu'OpenAI : quelle conséquence pour le code que vous avez écrit hier ?</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · démonstration</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">Passer du cloud au local : deux lignes</h2>
+  <div class="file-path">.env</div>
+<pre class="code"><span class="cm"># --- Configuration OpenAI (payant, données envoyées) ---</span>
+LLM_BASE_URL=https://api.openai.com/v1
+LLM_API_KEY=sk-proj-...
+LLM_MODEL=gpt-5.6-luna
+
+<span class="cm"># --- Configuration LM Studio (gratuit, tout reste chez vous) ---</span>
+LLM_BASE_URL=http://localhost:1234/v1
+LLM_API_KEY=lm-studio          <span class="cm"># n'importe quelle valeur : non vérifiée</span>
+LLM_MODEL=local-model          <span class="cm"># le nom affiché dans l'onglet Developer</span>
+
+
+<span class="cm"># Routes servies par LM Studio, identiques à celles d'OpenAI :</span>
+<span class="cm">#   GET  /v1/models</span>
+<span class="cm">#   POST /v1/chat/completions</span>
+<span class="cm">#   POST /v1/embeddings</span>
+<span class="cm">#   POST /v1/completions</span>
+
+<span class="cm"># AUCUNE ligne de Python à modifier dans nos six exercices.</span></pre>
+  <div class="note">C'est le bénéfice concret d'avoir isolé l'appel dans <code class="inline">llm_client.py</code>. Une seule fonction à modifier — ou même aucune. <b>C'est de l'architecture, pas de l'IA.</b></div>
+  <div class="amorce">💬 Votre code actuel supporterait-il ce changement en deux lignes ? Sinon, où est le problème ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Alternatives locales</div>
+  <h2 class="slide-title">Ollama, llama.cpp et les autres</h2>
+  <table class="cmp">
+    <tr><th>Outil</th><th>Interface</th><th>Point fort</th></tr>
+    <tr><td><b>LM Studio</b></td><td>Graphique</td><td>Le plus simple pour découvrir et tester</td></tr>
+    <tr><td><b>Ollama</b></td><td>Ligne de commande</td><td>Scriptable, idéal sur un serveur : <code class="inline">ollama run mistral</code></td></tr>
+    <tr><td><b>llama.cpp</b></td><td>Ligne de commande</td><td>Le moteur sous-jacent, réglages fins, très léger</td></tr>
+    <tr><td><b>vLLM</b></td><td>Serveur</td><td>Production à fort débit, nécessite un GPU</td></tr>
+  </table>
+  <div class="note">En formation et en découverte : <b>LM Studio</b>. Sur un serveur de production interne : <b>Ollama</b> ou <b>vLLM</b>. Les trois premiers lisent le même format GGUF, vous ne perdez rien en changeant.</div>
+  <div class="amorce">💬 Si vous deviez déployer un modèle local pour dix collègues, sur quelle machine et avec quel outil ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Hugging Face</div>
+  <h2 class="slide-title">Hugging Face : le point de passage obligé</h2>
+  <ul class="points">
+    <li><b>Le Hub</b> : des centaines de milliers de modèles, avec fiche, licence, taille et exemples d'utilisation.</li>
+    <li><b>Les datasets</b> : des jeux de données prêts à l'emploi pour tester ou évaluer.</li>
+    <li><b>Les Spaces</b> : des démonstrations exécutables dans le navigateur, souvent avec leur code source visible.</li>
+    <li><b>Les bibliothèques</b> : <code class="inline">transformers</code> pour exécuter, <code class="inline">datasets</code> pour charger, <code class="inline">sentence-transformers</code> pour les embeddings.</li>
+    <li>Filtre indispensable pour nous : <code class="inline">library=gguf</code>, pour ne voir que les modèles utilisables en local.</li>
+  </ul>
+  <div class="note">Réflexe professionnel : avant d'utiliser un modèle trouvé sur le Hub, lisez sa <b>fiche</b> en entier. Langue d'entraînement, licence, date, biais connus, usage prévu. Un modèle anglophone donnera de mauvais résultats sur vos documents français.</div>
+  <div class="amorce">💬 Comment vérifieriez-vous qu'un modèle est réellement bon en français avant de l'adopter ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Embeddings</div>
+  <h2 class="slide-title">Les modèles d'embedding : petits, rapides, économiques</h2>
+  <ul class="points">
+    <li>Un modèle d'embedding <b>ne génère pas de texte</b> : il transforme un texte en vecteur. C'est tout.</li>
+    <li>Il est bien plus petit qu'un LLM : quelques dizaines à quelques centaines de millions de paramètres.</li>
+    <li>Il tourne sans difficulté sur un processeur ordinaire — et le coût en API est très inférieur à la génération.</li>
+    <li>Critère de choix numéro un pour nous : <b>le multilingue</b>. Un modèle entraîné sur l'anglais rapproche mal deux phrases françaises.</li>
+    <li>Règle absolue : <b>le même modèle doit servir à indexer et à interroger</b>. Deux modèles différents produisent des vecteurs incomparables.</li>
+  </ul>
+  <div class="warn">Conséquence pratique lourde : changer de modèle d'embedding oblige à <b>réindexer toute la base</b>. Choisissez-le avec soin dès le départ.</div>
+  <div class="amorce">💬 Combien de temps prendrait la réindexation de 5 000 documents chez vous ? L'avez-vous prévu ?</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · exercice 5</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">Fabriquer un embedding à la main</h2>
+  <div class="file-path">exercice_5_embeddings/embeddings_maison.py</div>
+<pre class="code">DIMENSION = <span class="st">128</span>   <span class="cm"># les vrais modèles : 384, 768, 1536 ou 3072</span>
+
+<span class="kw">def</span> <span class="fn">embedding</span>(texte, dimension=DIMENSION):
+    <span class="st">"""1. découper en mots utiles  2. chaque mot vote pour une case</span>
+<span class="st">       3. normaliser (longueur ramenée à 1)"""</span>
+
+    vecteur = [<span class="st">0.0</span>] * dimension          <span class="cm"># on part de zéros</span>
+
+    mots = <span class="fn">decouper_en_mots</span>(texte)       <span class="cm"># minuscules, sans accents, sans mots vides</span>
+
+    <span class="kw">for</span> mot <span class="kw">in</span> mots:
+        <span class="cm"># Le "hashing trick" : le même mot tombe toujours dans la même case</span>
+        position = <span class="fn">_position_du_mot</span>(mot, dimension)
+        vecteur[position] += <span class="st">1.0</span>
+
+    <span class="kw">return</span> <span class="fn">normaliser</span>(vecteur)
+
+
+<span class="kw">def</span> <span class="fn">normaliser</span>(vecteur):
+    <span class="st">"""Sans cette étape, un texte long aurait des scores plus élevés."""</span>
+    longueur = math.<span class="fn">sqrt</span>(<span class="fn">sum</span>(v * v <span class="kw">for</span> v <span class="kw">in</span> vecteur))
+
+    <span class="kw">if</span> longueur == <span class="st">0</span>:
+        <span class="kw">return</span> vecteur
+
+    <span class="kw">return</span> [v / longueur <span class="kw">for</span> v <span class="kw">in</span> vecteur]</pre>
+  <div class="amorce">💬 Notre embedding ignore l'ordre des mots. Quelle limite cela crée-t-il pour « le chat mange la souris » ?</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · exercice 5</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">La similarité cosinus : dix lignes de géométrie</h2>
+  <div class="file-path">exercice_5_embeddings/embeddings_maison.py</div>
+<pre class="code"><span class="kw">def</span> <span class="fn">similarite_cosinus</span>(vecteur_a, vecteur_b):
+    <span class="st">"""1 = même sens · 0 = aucun rapport · -1 = opposés"""</span>
+
+    <span class="kw">if</span> <span class="fn">len</span>(vecteur_a) != <span class="fn">len</span>(vecteur_b):
+        <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"Tailles différentes : comparaison impossible"</span>)
+
+    norme_a = math.<span class="fn">sqrt</span>(<span class="fn">sum</span>(v * v <span class="kw">for</span> v <span class="kw">in</span> vecteur_a))
+    norme_b = math.<span class="fn">sqrt</span>(<span class="fn">sum</span>(v * v <span class="kw">for</span> v <span class="kw">in</span> vecteur_b))
+
+    <span class="kw">if</span> norme_a == <span class="st">0</span> <span class="kw">or</span> norme_b == <span class="st">0</span>:
+        <span class="kw">return</span> <span class="st">0.0</span>          <span class="cm"># un vecteur nul n'a pas de direction</span>
+
+    <span class="cm"># zip(a, b) parcourt les deux listes en parallèle</span>
+    produit = <span class="fn">sum</span>(x * y <span class="kw">for</span> x, y <span class="kw">in</span> <span class="fn">zip</span>(vecteur_a, vecteur_b))
+
+    <span class="kw">return</span> produit / (norme_a * norme_b)
+
+
+<span class="cm"># Résultat mesuré avec notre embedding maison :</span>
+<span class="cm">#   « congé parental »  vs  « demande de congé parental »   -> 0.447</span>
+<span class="cm">#   « congé parental »  vs  « prix d'une imprimante »        -> 0.000</span></pre>
+  <div class="amorce">💬 0,447 pour deux phrases très proches : est-ce beaucoup ou peu ? À quel seuil placeriez-vous la barre ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Visualisation</div>
+  <h2 class="slide-title">La réduction de dimension : voir ce qu'on ne peut pas voir</h2>
+  <ul class="points">
+    <li>Un embedding a 128, 768 ou 1 536 dimensions. <b>Personne ne peut se représenter cela.</b></li>
+    <li>La réduction de dimension projette ces vecteurs sur <b>2 ou 3 axes</b>, pour les dessiner.</li>
+    <li>On perd de l'information, forcément. Mais on gagne quelque chose de précieux : <b>on voit les groupes</b>.</li>
+    <li>Méthodes courantes : <b>PCA</b> (rapide, linéaire), <b>t-SNE</b> et <b>UMAP</b> (meilleurs groupes visuels, plus lents).</li>
+    <li>Usage professionnel réel : repérer les <b>doublons</b>, les documents mal classés, ou les zones où votre base est vide.</li>
+  </ul>
+  <div class="note">Un nuage de points d'embeddings est souvent le meilleur outil de diagnostic d'un RAG qui répond mal : si tous vos documents forment un seul amas, aucune recherche ne pourra les distinguer.</div>
+  <div class="amorce">💬 Que verriez-vous si vous projetiez tous les documents de votre intranet ? Des groupes nets, ou une bouillie ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">RAG</div>
+  <h2 class="slide-title">L'architecture RAG en une image</h2>
+  <div class="schema-box">
+    <svg viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="18" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#0B6E68">PHASE 1 — INDEXATION (une fois, hors ligne)</text>
+      <rect x="10" y="28" width="98" height="42" rx="6" fill="#EAF4F3" stroke="#0E8C86" stroke-width="1.5"/>
+      <text x="59" y="45" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#0B2D48">Documents</text>
+      <text x="59" y="60" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#4B5C63">PDF, DOCX, TXT</text>
+      <rect x="130" y="28" width="98" height="42" rx="6" fill="#EAF4F3" stroke="#0E8C86" stroke-width="1.5"/>
+      <text x="179" y="45" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#0B2D48">Découpage</text>
+      <text x="179" y="60" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#4B5C63">600 car. / 100</text>
+      <rect x="250" y="28" width="98" height="42" rx="6" fill="#EAF4F3" stroke="#0E8C86" stroke-width="1.5"/>
+      <text x="299" y="45" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#0B2D48">Embedding</text>
+      <text x="299" y="60" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#4B5C63">texte → vecteur</text>
+      <rect x="370" y="28" width="110" height="42" rx="6" fill="#0E8C86"/>
+      <text x="425" y="45" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#FFF">Base vectorielle</text>
+      <text x="425" y="60" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#E3F2F1">+ métadonnées</text>
+      <line x1="108" y1="49" x2="130" y2="49" stroke="#4B5C63" stroke-width="1.5" marker-end="url(#r1)"/>
+      <line x1="228" y1="49" x2="250" y2="49" stroke="#4B5C63" stroke-width="1.5" marker-end="url(#r1)"/>
+      <line x1="348" y1="49" x2="370" y2="49" stroke="#4B5C63" stroke-width="1.5" marker-end="url(#r1)"/>
+
+      <text x="10" y="118" font-family="Inter,sans-serif" font-size="12" font-weight="700" fill="#0B2D48">PHASE 2 — INTERROGATION (temps réel, à chaque question)</text>
+      <rect x="10" y="130" width="88" height="42" rx="6" fill="#FFFFFF" stroke="#0B2D48" stroke-width="1.5"/>
+      <text x="54" y="155" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#0B2D48">Question</text>
+      <rect x="118" y="130" width="88" height="42" rx="6" fill="#FFFFFF" stroke="#0B2D48" stroke-width="1.5"/>
+      <text x="162" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#0B2D48">Embedding</text>
+      <text x="162" y="163" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#4B5C63">même modèle</text>
+      <rect x="226" y="130" width="98" height="42" rx="6" fill="#FFFFFF" stroke="#0B2D48" stroke-width="1.5"/>
+      <text x="275" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#0B2D48">Recherche</text>
+      <text x="275" y="163" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#4B5C63">top 3 + seuil</text>
+      <rect x="344" y="130" width="98" height="42" rx="6" fill="#FFFFFF" stroke="#0B2D48" stroke-width="1.5"/>
+      <text x="393" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#0B2D48">Prompt</text>
+      <text x="393" y="163" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#4B5C63">contexte + question</text>
+      <rect x="462" y="130" width="88" height="42" rx="6" fill="#0B2D48"/>
+      <text x="506" y="155" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#FFF">LLM</text>
+      <rect x="570" y="130" width="100" height="42" rx="6" fill="#EAF4F3" stroke="#0E8C86" stroke-width="1.5"/>
+      <text x="620" y="148" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" fill="#0B2D48">Réponse</text>
+      <text x="620" y="163" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" fill="#4B5C63">+ sources citées</text>
+      <line x1="98" y1="151" x2="118" y2="151" stroke="#4B5C63" stroke-width="1.5" marker-end="url(#r1)"/>
+      <line x1="206" y1="151" x2="226" y2="151" stroke="#4B5C63" stroke-width="1.5" marker-end="url(#r1)"/>
+      <line x1="324" y1="151" x2="344" y2="151" stroke="#4B5C63" stroke-width="1.5" marker-end="url(#r1)"/>
+      <line x1="442" y1="151" x2="462" y2="151" stroke="#4B5C63" stroke-width="1.5" marker-end="url(#r1)"/>
+      <line x1="550" y1="151" x2="570" y2="151" stroke="#4B5C63" stroke-width="1.5" marker-end="url(#r1)"/>
+      <line x1="425" y1="70" x2="425" y2="100" stroke="#0E8C86" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <line x1="425" y1="100" x2="290" y2="100" stroke="#0E8C86" stroke-width="1.5" stroke-dasharray="4 3"/>
+      <line x1="290" y1="100" x2="290" y2="130" stroke="#0E8C86" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#r1)"/>
+      <defs><marker id="r1" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" fill="#4B5C63"/></marker></defs>
+    </svg>
+  </div>
+  <div class="note"><b>RAG</b> = Retrieval (recherche) + Augmented (on enrichit le prompt) + Generation (le modèle rédige). Le modèle ne cherche rien : <b>c'est votre code qui cherche</b>.</div>
+  <div class="amorce">💬 Sur ce schéma, où se joue la qualité du résultat final ? Pointez la boîte la plus critique.</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">RAG</div>
+  <h2 class="slide-title">Pourquoi le RAG plutôt que réentraîner le modèle</h2>
+  <table class="cmp">
+    <tr><th>Approche</th><th>Coût</th><th>Mise à jour</th><th>Traçabilité</th><th>Retenu ?</th></tr>
+    <tr><td>Réentraîner un modèle</td><td>Très élevé</td><td>À refaire entièrement</td><td>Aucune</td><td>Non</td></tr>
+    <tr><td>Fine-tuning</td><td>Élevé</td><td>Lente</td><td>Faible</td><td>Rarement</td></tr>
+    <tr><td><b>RAG</b></td><td><b>Faible</b></td><td><b>Immédiate</b></td><td><b>Sources citées</b></td><td><b>Oui</b></td></tr>
+    <tr><td>Tout mettre dans le prompt</td><td>Prohibitif</td><td>—</td><td>—</td><td>Impossible</td></tr>
+  </table>
+  <div class="note">Idée reçue à corriger : <b>le fine-tuning n'ajoute pas de connaissances</b>, il ajuste un style, un format, un comportement. Pour faire connaître un document au modèle, c'est le RAG — et lui seul.</div>
+  <div class="amorce">💬 On vous demande « d'entraîner l'IA sur nos documents ». Comment reformulez-vous la demande ?</div>
+</section>
+<section class="slide slide-question">
+  <div class="q-tag">💬 Question de relance · module 5</div>
+  <div class="q-question">Votre RAG donne de mauvaises réponses. Vous avez le choix : changer pour un modèle plus puissant, ou revoir votre découpage et votre recherche. Par quoi commencez-vous, et comment le vérifiez-vous ?</div>
+  <div class="q-hint">Piste décisive : commencez par regarder <b>les extraits remontés</b>, avant même de lire la réponse. Si les bons extraits ne sont pas là, aucun modèle au monde ne pourra bien répondre — la qualité d'un RAG se joue à 80 % dans l'indexation. Méthode : constituez vingt questions de référence, mesurez le taux de bon extrait en première position, puis seulement ensuite jugez la rédaction.</div>
+</section>
+<section class="slide slide-exercice">
+  <div class="exo-tag">Exercice 5 · Module 5</div>
+  <h2 class="exo-title">Rédiger la spécification RAG et coder les embeddings</h2>
+  <div class="exo-duree">1h15 · en binôme · dossier <code class="inline">exercice_5_embeddings/</code></div>
+  <ol class="exo-steps">
+    <li>Lancez <code class="inline">python exercice_5_embeddings/embeddings_maison.py</code> : observez les scores de similarité affichés.</li>
+    <li>Ajoutez trois phrases de <b>votre métier</b> dans la démonstration et mesurez leurs similarités deux à deux.</li>
+    <li>Ouvrez <code class="inline">specification_rag.md</code> : c'est le livrable écrit de l'exercice. Lisez le tableau des cas limites.</li>
+    <li>Adaptez cette spécification à <b>un cas réel de votre organisation</b> : quelles sources, quels droits d'accès, quel modèle ?</li>
+    <li>Faites varier <code class="inline">DIMENSION</code> de 128 à 32, puis à 512. Que deviennent les scores ? Pourquoi ?</li>
+    <li>Ajoutez trois mots vides français dans <code class="inline">MOTS_VIDES</code> et mesurez l'effet sur la recherche.</li>
+    <li>Lancez <code class="inline">pytest exercice_5_embeddings/ -v</code> : vingt-trois tests doivent passer.</li>
+  </ol>
+  <div class="exo-livrable">Livrable : la spécification RAG adaptée à votre contexte, et une note d'une page sur l'effet observé de la dimension et des mots vides.</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · exercice 5</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">Une base vectorielle en trente lignes</h2>
+  <div class="file-path">exercice_5_embeddings/embeddings_maison.py</div>
+<pre class="code"><span class="kw">class</span> <span class="fn">BaseVectorielle</span>:
+    <span class="st">"""Chroma, Qdrant et pgvector ajoutent la persistance et les index.</span>
+<span class="st">    Le principe de la recherche est exactement celui-ci."""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, dimension=DIMENSION):
+        self.dimension = dimension
+        self.documents = []
+
+    <span class="kw">def</span> <span class="fn">ajouter</span>(self, texte, metadonnees=<span class="kw">None</span>):
+        self.documents.<span class="fn">append</span>({
+            <span class="st">"texte"</span>: texte,
+            <span class="st">"vecteur"</span>: <span class="fn">embedding</span>(texte, self.dimension),
+            <span class="st">"metadonnees"</span>: metadonnees <span class="kw">or</span> {},   <span class="cm"># source, page, droits...</span>
+        })
+
+    <span class="kw">def</span> <span class="fn">rechercher</span>(self, question, nombre_de_resultats=<span class="st">3</span>):
+        <span class="cm"># 1. la question devient un vecteur, avec LE MÊME embedding</span>
+        vecteur_question = <span class="fn">embedding</span>(question, self.dimension)
+
+        resultats = []
+
+        <span class="cm"># 2. on compare la question à CHAQUE document</span>
+        <span class="kw">for</span> document <span class="kw">in</span> self.documents:
+            score = <span class="fn">similarite_cosinus</span>(vecteur_question, document[<span class="st">"vecteur"</span>])
+            resultats.<span class="fn">append</span>({<span class="st">"texte"</span>: document[<span class="st">"texte"</span>],
+                              <span class="st">"score"</span>: <span class="fn">round</span>(score, <span class="st">4</span>),
+                              <span class="st">"metadonnees"</span>: document[<span class="st">"metadonnees"</span>]})
+
+        <span class="cm"># 3. on trie du plus proche au plus lointain, 4. on garde les N premiers</span>
+        resultats.<span class="fn">sort</span>(key=<span class="kw">lambda</span> ligne: ligne[<span class="st">"score"</span>], reverse=<span class="kw">True</span>)
+        <span class="kw">return</span> resultats[:nombre_de_resultats]</pre>
+  <div class="amorce">💬 Cette boucle compare la question à tous les documents. Que se passe-t-il avec un million de documents ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Débrief exercice 5</div>
+  <h2 class="slide-title">Ce que cet exercice démontre</h2>
+  <ul class="points">
+    <li>Un embedding n'a rien de magique : <b>des mots, des cases, une addition, une division</b>.</li>
+    <li>La normalisation n'est pas un détail : sans elle, les longs documents gagneraient toujours.</li>
+    <li>Une base vectorielle, à petite échelle, c'est <b>une liste et une boucle</b>. Le produit sert quand le volume grandit.</li>
+    <li>Les <b>métadonnées</b> ne sont pas optionnelles : sans elles, pas de citation, pas de filtre par droits, pas de confiance.</li>
+    <li>Le choix de la dimension est un compromis <b>précision contre poids</b>, que vous mesurez maintenant vous-même.</li>
+  </ul>
+  <div class="amorce">💬 Maintenant que vous l'avez codé, la « base vectorielle » vous impressionne-t-elle toujours autant ?</div>
+</section>
+<section class="slide slide-divider">
+  <div class="section-num">06</div>
+  <div class="section-tag">Module 6</div>
+  <h1 class="section-title">Les outils pour développer avec l'IA</h1>
+  <p class="section-sub">API, bibliothèques, frameworks — et l'assemblage final</p>
+  <div class="schema-box" style="max-width:190px;margin-left:auto;margin-right:auto;">
+    <svg viewBox="0 0 140 100" xmlns="http://www.w3.org/2000/svg">
+      <rect x="14" y="20" width="34" height="26" rx="4" fill="#EAF4F3" stroke="#0E8C86" stroke-width="1.8"/>
+      <rect x="54" y="20" width="34" height="26" rx="4" fill="#EAF4F3" stroke="#0E8C86" stroke-width="1.8"/>
+      <rect x="94" y="20" width="34" height="26" rx="4" fill="#EAF4F3" stroke="#0E8C86" stroke-width="1.8"/>
+      <rect x="34" y="60" width="74" height="26" rx="4" fill="#0B2D48"/>
+      <text x="71" y="77" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="700" fill="#FFF">votre code</text>
+      <line x1="31" y1="46" x2="55" y2="60" stroke="#D7E6E4" stroke-width="1.8"/>
+      <line x1="71" y1="46" x2="71" y2="60" stroke="#D7E6E4" stroke-width="1.8"/>
+      <line x1="111" y1="46" x2="88" y2="60" stroke="#D7E6E4" stroke-width="1.8"/>
+    </svg>
+  </div>
+</section>
+<section class="slide">
+  <div class="slide-tag">API</div>
+  <h2 class="slide-title">L'API OpenAI : les points d'entrée à connaître</h2>
+  <table class="cmp">
+    <tr><th>Route</th><th>Ce qu'elle fait</th><th>Usage typique</th></tr>
+    <tr><td><code class="inline">/v1/chat/completions</code></td><td>Génère du texte à partir d'une conversation</td><td>Le point d'entrée principal, celui de nos exercices</td></tr>
+    <tr><td><code class="inline">/v1/embeddings</code></td><td>Transforme un texte en vecteur</td><td>Indexation d'une base documentaire</td></tr>
+    <tr><td><code class="inline">/v1/models</code></td><td>Liste les modèles disponibles</td><td>Vérifier ce que sert un serveur local</td></tr>
+    <tr><td><code class="inline">/v1/audio/transcriptions</code></td><td>Transcrit un fichier audio</td><td>Comptes rendus de réunion</td></tr>
+    <tr><td><code class="inline">/v1/images/generations</code></td><td>Génère une image</td><td>Illustrations, maquettes</td></tr>
+  </table>
+  <div class="note">Ce format d'API est devenu un <b>standard de fait</b> : LM Studio, Ollama, Mistral, vLLM et beaucoup d'autres l'implémentent. Coder « à la sauce OpenAI » n'enferme donc pas — au contraire, cela ouvre.</div>
+  <div class="amorce">💬 Sur ces cinq routes, laquelle n'aviez-vous pas envisagée pour votre métier ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Bibliothèques</div>
+  <h2 class="slide-title">Client officiel ou requêtes HTTP directes ?</h2>
+  <div class="two-col">
+    <div class="col">
+      <h4>Bibliothèque officielle</h4>
+      <ul class="points">
+        <li>Gère les réessais et les erreurs</li>
+        <li>Streaming intégré</li>
+        <li>Typage et autocomplétion</li>
+        <li>Suit les nouveautés de l'API</li>
+        <li><b>Le choix par défaut en production</b></li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>requests, comme dans nos exercices</h4>
+      <ul class="points">
+        <li>Aucune dépendance lourde</li>
+        <li>On voit exactement ce qui part sur le réseau</li>
+        <li>Fonctionne avec n'importe quel fournisseur</li>
+        <li>Idéal pour <b>comprendre</b></li>
+        <li>À vous d'écrire les réessais</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">Nous avons choisi <code class="inline">requests</code> pour la formation afin qu'aucune magie ne s'interpose. En production, prenez la bibliothèque officielle — mais gardez l'appel isolé dans <b>un seul fichier</b>, comme notre <code class="inline">llm_client.py</code>.</div>
+  <div class="amorce">💬 Combien d'endroits de votre code appellent directement une API d'IA aujourd'hui ? Idéalement : un seul.</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Hugging Face</div>
+  <h2 class="slide-title">transformers et datasets : exécuter un modèle depuis Python</h2>
+  <ul class="points">
+    <li><code class="inline">transformers</code> permet de charger et d'exécuter un modèle <b>directement dans votre programme</b>, sans serveur.</li>
+    <li>La fonction <code class="inline">pipeline()</code> masque toute la complexité : trois lignes pour classer, résumer ou traduire.</li>
+    <li><code class="inline">datasets</code> charge des jeux de données publics ou vos propres fichiers, avec un cache automatique.</li>
+    <li><code class="inline">sentence-transformers</code> est la référence pour les <b>embeddings de qualité</b>, y compris multilingues.</li>
+    <li>Attention : le premier appel <b>télécharge le modèle</b> (souvent plusieurs gigaoctets). Prévoyez l'espace disque et le temps.</li>
+  </ul>
+  <div class="warn">Point de vigilance en entreprise : par défaut, ces bibliothèques téléchargent depuis internet. Sur un réseau fermé, il faut prévoir un <b>miroir interne</b> ou copier les modèles à la main.</div>
+  <div class="amorce">💬 Vos serveurs de production ont-ils accès à internet ? Sinon, comment y feriez-vous arriver un modèle ?</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · démonstration</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">De vrais embeddings, en trois lignes</h2>
+  <div class="file-path">démonstration — nécessite : pip install sentence-transformers</div>
+<pre class="code"><span class="kw">from</span> sentence_transformers <span class="kw">import</span> SentenceTransformer
+
+<span class="cm"># Un modèle multilingue, léger, qui tourne sur processeur.</span>
+<span class="cm"># Le premier appel télécharge le modèle (environ 470 Mo).</span>
+modele = <span class="fn">SentenceTransformer</span>(<span class="st">"paraphrase-multilingual-MiniLM-L12-v2"</span>)
+
+phrases = [
+    <span class="st">"Comment poser un congé parental ?"</span>,
+    <span class="st">"Quelle est la procédure pour demander un congé parental ?"</span>,
+    <span class="st">"Quel est le prix d'une imprimante laser ?"</span>,
+]
+
+<span class="cm"># encode() renvoie un vecteur de 384 nombres par phrase</span>
+vecteurs = modele.<span class="fn">encode</span>(phrases)
+
+<span class="cm"># Comparaison avec NOTRE fonction, écrite ce matin :</span>
+<span class="kw">from</span> exercice_5_embeddings.embeddings_maison <span class="kw">import</span> similarite_cosinus
+
+<span class="fn">print</span>(<span class="fn">similarite_cosinus</span>(vecteurs[<span class="st">0</span>], vecteurs[<span class="st">1</span>]))   <span class="cm"># proche de 0.9</span>
+<span class="fn">print</span>(<span class="fn">similarite_cosinus</span>(vecteurs[<span class="st">0</span>], vecteurs[<span class="st">2</span>]))   <span class="cm"># proche de 0.1</span></pre>
+  <div class="note">Notre embedding maison donnait 0,45 et 0,00. Un vrai modèle donne 0,9 et 0,1 : il comprend que « poser » et « demander » sont proches, <b>ce que notre version par comptage de mots ne peut pas savoir</b>.</div>
+  <div class="amorce">💬 Trois lignes pour remplacer notre code. Fallait-il quand même l'écrire à la main ce matin ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Frameworks</div>
+  <h2 class="slide-title">LangChain : à quoi ça sert vraiment</h2>
+  <ul class="points">
+    <li>LangChain fournit des <b>briques standardisées</b> : chargeurs de documents, découpeurs, embeddings, bases vectorielles, chaînes.</li>
+    <li>Son intérêt principal : <b>changer de composant sans réécrire</b> le reste. Passer de Chroma à Qdrant, ou d'OpenAI à un modèle local.</li>
+    <li>Il apporte aussi les agents, la mémoire de conversation et l'observabilité.</li>
+    <li>Son coût : une <b>couche d'abstraction</b> de plus, une API qui évolue vite, et un débogage moins direct.</li>
+    <li>Notre RAG de cet après-midi fait la même chose <b>en 150 lignes lisibles</b>, sans framework.</li>
+  </ul>
+  <div class="src">Source : <a href="https://docs.langchain.com/oss/python/deepagents/rag" target="_blank" rel="noopener">LangChain — construire une application RAG</a></div>
+  <div class="amorce">💬 Framework ou code maison : quel critère fait pencher la balance dans votre équipe ?</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · comparaison</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">Le même RAG, version LangChain</h2>
+  <div class="file-path">démonstration — les quatre étapes officielles</div>
+<pre class="code"><span class="cm"># 1. CHARGER les documents</span>
+<span class="kw">from</span> langchain_core.documents <span class="kw">import</span> Document
+docs = [<span class="fn">Document</span>(page_content=texte, metadata={<span class="st">"source"</span>: nom})]
+
+<span class="cm"># 2. DÉCOUPER en morceaux (notre fonction decouper())</span>
+<span class="kw">from</span> langchain_text_splitters <span class="kw">import</span> RecursiveCharacterTextSplitter
+splitter = <span class="fn">RecursiveCharacterTextSplitter</span>(chunk_size=<span class="st">1000</span>, chunk_overlap=<span class="st">200</span>)
+chunks = splitter.<span class="fn">split_documents</span>(docs)
+
+<span class="cm"># 3. CALCULER les embeddings (notre fonction embedding())</span>
+<span class="kw">from</span> langchain_openai <span class="kw">import</span> OpenAIEmbeddings
+embeddings = <span class="fn">OpenAIEmbeddings</span>(model=<span class="st">"text-embedding-3-large"</span>)
+
+<span class="cm"># 4. STOCKER dans une base vectorielle (notre classe BaseVectorielle)</span>
+<span class="kw">from</span> langchain_core.vectorstores <span class="kw">import</span> InMemoryVectorStore
+vector_store = <span class="fn">InMemoryVectorStore</span>(embedding=embeddings)
+vector_store.<span class="fn">add_documents</span>(documents=chunks)
+
+<span class="cm"># Les quatre étapes sont EXACTEMENT celles de notre rag.py.</span>
+<span class="cm"># Seuls les noms changent.</span></pre>
+  <div class="amorce">💬 Vous reconnaissez les quatre étapes. Le framework vous apprend-il quelque chose de nouveau, ou vous fait-il gagner du temps ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Décision</div>
+  <h2 class="slide-title">Faut-il utiliser un framework ?</h2>
+  <table class="cmp">
+    <tr><th>Situation</th><th>Recommandation</th><th>Pourquoi</th></tr>
+    <tr><td>Vous apprenez</td><td><b>Sans framework</b></td><td>Pour comprendre ce qui se passe réellement</td></tr>
+    <tr><td>Prototype rapide, composants variés</td><td>Framework</td><td>Les intégrations sont déjà écrites</td></tr>
+    <tr><td>Un cas d'usage simple et stable</td><td><b>Sans framework</b></td><td>150 lignes que vous maîtrisez valent mieux qu'une dépendance</td></tr>
+    <tr><td>Beaucoup de sources et de formats</td><td>Framework</td><td>Les chargeurs de documents seuls justifient l'adoption</td></tr>
+    <tr><td>Contrainte forte de maintenance longue</td><td><b>Sans framework</b></td><td>Moins de dépendances, moins de ruptures</td></tr>
+  </table>
+  <div class="note">Position honnête : commencez sans framework pour comprendre, puis adoptez-en un le jour où vous rencontrez le <b>problème précis</b> qu'il résout. Adopter une dépendance « au cas où » est toujours une mauvaise idée.</div>
+  <div class="amorce">💬 Combien de dépendances de vos projets actuels ne servent plus vraiment à rien ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Bonnes pratiques</div>
+  <h2 class="slide-title">Dix règles d'usage des outils d'IA en développement</h2>
+  <ul class="points">
+    <li><b>1.</b> Un seul endroit dans le code appelle le modèle. Un seul.</li>
+    <li><b>2.</b> Le prompt vit dans une fonction, versionnée dans Git.</li>
+    <li><b>3.</b> La sortie du modèle est validée par du code avant tout usage.</li>
+    <li><b>4.</b> Les tests ne font jamais d'appel réel : on utilise des doublures.</li>
+    <li><b>5.</b> Un chemin dégradé existe pour le cas où le modèle est indisponible.</li>
+    <li><b>6.</b> Les clés sont dans l'environnement, jamais dans le code ni dans les journaux.</li>
+    <li><b>7.</b> Le coût est estimé avant le développement, et mesuré après.</li>
+    <li><b>8.</b> On choisit le plus petit modèle qui réussit la tâche.</li>
+    <li><b>9.</b> Chaque réponse destinée à un utilisateur cite sa source ou est validée par un humain.</li>
+    <li><b>10.</b> On mesure la qualité sur un jeu de cas réels, pas sur une impression.</li>
+  </ul>
+  <div class="amorce">💬 Sur ces dix règles, combien sont déjà respectées dans votre code actuel ? Soyez honnêtes.</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Évaluation</div>
+  <h2 class="slide-title">Mesurer la qualité : le sujet dont personne ne parle</h2>
+  <ul class="points">
+    <li>Constituez un <b>jeu de vingt à cinquante cas réels</b>, avec la réponse attendue. C'est votre référence.</li>
+    <li>Rejouez-le à chaque changement : de prompt, de modèle, de découpage, de version.</li>
+    <li>Mesurez séparément <b>la recherche</b> (le bon extrait est-il remonté ?) et <b>la rédaction</b> (la réponse est-elle fidèle ?).</li>
+    <li>Suivez le <b>taux de « je ne sais pas »</b> : trop bas, votre système invente ; trop haut, il est inutile.</li>
+    <li>Journalisez les questions sans réponse : c'est la meilleure liste de documents à ajouter à votre base.</li>
+  </ul>
+  <div class="note">Sans jeu d'évaluation, vous ne saurez jamais si votre modification a amélioré ou dégradé le système. <b>Vous naviguerez à l'impression</b> — et l'impression, en IA, est particulièrement trompeuse.</div>
+  <div class="amorce">💬 Qui, dans votre organisation, saurait fournir les vingt bonnes questions et leurs bonnes réponses ?</div>
+</section>
+<section class="slide slide-anecdote">
+  <div class="an-tag">📖 Anecdote</div>
+  <div class="an-title">Le chatbot qui a engagé sa compagnie aérienne</div>
+  <div class="an-body">Un passager interroge le chatbot d'une compagnie aérienne sur les tarifs applicables en cas de deuil. Le chatbot lui indique qu'il peut demander le remboursement dans les 90 jours suivant l'achat — <b>ce qui était faux</b>, et contredisait la politique publiée sur le site. La compagnie a refusé le remboursement, arguant que le chatbot était « une entité distincte responsable de ses propres propos ». Le tribunal a rejeté cet argument : <b>l'entreprise est responsable de l'information fournie sur son propre site</b>, quel qu'en soit le canal.<br><br><b>Pour un développeur</b> : c'est la jurisprudence qui compte. La réponse d'un LLM que vous mettez en ligne <b>engage votre organisation</b>. C'est exactement pourquoi notre RAG répondra « je ne trouve pas cette information dans les documents fournis » plutôt que d'improviser.</div>
+  <div class="src">Source : <a href="https://www.bbc.com/travel/article/20240222-air-canada-chatbot-misinformation-what-travellers-should-know" target="_blank" rel="noopener">BBC — Air Canada chatbot (2024)</a></div>
+</section>
+<section class="slide slide-question">
+  <div class="q-tag">💬 Question de relance · module 6</div>
+  <div class="q-question">Vous mettez en ligne un assistant qui répond aux questions de vos clients à partir de votre documentation. Quelles garanties écrivez-vous dans le code — et non dans la charte d'usage — pour que cet assistant n'engage pas votre organisation à tort ?</div>
+  <div class="q-hint">Pistes concrètes : refuser de répondre en dessous d'un seuil de pertinence ; imposer la citation de la source à chaque affirmation ; interdire toute affirmation sur les prix, délais et conditions contractuelles, en les renvoyant vers la page officielle ; journaliser chaque réponse avec ses extraits ; afficher un avertissement visible ; prévoir un bouton « parler à un humain » à chaque réponse.</div>
+</section>
+<section class="slide slide-demo">
+  <div class="demo-tag">🖥️ Démonstration en direct</div>
+  <div class="demo-title">LM Studio — du téléchargement au serveur, en dix minutes</div>
+  <p style="font-size:1.02rem;color:#4B5C63;max-width:82%;">On télécharge un modèle instruct 7B en Q4_K_M, on discute avec lui dans l'onglet Chat, on démarre le serveur local dans l'onglet Developer, puis on relance <b>nos exercices d'hier</b> sans toucher une ligne de Python.</p>
+  <a class="demo-link" href="https://lmstudio.ai/" target="_blank" rel="noopener">lmstudio.ai</a>
+  <div class="note">Observez pendant la démonstration : la <b>mémoire vive consommée</b>, la <b>vitesse en tokens par seconde</b>, et la différence de qualité avec le modèle cloud utilisé hier. Les trois comptent pour une décision d'architecture.</div>
+  <div class="amorce">💬 À quelle vitesse le modèle répond-il sur votre machine ? Est-ce acceptable pour un utilisateur qui attend ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">RAG · indexation</div>
+  <h2 class="slide-title">Quatre stratégies de découpage, et quand les choisir</h2>
+  <table class="cmp">
+    <tr><th>Stratégie</th><th>Principe</th><th>Bon pour</th><th>Limite</th></tr>
+    <tr><td><b>Taille fixe</b></td><td>N caractères, avec chevauchement</td><td>Texte homogène, mise en route rapide</td><td>Coupe au milieu des idées</td></tr>
+    <tr><td><b>Par phrase</b></td><td>On regroupe des phrases entières</td><td>Comptes rendus, articles</td><td>Morceaux de taille très inégale</td></tr>
+    <tr><td><b>Par structure</b></td><td>On suit les titres et les articles</td><td><b>Règlements, procédures, contrats</b></td><td>Demande un document bien structuré</td></tr>
+    <tr><td><b>Par sens</b></td><td>On coupe où le sujet change</td><td>Documents longs et hétérogènes</td><td>Coûteux : il faut calculer des embeddings pour découper</td></tr>
+  </table>
+  <div class="note">Pour des documents administratifs — règlement intérieur, procédure, note de service — <b>le découpage par structure gagne presque toujours</b> : un article de règlement est déjà une unité de sens complète.</div>
+  <div class="amorce">💬 Regardez un document type de votre organisation : quelle stratégie lui conviendrait le mieux ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">RAG · recherche</div>
+  <h2 class="slide-title">Recherche hybride et reclassement : les deux améliorations qui paient</h2>
+  <ul class="points">
+    <li><b>Le problème</b> : la recherche vectorielle comprend le sens, mais rate les termes exacts — une référence, un code produit, un numéro d'article.</li>
+    <li><b>La recherche hybride</b> combine deux scores : le vectoriel (le sens) et le lexical, type BM25 (les mots exacts).</li>
+    <li>Le gain est souvent spectaculaire sur des documents techniques bourrés de références.</li>
+    <li><b>Le reclassement</b> (reranking) : on récupère vingt candidats, puis un petit modèle spécialisé les réordonne finement, et on n'en garde que trois.</li>
+    <li>Coût : un modèle de plus dans la chaîne, et quelques centaines de millisecondes.</li>
+  </ul>
+  <div class="note">Ordre d'intervention conseillé quand un RAG répond mal : <b>1. le découpage · 2. la recherche hybride · 3. le reclassement · 4. seulement ensuite, un plus gros modèle</b>. C'est l'ordre du meilleur rapport gain / effort.</div>
+  <div class="amorce">💬 Vos documents contiennent-ils beaucoup de références exactes ? Alors le vectoriel seul vous décevra.</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Au-delà du texte</div>
+  <h2 class="slide-title">L'appel d'outils : quand le modèle décide d'exécuter votre code</h2>
+  <ul class="points">
+    <li>Vous déclarez à l'API une liste de <b>fonctions disponibles</b>, avec leur description et leurs paramètres.</li>
+    <li>Le modèle ne les exécute pas : il <b>demande</b> à ce qu'on les exécute, en renvoyant un nom de fonction et des arguments en JSON.</li>
+    <li><b>C'est votre code qui exécute</b>, puis renvoie le résultat au modèle, qui rédige alors la réponse finale.</li>
+    <li>C'est ainsi qu'on règle les limites du jour 1 : une vraie calculatrice, une vraie requête en base, une vraie recherche web.</li>
+    <li>La description de chaque fonction est <b>un prompt</b> : sa qualité détermine si le modèle appelle la bonne fonction.</li>
+  </ul>
+  <div class="warn">Règle de sécurité absolue : <b>vous décidez de ce que vous exécutez</b>. Ne branchez jamais directement une sortie de modèle sur une commande système, une suppression en base ou un virement. Validez les arguments comme une entrée utilisateur hostile.</div>
+  <div class="amorce">💬 Quelle fonction de votre code seriez-vous prêt à exposer ainsi ? Et laquelle jamais ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Au-delà du texte</div>
+  <h2 class="slide-title">Les agents : une boucle, pas une intelligence</h2>
+  <ul class="points">
+    <li>Un <b>agent</b> est une boucle : le modèle réfléchit, choisit un outil, votre code l'exécute, le résultat revient, et on recommence.</li>
+    <li>La boucle s'arrête quand le modèle estime la tâche terminée — ou quand <b>vous</b> avez atteint la limite d'itérations que vous avez fixée.</li>
+    <li>Cette limite n'est pas optionnelle : sans elle, une boucle peut tourner des heures et coûter très cher.</li>
+    <li>Les agents brillent sur les tâches <b>vérifiables</b> : le code, où les tests disent si c'est bon.</li>
+    <li>Ils échouent sur les tâches dont personne ne sait dire objectivement si le résultat est correct.</li>
+  </ul>
+  <div class="note">Question à se poser avant tout projet d'agent : <b>« comment saurai-je automatiquement que le travail est bien fait ? »</b> Sans réponse à cette question, il ne faut pas construire un agent.</div>
+  <div class="amorce">💬 Quelle tâche de votre quotidien est à la fois répétitive <b>et</b> vérifiable automatiquement ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Interopérabilité</div>
+<h2 class="slide-title">MCP : brancher un assistant sur vos systèmes</h2>
+<h3 class="subtitle">Model Context Protocol. Une norme ouverte pour qu'un assistant appelle <b>vos</b> outils, au lieu que vous copiiez-colliez vos données dans un chat.</h3>
+<ul class="points"><li>Le <b>serveur</b> — le vôtre — expose des outils : chercher un document, lire une base, appeler une API interne.</li><li>Le <b>client</b> — Claude Code, Codex, Copilot CLI, l'application Claude — les découvre et les appelle.</li><li>Le transport le plus courant : l'<b>entrée et la sortie standard</b> d'un processus. Une ligne de JSON par message.</li><li>Le protocole sous-jacent : <b>JSON-RPC 2.0</b>. Trois méthodes suffisent à faire un serveur utile.</li><li>Écrit une fois, votre serveur fonctionne avec <b>tous</b> les assistants compatibles. C'est tout l'intérêt d'une norme.</li></ul>
+<div class="note">Ce que cela change concrètement : votre base documentaire de l'exercice 6 devient interrogeable par un assistant, <b>sans qu'aucun document ne quitte votre machine</b>. L'assistant reçoit l'extrait utile, pas le fichier.</div>
+<div class="amorce">&#128172; Quel système interne, chez vous, gagnerait le plus à être interrogeable directement par un assistant ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Au-delà du texte</div>
+  <h2 class="slide-title">Le multimodal : image, audio, documents</h2>
+  <ul class="points">
+    <li>Les modèles récents acceptent des <b>images en entrée</b> : capture d'écran, photo de document, schéma, graphique.</li>
+    <li>Usages concrets pour un développeur : décrire une maquette pour en générer le HTML, lire un message d'erreur en capture, extraire un tableau d'une photo.</li>
+    <li>La <b>transcription audio</b> est devenue fiable et peu coûteuse : comptes rendus de réunion, notes vocales.</li>
+    <li>Attention au coût : une image consomme <b>plusieurs centaines à plusieurs milliers de tokens</b> selon sa taille.</li>
+    <li>Attention à la confidentialité : une capture d'écran contient souvent bien plus que ce que vous vouliez montrer.</li>
+  </ul>
+  <div class="warn">Le piège classique : envoyer une capture d'écran complète pour poser une question sur un bouton — et transmettre au passage des noms de clients, des montants et des adresses e-mail visibles à l'écran.</div>
+  <div class="amorce">💬 Regardez votre écran maintenant. Que transmettriez-vous involontairement avec une capture ?</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · production</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">Le streaming : afficher la réponse au fil de l'eau</h2>
+  <div class="file-path">variante de commun/llm_client.py</div>
+<pre class="code"><span class="kw">def</span> <span class="fn">demander_en_flux</span>(prompt, systeme=<span class="kw">None</span>, temperature=<span class="st">0.7</span>):
+    <span class="st">"""Renvoie les morceaux de réponse au fur et à mesure de leur arrivée."""</span>
+
+    corps = {
+        <span class="st">"model"</span>: os.environ.<span class="fn">get</span>(<span class="st">"LLM_MODEL"</span>, <span class="st">"local-model"</span>),
+        <span class="st">"messages"</span>: [{<span class="st">"role"</span>: <span class="st">"user"</span>, <span class="st">"content"</span>: prompt}],
+        <span class="st">"temperature"</span>: temperature,
+        <span class="st">"stream"</span>: <span class="kw">True</span>,          <span class="cm"># &lt;-- la seule différence côté requête</span>
+    }
+
+    <span class="cm"># stream=True côté requests : on ne charge pas tout en mémoire</span>
+    reponse = requests.<span class="fn">post</span>(url, headers=entetes, json=corps, stream=<span class="kw">True</span>)
+
+    <span class="kw">for</span> ligne <span class="kw">in</span> reponse.<span class="fn">iter_lines</span>():
+        <span class="kw">if</span> <span class="kw">not</span> ligne:
+            <span class="kw">continue</span>
+
+        <span class="cm"># Le serveur envoie des lignes qui commencent par "data: "</span>
+        texte = ligne.<span class="fn">decode</span>(<span class="st">"utf-8"</span>).<span class="fn">removeprefix</span>(<span class="st">"data: "</span>)
+
+        <span class="kw">if</span> texte == <span class="st">"[DONE]"</span>:      <span class="cm"># marqueur de fin</span>
+            <span class="kw">break</span>
+
+        morceau = json.<span class="fn">loads</span>(texte)
+        contenu = morceau[<span class="st">"choices"</span>][<span class="st">0</span>][<span class="st">"delta"</span>].<span class="fn">get</span>(<span class="st">"content"</span>, <span class="st">""</span>)
+
+        <span class="kw">if</span> contenu:
+            <span class="kw">yield</span> contenu        <span class="cm"># yield : on renvoie sans terminer la fonction</span></pre>
+  <div class="note">Le streaming ne rend pas le modèle plus rapide. Il change la <b>perception</b> : le premier mot arrive en une seconde au lieu de vingt. C'est souvent la différence entre une interface utilisable et une interface abandonnée.</div>
+  <div class="amorce">💬 Quel inconvénient le streaming introduit-il quand on veut valider la sortie avant de l'afficher ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Sécurité</div>
+  <h2 class="slide-title">Faire tourner un modèle local n'est pas sans risque</h2>
+  <ul class="points">
+    <li>Un modèle téléchargé est <b>un fichier venu d'internet</b>. Vérifiez l'éditeur : compte officiel, nombre de téléchargements, licence lisible.</li>
+    <li>Préférez les formats sûrs. Les anciens formats basés sur la sérialisation Python pouvaient <b>exécuter du code au chargement</b>. GGUF et safetensors sont conçus pour éviter cela.</li>
+    <li>Un modèle peut avoir été <b>volontairement altéré</b> pour produire certaines réponses dans certains contextes. C'est indétectable à l'œil.</li>
+    <li>Le serveur local écoute sur un port : vérifiez qu'il n'est <b>pas exposé</b> au réseau de l'entreprise sans authentification.</li>
+    <li>Journalisez quel modèle exact, et quelle version, a produit quelle réponse. En cas de contrôle, c'est ce qu'on vous demandera.</li>
+  </ul>
+  <div class="warn">Un serveur LM Studio lancé sur <code class="inline">0.0.0.0</code> au lieu de <code class="inline">127.0.0.1</code>, c'est un modèle accessible à tout le réseau local, sans mot de passe. Vérifiez ce réglage.</div>
+  <div class="amorce">💬 Qui, chez vous, validerait qu'un modèle téléchargé peut être installé sur un poste de travail ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Évaluation</div>
+  <h2 class="slide-title">Les quatre indicateurs d'un RAG que l'on pilote</h2>
+  <table class="cmp">
+    <tr><th>Indicateur</th><th>Question posée</th><th>Comment le mesurer</th><th>Cible</th></tr>
+    <tr><td><b>Rappel de recherche</b></td><td>Le bon extrait est-il remonté ?</td><td>30 questions dont on connaît le document source</td><td>&gt; 90 %</td></tr>
+    <tr><td><b>Fidélité</b></td><td>La réponse s'appuie-t-elle vraiment sur les extraits ?</td><td>Relecture d'un échantillon, ou modèle juge</td><td>&gt; 95 %</td></tr>
+    <tr><td><b>Taux de refus</b></td><td>Combien de « je ne trouve pas » ?</td><td>Journalisation en continu</td><td>5 à 15 %</td></tr>
+    <tr><td><b>Latence</b></td><td>Combien de temps attend l'utilisateur ?</td><td>Mesure en production, au 95e centile</td><td>&lt; 5 s</td></tr>
+  </table>
+  <div class="note">Le troisième indicateur est le plus révélateur. <b>Un taux de refus de 0 % n'est pas une bonne nouvelle</b> : cela signifie que votre système répond même quand il ne sait pas.</div>
+  <div class="amorce">💬 Si votre assistant ne refusait jamais de répondre, comment le prendriez-vous ? Comme une qualité ?</div>
+</section>
+<section class="slide slide-question">
+  <div class="q-tag">💬 Question de relance · avant l'exercice final</div>
+  <div class="q-question">Vous avez maintenant tous les éléments. Décrivez en trois phrases l'architecture que vous proposeriez pour un assistant interne répondant aux questions des 300 agents de votre organisation sur les procédures RH.</div>
+  <div class="q-hint">Attendu : où tourne le modèle et pourquoi ; comment les documents sont découpés et indexés, et à quelle fréquence ; comment les droits d'accès sont appliqués ; ce qui se passe quand la réponse n'est pas trouvée ; qui valide les réponses les premières semaines ; et comment vous mesurerez que ça marche.</div>
+</section>
+<section class="slide slide-exercice">
+  <div class="exo-tag">Exercice 6 · Module 6 · Exercice de synthèse</div>
+  <h2 class="exo-title">Un « ChatGPT » local sur une base documentaire confidentielle</h2>
+  <div class="exo-duree">1h30 · en binôme · dossier <code class="inline">exercice_6_rag_local/</code></div>
+  <ol class="exo-steps">
+    <li>Ouvrez le dossier <code class="inline">documents/</code> : quatre documents internes fictifs (congés, télétravail, frais, charte IA).</li>
+    <li>Lancez <code class="inline">python exercice_6_rag_local/rag.py "Quelle est la durée du congé parental ?"</code>.</li>
+    <li>Lancez le mode conversation : <code class="inline">python exercice_6_rag_local/rag.py</code>, puis posez cinq questions.</li>
+    <li>Posez une question <b>hors sujet</b> : « quel temps fait-il ? ». Vérifiez que le modèle n'est <b>pas appelé</b>.</li>
+    <li>Ajoutez <b>un document de votre entreprise</b> (non confidentiel) dans le dossier, et réindexez.</li>
+    <li>Faites varier <code class="inline">taille</code> et <code class="inline">chevauchement</code> dans <code class="inline">decouper()</code> : mesurez l'effet sur la qualité des extraits.</li>
+    <li>Branchez LM Studio (<code class="inline">.env</code>) et comparez les réponses avec celles du mode hors ligne.</li>
+    <li>Lancez <code class="inline">pytest exercice_6_rag_local/ -v</code> : vingt tests doivent passer.</li>
+  </ol>
+  <div class="exo-livrable">Livrable : le RAG qui répond sur vos documents, une capture de la réponse hors sujet correctement refusée, et vos réglages de découpage justifiés.</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · exercice 6</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">Découper : la fonction qui décide de tout</h2>
+  <div class="file-path">exercice_6_rag_local/rag.py</div>
+<pre class="code"><span class="kw">def</span> <span class="fn">decouper</span>(texte, taille=<span class="st">600</span>, chevauchement=<span class="st">100</span>):
+    <span class="st">"""Le chevauchement évite de couper une phrase importante en deux."""</span>
+
+    <span class="kw">if</span> <span class="fn">len</span>(texte) &lt;= taille:
+        <span class="kw">return</span> [texte.<span class="fn">strip</span>()] <span class="kw">if</span> texte.<span class="fn">strip</span>() <span class="kw">else</span> []
+
+    morceaux = []
+    debut = <span class="st">0</span>
+
+    <span class="kw">while</span> debut &lt; <span class="fn">len</span>(texte):
+        fin = debut + taille
+        morceau = texte[debut:fin]
+
+        <span class="cm"># On préfère couper à la fin d'une phrase plutôt qu'au milieu d'un mot</span>
+        <span class="kw">if</span> fin &lt; <span class="fn">len</span>(texte):
+            position_point = morceau.<span class="fn">rfind</span>(<span class="st">". "</span>)
+
+            <span class="cm"># Seulement si le point est dans la seconde moitié,</span>
+            <span class="cm"># sinon les morceaux deviendraient bien trop courts</span>
+            <span class="kw">if</span> position_point &gt; taille // <span class="st">2</span>:
+                morceau = morceau[:position_point + <span class="st">1</span>]
+                fin = debut + position_point + <span class="st">1</span>
+
+        <span class="kw">if</span> morceau.<span class="fn">strip</span>():
+            morceaux.<span class="fn">append</span>(morceau.<span class="fn">strip</span>())
+
+        <span class="cm"># max(..., debut + 1) garantit qu'on avance : anti-boucle-infinie</span>
+        debut = <span class="fn">max</span>(fin - chevauchement, debut + <span class="st">1</span>)
+
+    <span class="kw">return</span> morceaux</pre>
+  <div class="amorce">💬 Un morceau trop petit perd le contexte, trop grand noie l'information. Comment trouveriez-vous le bon réglage ?</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · exercice 6</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">Indexer : les métadonnées d'abord</h2>
+  <div class="file-path">exercice_6_rag_local/rag.py</div>
+<pre class="code"><span class="kw">def</span> <span class="fn">indexer</span>(dossier=<span class="kw">None</span>):
+    <span class="st">"""PHASE 1 du RAG : une fois, à l'avance. En production : chaque nuit."""</span>
+
+    dossier = <span class="fn">Path</span>(dossier) <span class="kw">if</span> dossier <span class="kw">else</span> DOSSIER_DOCUMENTS
+    base = <span class="fn">BaseVectorielle</span>()
+
+    <span class="kw">if</span> <span class="kw">not</span> dossier.<span class="fn">exists</span>():
+        <span class="fn">print</span>(<span class="fn">f</span><span class="st">"[rag] Dossier introuvable : {dossier}"</span>)
+        <span class="kw">return</span> base            <span class="cm"># base vide plutôt qu'un plantage</span>
+
+    <span class="cm"># sorted() : ordre stable d'une exécution à l'autre</span>
+    <span class="kw">for</span> fichier <span class="kw">in</span> <span class="fn">sorted</span>(dossier.<span class="fn">glob</span>(<span class="st">"*.txt"</span>)):
+
+        contenu = fichier.<span class="fn">read_text</span>(encoding=<span class="st">"utf-8"</span>)
+        morceaux = <span class="fn">decouper</span>(contenu)
+
+        <span class="kw">for</span> numero, morceau <span class="kw">in</span> <span class="fn">enumerate</span>(morceaux):
+            base.<span class="fn">ajouter</span>(morceau, metadonnees={
+                <span class="st">"source"</span>: fichier.name,   <span class="cm"># SANS ÇA : pas de citation possible</span>
+                <span class="st">"morceau"</span>: numero,        <span class="cm"># position dans le document</span>
+            })
+
+    <span class="kw">return</span> base</pre>
+  <div class="note">En production, on ajouterait ici les <b>droits d'accès</b> dans les métadonnées, pour filtrer <b>avant</b> la recherche. Un agent ne doit pas obtenir par l'assistant ce qu'il ne peut pas ouvrir.</div>
+  <div class="amorce">💬 Quelles métadonnées ajouteriez-vous pour vos documents ? Date de validité ? Service ? Version ?</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · exercice 6</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">L'instruction qui empêche le modèle d'inventer</h2>
+  <div class="file-path">exercice_6_rag_local/rag.py</div>
+<pre class="code">INSTRUCTION_SYSTEME = <span class="st">"""Tu es l'assistant documentaire interne de l'organisation.</span>
+
+<span class="st">RÈGLES ABSOLUES</span>
+<span class="st">1. Tu réponds UNIQUEMENT à partir du CONTEXTE fourni ci-dessous.</span>
+<span class="st">2. Si le contexte ne contient pas l'information, tu réponds exactement :</span>
+<span class="st">   « Je ne trouve pas cette information dans les documents fournis. »</span>
+<span class="st">3. Tu n'utilises jamais tes connaissances générales pour compléter.</span>
+<span class="st">4. Après chaque affirmation, tu cites le document source entre crochets.</span>
+<span class="st">   Exemple : Le congé parental dure quatre mois. [reglement_conges.txt]</span>
+<span class="st">5. Tu réponds en français, en cinq phrases au maximum.</span>
+<span class="st">6. Si le contexte contient deux informations contradictoires, tu le signales."""</span>
+
+
+<span class="cm"># Et le test qui verrouille ces règles pour toujours :</span>
+<span class="kw">def</span> <span class="fn">test_linstruction_systeme_interdit_les_connaissances_generales</span>():
+    <span class="kw">assert</span> <span class="st">"UNIQUEMENT à partir du CONTEXTE"</span> <span class="kw">in</span> INSTRUCTION_SYSTEME
+    <span class="kw">assert</span> <span class="st">"Je ne trouve pas cette information"</span> <span class="kw">in</span> INSTRUCTION_SYSTEME
+    <span class="kw">assert</span> <span class="st">"cites le document source"</span> <span class="kw">in</span> INSTRUCTION_SYSTEME</pre>
+  <div class="warn">Cette instruction <b>réduit</b> fortement les inventions. Elle ne les supprime pas totalement. C'est pourquoi la règle 4 — citer la source — est la plus importante : elle rend l'erreur <b>vérifiable</b> par l'utilisateur.</div>
+  <div class="amorce">💬 Un test qui vérifie le contenu d'un prompt : pourquoi est-ce une excellente idée dans une équipe ?</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · exercice 6</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">La fonction qui assemble les six exercices</h2>
+  <div class="file-path">exercice_6_rag_local/rag.py</div>
+<pre class="code"><span class="kw">def</span> <span class="fn">repondre</span>(question, base, nombre_dextraits=<span class="st">3</span>, seuil=<span class="st">0.05</span>):
+
+    <span class="cm"># --- R comme Retrieval : la recherche (exercice 5) ---</span>
+    resultats = base.<span class="fn">rechercher</span>(question, nombre_de_resultats=nombre_dextraits)
+
+    <span class="cm"># --- On écarte les extraits trop peu pertinents ---</span>
+    extraits = [l <span class="kw">for</span> l <span class="kw">in</span> resultats <span class="kw">if</span> l[<span class="st">"score"</span>] &gt;= seuil]
+
+    <span class="cm"># --- Rien de pertinent : on N'APPELLE PAS le modèle du tout ---</span>
+    <span class="cm">#     On économise un appel ET on évite une réponse inventée.</span>
+    <span class="kw">if</span> <span class="kw">not</span> extraits:
+        <span class="kw">return</span> {<span class="st">"reponse"</span>: <span class="st">"Je ne trouve pas cette information dans les documents fournis."</span>,
+                <span class="st">"sources"</span>: [], <span class="st">"extraits"</span>: [], <span class="st">"modele_appele"</span>: <span class="kw">False</span>}
+
+    <span class="cm"># --- A comme Augmented : on enrichit le prompt (exercice 3) ---</span>
+    prompt = <span class="fn">construire_prompt</span>(question, extraits)
+
+    <span class="cm"># --- G comme Generation : le modèle rédige (exercice 2) ---</span>
+    <span class="cm">#     temperature 0.1 : fidélité aux documents, pas de créativité</span>
+    reponse = <span class="fn">demander</span>(prompt, systeme=INSTRUCTION_SYSTEME, temperature=<span class="st">0.1</span>)
+
+    <span class="cm"># --- On remonte les sources, sans doublon, pour que l'humain vérifie ---</span>
+    sources = []
+    <span class="kw">for</span> extrait <span class="kw">in</span> extraits:
+        source = extrait[<span class="st">"metadonnees"</span>].<span class="fn">get</span>(<span class="st">"source"</span>)
+        <span class="kw">if</span> source <span class="kw">and</span> source <span class="kw">not in</span> sources:
+            sources.<span class="fn">append</span>(source)
+
+    <span class="kw">return</span> {<span class="st">"reponse"</span>: reponse, <span class="st">"sources"</span>: sources,
+            <span class="st">"extraits"</span>: extraits, <span class="st">"modele_appele"</span>: <span class="kw">True</span>}</pre>
+  <div class="amorce">💬 Cette fonction renvoie aussi les extraits utilisés. À quoi cela sert-il, puisque l'utilisateur lit la réponse ?</div>
+</section>
+<section class="slide slide-code">
+  <div class="code-tag">Code · exercice 6</div>
+  <h2 class="slide-title" style="font-size:1.5rem;">Le test qui prouve qu'on n'invente pas</h2>
+  <div class="file-path">exercice_6_rag_local/test_rag.py</div>
+<pre class="code"><span class="kw">def</span> <span class="fn">test_repondre_nappelle_pas_le_modele_si_rien_nest_trouve</span>(base, monkeypatch):
+    <span class="st">"""Économie d'appel ET protection contre l'invention."""</span>
+
+    appels = []
+
+    <span class="kw">def</span> <span class="fn">faux_demander</span>(*args, **kwargs):
+        appels.<span class="fn">append</span>(<span class="st">1</span>)
+        <span class="kw">return</span> <span class="st">"une réponse inventée"</span>
+
+    monkeypatch.<span class="fn">setattr</span>(module_rag, <span class="st">"demander"</span>, faux_demander)
+
+    <span class="cm"># Un seuil de 0,99 est impossible à atteindre : rien ne passera</span>
+    resultat = <span class="fn">repondre</span>(<span class="st">"question hors sujet"</span>, base, seuil=<span class="st">0.99</span>)
+
+    <span class="kw">assert</span> resultat[<span class="st">"modele_appele"</span>] <span class="kw">is</span> <span class="kw">False</span>
+    <span class="kw">assert</span> <span class="fn">len</span>(appels) == <span class="st">0</span>              <span class="cm"># aucun appel, donc aucun coût</span>
+    <span class="kw">assert</span> resultat[<span class="st">"sources"</span>] == []
+    <span class="kw">assert</span> <span class="st">"Je ne trouve pas"</span> <span class="kw">in</span> resultat[<span class="st">"reponse"</span>]
+
+
+<span class="kw">def</span> <span class="fn">test_la_recherche_trouve_le_bon_document_pour_la_charte_ia</span>(base):
+    resultats = base.<span class="fn">rechercher</span>(
+        <span class="st">"puis-je envoyer des données confidentielles à une IA"</span>, <span class="st">1</span>)
+
+    <span class="kw">assert</span> resultats[<span class="st">0</span>][<span class="st">"metadonnees"</span>][<span class="st">"source"</span>] == <span class="st">"charte_ia.txt"</span></pre>
+  <div class="note">Le second test est le plus précieux de tout le projet : il vérifie que <b>la recherche remonte le bon document</b>. C'est là que se joue 80 % de la qualité d'un RAG.</div>
+  <div class="amorce">💬 Écrivez mentalement le vingt-et-unième test. Que vérifierait-il ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Débrief exercice 6</div>
+  <h2 class="slide-title">Ce que vous venez de construire</h2>
+  <ul class="points">
+    <li>Un assistant qui répond sur une base documentaire <b>sans qu'aucun octet ne quitte la machine</b>.</li>
+    <li>Environ <b>150 lignes de Python</b>, sans framework, entièrement lisibles et testées.</li>
+    <li>Qui <b>cite ses sources</b> systématiquement, donc dont chaque réponse est vérifiable.</li>
+    <li>Qui <b>refuse de répondre</b> plutôt que d'inventer, et qui n'appelle même pas le modèle quand c'est inutile.</li>
+    <li>Réutilisant le client de l'exercice 2, les techniques de prompt de l'exercice 3, et les embeddings de l'exercice 5.</li>
+  </ul>
+  <div class="note">Ce n'est pas une maquette. C'est <b>l'ossature exacte</b> d'un RAG d'entreprise. Ce qu'il faudrait ajouter pour la production : de vrais embeddings, une base persistante, les droits d'accès, une interface, et un jeu d'évaluation.</div>
+  <div class="amorce">💬 Sur ces cinq ajouts, lequel prendrait le plus de temps dans votre organisation ? Rarement le code…</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Aller plus loin</div>
+  <h2 class="slide-title">Passer de cet exercice à un vrai projet</h2>
+  <table class="cmp">
+    <tr><th>Étape</th><th>Ce qu'on remplace</th><th>Par quoi</th></tr>
+    <tr><td>1</td><td>L'embedding maison</td><td><code class="inline">sentence-transformers</code> multilingue, en local</td></tr>
+    <tr><td>2</td><td>La liste en mémoire</td><td>Chroma ou pgvector, persistant sur disque</td></tr>
+    <tr><td>3</td><td>Les fichiers .txt</td><td>Extraction PDF et DOCX, avec OCR si nécessaire</td></tr>
+    <tr><td>4</td><td>Le mode conversation en terminal</td><td>Une API FastAPI et une interface web</td></tr>
+    <tr><td>5</td><td>Rien</td><td>Les droits d'accès dans les métadonnées</td></tr>
+    <tr><td>6</td><td>Rien</td><td>Un jeu de 30 questions de référence, rejoué à chaque changement</td></tr>
+  </table>
+  <div class="note">Ordre conseillé : <b>l'étape 6 avant toutes les autres</b>. Sans jeu d'évaluation, vous ne saurez pas si les étapes 1 à 5 améliorent réellement quelque chose.</div>
+  <div class="amorce">💬 Combien de jours estimez-vous pour ces six étapes dans votre contexte ?</div>
+</section>
+<section class="slide slide-divider">
+<div class="section-num">7</div>
+<div class="section-tag">Module 6 bis</div>
+<h2 class="section-title">MCP : le protocole qui relie tout</h2>
+<p class="section-sub">Cinq messages JSON, et votre base documentaire devient un outil que n'importe quel assistant sait appeler.</p>
+</section>
+<section class="slide">
+<div class="slide-tag">MCP · le protocole</div>
+<h2 class="slide-title">Tout le protocole tient en cinq messages</h2>
+<ul class="points"><li><code class="inline">initialize</code> — la poignée de main : version du protocole, capacités, nom du serveur.</li><li><code class="inline">notifications/initialized</code> — le client confirme. Aucun « id » : <b>on ne répond pas</b>.</li><li><code class="inline">tools/list</code> — le catalogue. Le modèle ne verra <b>que</b> ce que vous décrivez ici.</li><li><code class="inline">tools/call</code> — l'exécution, avec les arguments choisis par le modèle.</li><li>La réponse — toujours une <b>liste de blocs de contenu</b> : c'est ce qui permet de renvoyer du texte, une image ou un document avec la même structure.</li></ul>
+<div class="note">Lancez <code class="inline">python exercice_7_mcp/serveur_mcp.py --demo</code> : les cinq messages défilent à l'écran. C'est plus parlant que dix pages de documentation.</div>
+<div class="amorce">&#128172; Avant cette slide, MCP vous paraissait-il plus compliqué que cela ? Pourquoi ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · exercice 7</div>
+<h2 class="slide-title code-title">La description d'un outil : c'est tout ce que le modèle voit</h2>
+<div class="file-path">exercice_7_mcp/serveur_mcp.py</div>
+<pre class="code">OUTILS = [
+    {
+        "name": "rechercher_documents",
+
+<span class="cm">        # LA description. Une description floue produit des appels absurdes.</span>
+<span class="cm">        # Écrivez-la comme une consigne à un stagiaire : ce que fait l'outil,</span>
+<span class="cm">        # quand l'utiliser, et surtout QUAND NE PAS l'utiliser.</span>
+        "description": (
+            "Cherche les passages les plus proches d'une question dans la base "
+            "documentaire interne (congés, notes de frais, télétravail, charte IA). "
+            "Renvoie les extraits bruts avec leur source, SANS les reformuler. "
+            "Utilise cet outil quand tu as besoin de citer un texte interne. "
+            "N'utilise pas cet outil pour des questions générales."
+        ),
+
+<span class="cm">        # Le schéma décrit les arguments : c'est du JSON Schema.</span>
+<span class="cm">        # Le modèle s'en sert pour fabriquer un appel valide du premier coup.</span>
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "question": {"type": "string",
+                             "description": "La question, en langage courant."},
+                "nombre_extraits": {"type": "integer", "default": 3,
+                                    "minimum": 1, "maximum": 10}
+            },
+            "required": ["question"]
+        }
+    },
+]</pre>
+<div class="warn">La qualité d'un serveur MCP se joue à <b>80 % dans les descriptions</b>, pas dans le code. Un outil parfaitement codé mais mal décrit ne sera jamais appelé, ou sera appelé au mauvais moment.</div>
+<div class="amorce">&#128172; Écrivez la description d'un outil de votre métier. Quelqu'un d'autre saurait-il quand l'utiliser ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · exercice 7</div>
+<h2 class="slide-title code-title">Le routage : trois méthodes, et c'est fini</h2>
+<div class="file-path">exercice_7_mcp/serveur_mcp.py</div>
+<pre class="code">def traiter_message(message):
+    methode = message.get("method")
+    identifiant = message.get("id")
+    parametres = message.get("params") or {}
+
+    if methode == "initialize":
+        return reponse_ok(identifiant, {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {"tools": {}},        # on n'expose que des outils
+            "serverInfo": {"name": "rag-documentaire-local", "version": "1.0.0"}
+        })
+
+<span class="cm">    # Une notification n'a pas d'« id » : y répondre CASSE le client.</span>
+    if methode == "notifications/initialized":
+        return None
+
+    if methode == "tools/list":
+        return reponse_ok(identifiant, {"tools": OUTILS})
+
+    if methode == "tools/call":
+        nom = parametres.get("name")
+        arguments = parametres.get("arguments") or {}
+
+        if nom not in IMPLEMENTATIONS:
+            return reponse_erreur(identifiant, -32602, f"Outil inconnu : {nom}")
+
+        try:
+            texte = IMPLEMENTATIONS[nom](arguments)
+            return reponse_ok(identifiant, {
+                "content": [{"type": "text", "text": texte}], "isError": False})
+
+        except Exception as erreur:
+<span class="cm">            # On ne laisse JAMAIS une exception remonter : elle tuerait le</span>
+<span class="cm">            # serveur. On renvoie l'erreur comme un RÉSULTAT : le modèle</span>
+<span class="cm">            # peut alors la lire et changer de stratégie.</span>
+            return reponse_ok(identifiant, {
+                "content": [{"type": "text", "text": f"L'outil a échoué : {erreur}"}],
+                "isError": True})</pre>
+<div class="amorce">&#128172; Pourquoi renvoyer l'erreur comme un résultat plutôt que comme une erreur de protocole ?</div>
+</section>
+<section class="slide slide-code">
+<div class="code-tag">Code · exercice 7</div>
+<h2 class="slide-title code-title">Le piège qui fait perdre une demi-journée</h2>
+<div class="file-path">exercice_7_mcp/serveur_mcp.py</div>
+<pre class="code">def boucle_principale():
+    """Lit l'entrée standard ligne par ligne, répond sur la sortie standard."""
+    for ligne in sys.stdin:
+        ligne = ligne.strip()
+        if not ligne:
+            continue
+
+        try:
+            message = json.loads(ligne)
+        except json.JSONDecodeError:
+            ecrire(reponse_erreur(None, -32700, "JSON illisible"))
+            continue
+
+        reponse = traiter_message(message)
+        if reponse is not None:          # None = notification : on se tait
+            ecrire(reponse)
+
+
+def ecrire(objet):
+    sys.stdout.write(json.dumps(objet, ensure_ascii=False) + "\n")
+<span class="cm">    # flush() force l'envoi IMMÉDIAT. Sans lui, Python garde le texte en</span>
+<span class="cm">    # mémoire tampon et le client attend une réponse qui ne vient jamais.</span>
+    sys.stdout.flush()
+
+
+def journal(message):
+<span class="cm">    # La sortie standard est RÉSERVÉE au protocole. Un seul print() de</span>
+<span class="cm">    # débogage casse la communication, sans message d'erreur.</span>
+    sys.stderr.write(f"[serveur-mcp] {message}\n")</pre>
+<div class="warn">Les deux erreurs qui coûtent le plus cher : un <code class="inline">print()</code> oublié dans le serveur, et un <code class="inline">flush()</code> manquant. Dans les deux cas : aucun message d'erreur, juste un silence.</div>
+<div class="amorce">&#128172; Comment déboguer un programme dont on n'a pas le droit d'afficher les traces ?</div>
+</section>
+<section class="slide slide-exercice">
+<div class="exo-tag">&#128295; Travaux pratiques</div>
+<h2 class="exo-title">Exposer votre base documentaire à un assistant, via MCP</h2>
+<div class="exo-duree">1 heure · en binôme · dossier &lt;code class="inline"&gt;exercice_7_mcp/&lt;/code&gt;</div>
+<ol class="exo-steps"><li>Lancez <code class="inline">python exercice_7_mcp/serveur_mcp.py --demo</code> et lisez les cinq échanges, un par un.</li><li>Lancez <code class="inline">python exercice_7_mcp/client_mcp_minimal.py</code> : vous voyez maintenant <b>les deux côtés du tuyau</b>.</li><li>Lancez <code class="inline">pytest exercice_7_mcp/ -v</code> : 17 tests de protocole.</li><li>Ajoutez un quatrième outil, <code class="inline">compter_les_mots</code>, qui renvoie le nombre de mots d'un document donné. Description, schéma, implémentation, test.</li><li><b>Dégradez volontairement</b> la description de <code class="inline">rechercher_documents</code> (remplacez-la par « cherche des trucs ») et observez le changement de comportement de l'assistant.</li><li>Branchez le serveur sur votre assistant : suivez <code class="inline">configuration_mcp.md</code> pour Claude Code, Codex ou Copilot CLI.</li><li>Posez-lui une question sur vos congés, et vérifiez qu'il cite bien le fichier source.</li></ol>
+<div class="exo-livrable"><b>Livrable :</b> un serveur MCP à quatre outils, ses tests au vert, branché sur un assistant réel, et une phrase écrite sur ce que la description d'un outil change au comportement du modèle.</div>
+
+</section>
+<section class="slide">
+<div class="slide-tag">MCP · sécurité</div>
+<h2 class="slide-title">Trois questions avant d'exposer un outil</h2>
+<ul class="points"><li><b>Que se passe-t-il si le modèle l'appelle au mauvais moment ?</b> Un outil <code class="inline">lire_document</code> est sans danger. Un outil <code class="inline">supprimer_client</code> ne devrait pas exister sans confirmation humaine.</li><li><b>Que voit le modèle en retour ?</b> Tout ce que l'outil renvoie entre dans le contexte, y compris ce que vous n'aviez pas prévu d'y mettre — une colonne « commentaire interne », par exemple.</li><li><b>Qui peut appeler ce serveur ?</b> En transport <code class="inline">stdio</code>, c'est l'utilisateur de la machine. Sur un transport réseau, c'est une autre affaire : authentification obligatoire.</li></ul>
+<div class="note"><b>Règle simple pour commencer :</b> des outils en <b>lecture seule</b>. On ouvre l'écriture plus tard, outil par outil, avec un test à chaque fois.</div>
+<div class="warn">Un serveur MCP mal cadré, c'est une injection de prompt qui devient une exécution de code. Le contenu d'un document peut contenir des instructions ; si un outil obéit à ce qu'il lit, vous avez ouvert une porte.</div>
+<div class="amorce">&#128172; Quel outil de votre système ne devrait JAMAIS être exposé, même en lecture ?</div>
+</section>
+<section class="slide slide-quote">
+  <div class="q-mark">"</div>
+  <div class="quote-text">Le modèle n'est pas votre application. Il en est un composant, remplaçable, faillible et coûteux, autour duquel vous faites votre métier d'ingénieur.</div>
+  <div class="quote-author"><b>Conclusion des trois jours</b> — Kuate Joël Parfait</div>
+</section>
+<section class="slide">
+<div class="slide-tag">La suite</div>
+<h2 class="slide-title">Trois formations outils vous attendent dans le dossier</h2>
+<h3 class="subtitle">Vous savez maintenant ce qu'est un LLM, un prompt, un RAG et un serveur MCP. Il reste à maîtriser les <b>outils</b> qui utilisent tout cela au quotidien.</h3>
+<table class="cmp"><tr><th>Formation</th><th>Ce que vous y trouvez</th><th>Sa code base</th></tr><tr><td><b>Claude Code</b></td><td>L'assistant en terminal : plan mode, sous-agents, hooks, CLAUDE.md, compétences, MCP, intégration Git et CI.</td><td>MiniCRM · variante « dette technique »</td></tr><tr><td><b>GitHub Copilot</b></td><td>L'assistant dans l'éditeur : complétion, chat, edits, mode agent, instructions personnalisées, revue de code.</td><td>MiniCRM · variante « squelette à compléter »</td></tr><tr><td><b>Codex</b></td><td>L'agent d'OpenAI : sandbox, modes d'approbation, AGENTS.md, délégation dans le cloud, revue automatique.</td><td>MiniCRM · variante « tests au rouge »</td></tr></table>
+<div class="note">Chaque dossier contient : le support (30 à 40 slides), un récapitulatif des <b>50 commandes à retenir</b>, un fichier d'exercices guidés, une fiche participant à remplir, et sa propre variante de la code base.</div>
+<div class="amorce">&#128172; Trois outils, le même projet. Sur lequel commencez-vous, et pour quelle raison ?</div>
+</section>
+<section class="slide">
+<div class="slide-tag">Le dossier Bonus</div>
+<h2 class="slide-title">Ce qu'on garde quand on est développeur</h2>
+<div class="two-col"><div class="col"><h4>Projets open source à connaître</h4><ul class="points"><li><b>Front</b> — les bibliothèques qui durent</li><li><b>Back</b> — frameworks, files, bases</li><li><b>Data et IA</b> — de pandas aux modèles</li><li><b>Archi et DevOps</b> — ce qui tient en production</li><li><b>Outillage</b> — ce qui fait gagner une heure par jour</li></ul></div><div class="col"><h4>Checklist de bonnes pratiques</h4><ul class="points"><li>Avant d'écrire une ligne</li><li>Pendant qu'on code, avec ou sans IA</li><li>Avant de proposer une modification</li><li>Avant de mettre en production</li><li>Spécifique à l'IA : ce qu'on vérifie toujours</li></ul></div></div>
+<div class="note">Dossier <code class="inline">Bonus/</code> — deux fichiers HTML, exportables en PDF. La checklist est faite pour être cochée à l'écran et gardée à côté du clavier.</div>
+<div class="amorce">&#128172; Une bonne pratique que vous connaissez mais n'appliquez pas : laquelle, et pourquoi ?</div>
+</section>
+<section class="slide">
+  <div class="slide-tag">Bilan des trois jours</div>
+  <h2 class="slide-title">Ce que vous emportez</h2>
+  <div class="two-col">
+    <div class="col">
+      <h4>Six programmes qui tournent</h4>
+      <ul class="points">
+        <li>Un générateur de Sudoku (IA symbolique)</li>
+        <li>Un générateur de pages web</li>
+        <li>Une bibliothèque de techniques de prompt</li>
+        <li>Une application web Flask et son budget</li>
+        <li>Des embeddings et une base vectorielle</li>
+        <li>Un RAG local complet</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h4>Des réflexes durables</h4>
+      <ul class="points">
+        <li>Un LLM prédit, il ne sait pas</li>
+        <li>Un prompt est du code : versionné, testé</li>
+        <li>Toute sortie est validée par du code</li>
+        <li>Le plus petit modèle qui suffit</li>
+        <li>Les clés hors du code, toujours</li>
+        <li>Citer la source ou ne pas répondre</li>
+      </ul>
+    </div>
+  </div>
+  <div class="note">Les <b>97 tests</b> de la code base sont votre meilleur souvenir de formation : ils vous permettront de modifier ce code dans six mois sans rien casser.</div>
+  <div class="amorce">💬 Souvenez-vous de la question du premier matin : qu'est-ce qu'un développeur perd et gagne avec l'IA ? Votre réponse a-t-elle changé ?</div>
+</section>
+<section class="slide slide-question">
+  <div class="q-tag">💬 Question de clôture</div>
+  <div class="q-question">Quel est le premier cas d'usage que vous allez proposer en rentrant — et quelle est la première objection que vous allez recevoir ?</div>
+  <div class="q-hint">Prenez trois minutes pour l'écrire noir sur blanc : le cas d'usage en une phrase, le gain mesurable en une phrase, l'objection attendue en une phrase, et votre réponse à cette objection en une phrase. Ces quatre phrases valent plus que tout ce que vous pourriez relire de ces trois jours.</div>
+  <div class="q-footer">Envoyez-les-moi si vous voulez un retour : hello@dhcompany.pro</div>
+</section>
+<section class="slide slide-cta">
+  <h2>Merci pour ces trois jours</h2>
+  <p>La code base, les tests et ces supports restent à vous.<br>Le meilleur usage que vous puissiez en faire : reprendre l'exercice 6 avec vos propres documents.</p>
+  <div class="cta-links">
+    <a href="mailto:hello@dhcompany.pro">hello@dhcompany.pro</a>
+    <a href="https://ia4africa.org" target="_blank" rel="noopener">ia4africa.org</a>
+  </div>
+  <p style="font-size:.95rem;">Kuate Joël Parfait — Digital House Company<br>Consultant IA et stratégie · formateur certifié</p>
+</section>
+<!-- SLIDES_END -->
+</div>
+
+<script>
+let current = 0;
+const slides = document.querySelectorAll('.slide');
+const progressBar = document.getElementById('progress');
+
+// Chaque slide de contenu porte déjà sa propre question d'amorce (.amorce),
+// écrite pour le sujet traité. Le mécanisme ci-dessous ne s'applique donc
+// qu'aux slides qui n'en auraient pas : il garantit qu'aucune slide
+// ne reste sans question à poser au groupe.
+const relanceTemplates = [
+  t => `\u{1F4AC} À demander au groupe : qu'est-ce que « ${t} » change dans votre façon de coder ?`,
+  t => `\u{1F4AC} Tour de table éclair : qui a déjà rencontré ce cas dans un projet ?`,
+  t => `\u{1F4AC} Une minute de réflexion : sur une échelle de 1 à 5, ce point est-il maîtrisé chez vous ?`,
+  t => `\u{1F4AC} Question flash : quel est le principal risque si l'on ignore ce point ?`,
+  t => `\u{1F4AC} Discussion : sur quel projet en cours pourriez-vous appliquer cela dès demain ?`,
+  t => `\u{1F4AC} À chaud : qu'est-ce qui vous surprend le plus dans « ${t} » ?`,
+];
+slides.forEach((s, i) => {
+  if (s.classList.contains('slide-question') || s.classList.contains('slide-cover')) return;
+  if (s.querySelector('.amorce')) return;
+  const titleEl = s.querySelector('.slide-title, .section-title, .an-title, .demo-title, .exo-title, .code-title, .quote-text');
+  const title = titleEl ? titleEl.textContent.trim() : '';
+  const div = document.createElement('div');
+  div.className = 'mini-relance';
+  div.textContent = relanceTemplates[i % relanceTemplates.length](title);
+  s.appendChild(div);
+});
+
+function goTo(n){
+  slides[current].classList.remove('active');
+  current = Math.max(0, Math.min(n, slides.length - 1));
+  slides[current].classList.add('active');
+  progressBar.style.width = ((current + 1) / slides.length * 100) + '%';
+  document.getElementById('counter').textContent = (current + 1) + ' / ' + slides.length;
+  slides[current].scrollTop = 0;
+  try { location.hash = 's' + (current + 1); } catch (e) {}
+}
+document.getElementById('prevBtn').addEventListener('click', ()=>goTo(current-1));
+document.getElementById('nextBtn').addEventListener('click', ()=>goTo(current+1));
+document.getElementById('pdfBtn').addEventListener('click', ()=>window.print());
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') goTo(current + 1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  if (e.key === 'Home') goTo(0);
+  if (e.key === 'End') goTo(slides.length - 1);
+  if (e.key === 'p' || e.key === 'P') window.print();
+});
+let xStart = null;
+document.addEventListener('touchstart', e => { xStart = e.changedTouches[0].screenX; });
+document.addEventListener('touchend', e => {
+  const diff = xStart - e.changedTouches[0].screenX;
+  if (Math.abs(diff) > 50) diff > 0 ? goTo(current + 1) : goTo(current - 1);
+});
+const depart = parseInt((location.hash || '').replace('#s', ''), 10);
+goTo(Number.isFinite(depart) && depart > 0 ? depart - 1 : 0);
+</script>
+</body>
+</html>

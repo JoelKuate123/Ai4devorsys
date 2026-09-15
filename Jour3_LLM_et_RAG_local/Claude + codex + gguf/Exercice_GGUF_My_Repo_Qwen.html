@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TP GGUF — Convertir et quantifier un petit modèle</title>
+<style>
+:root{
+  --paper:#fffdf9; --ink:#171717; --muted:#6d675f; --line:#ddd5cb;
+  --orange:#c94f12; --soft:#fff2e9; --green:#1e6a4b; --bg:#eee8e1;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+.sheet{
+  width:min(980px,calc(100% - 28px)); margin:22px auto; background:var(--paper);
+  border:1px solid var(--line); border-radius:24px; padding:36px 40px;
+  box-shadow:0 18px 60px rgba(40,30,20,.10);
+}
+.kicker{font-size:12px;font-weight:850;letter-spacing:.12em;text-transform:uppercase;color:var(--orange)}
+h1{font-size:38px;line-height:1.05;margin:10px 0 10px;letter-spacing:-.035em}
+h2{font-size:22px;margin:24px 0 10px}
+p,li{font-size:15px;line-height:1.5}
+.lead{font-size:18px;color:#38332e;max-width:850px}
+.box{border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0;background:#fff}
+.orange{background:var(--soft);border-color:#e5b598}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.step{display:grid;grid-template-columns:36px 1fr;gap:12px;align-items:start;margin:14px 0}
+.n{width:34px;height:34px;border-radius:10px;background:#171717;color:white;display:grid;place-items:center;font-weight:900}
+code{font-family:Consolas,"Liberation Mono",monospace;background:#f1ece6;padding:2px 6px;border-radius:6px}
+a{color:#8a3a10}
+label{font-size:13px;font-weight:750;display:block;margin:9px 0 5px}
+input[type=text],textarea{
+  width:100%;border:1px solid #cfc6bc;border-radius:10px;padding:9px 10px;
+  background:white;font:inherit;color:inherit
+}
+textarea{min-height:70px;resize:vertical}
+.check{margin-right:6px}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:9px;text-align:left;vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.note{font-size:12px;color:var(--muted)}
+.result{border-left:5px solid var(--orange);background:#fff5ee;border-radius:10px;padding:12px 14px}
+.footer{margin-top:24px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+.btn{display:inline-block;padding:9px 13px;background:#171717;color:white;text-decoration:none;border-radius:10px;font-weight:800;font-size:13px}
+@media(max-width:700px){.sheet{padding:24px 20px}.grid{grid-template-columns:1fr}h1{font-size:31px}}
+@media print{body{background:white}.sheet{width:100%;margin:0;border:0;box-shadow:none;border-radius:0}.btn{display:none}}
+</style>
+</head>
+<body>
+<main class="sheet">
+  <div class="kicker">Exercice pratique · 15 à 20 minutes</div>
+  <h1>Convertir et quantifier un modèle avec GGUF My Repo</h1>
+  <p class="lead">
+    Objectif : prendre un petit modèle Hugging Face, le convertir en <b>GGUF</b>,
+    appliquer une quantification <b>Q4_K_M</b>, puis expliquer ce qui a réellement changé.
+  </p>
+
+  <div class="box orange">
+    <b>Modèle proposé :</b> <code>Qwen/Qwen2.5-0.5B-Instruct</code><br>
+    <span class="note">0.5B = environ 0,5 milliard de paramètres. « Instruct » = variante adaptée au suivi d’instructions.</span>
+    <br><br>
+    <a class="btn" href="https://huggingface.co/spaces/ggml-org/gguf-my-repo" target="_blank">Ouvrir GGUF My Repo</a>
+    &nbsp;
+    <a href="https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct" target="_blank">Voir le modèle source</a>
+  </div>
+
+  <div class="result">
+    <b>Attention au vocabulaire :</b> dans cet exercice, vous ne changez pas les connaissances du modèle.
+    Vous changez surtout son <b>format de stockage</b> et la <b>précision de ses poids</b> grâce à la quantification.
+  </div>
+
+  <h2>Consigne</h2>
+
+  <div class="step">
+    <div class="n">1</div>
+    <div>
+      <b>Connectez-vous à Hugging Face et ouvrez le Space.</b>
+      <p>Le Space exige une connexion Hugging Face pour créer le nouveau dépôt sous votre compte.</p>
+      <label><input class="check" type="checkbox"> Connexion effectuée</label>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">2</div>
+    <div>
+      <b>Dans « Hub Model ID », recherchez :</b>
+      <p><code>Qwen/Qwen2.5-0.5B-Instruct</code></p>
+      <label>Pourquoi avons-nous choisi un petit modèle pour l’exercice ?</label>
+      <textarea placeholder="Votre réponse…"></textarea>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">3</div>
+    <div>
+      <b>Choisissez la méthode de quantification <code>Q4_K_M</code>.</b>
+      <p>
+        Q = Quantization ; 4 = famille proche de 4 bits ; K = famille de quantification par blocs ;
+        M = variante Medium.
+      </p>
+      <label>Votre hypothèse : que va-t-il arriver à la taille du modèle ?</label>
+      <input type="text" placeholder="Ex. : elle devrait diminuer parce que…">
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">4</div>
+    <div>
+      <b>Laissez « Use Imatrix Quantization » désactivé pour ce premier exercice.</b>
+      <p>
+        Une <b>importance matrix (imatrix)</b> utilise des données représentatives pour guider la quantification
+        et préserver davantage les parties importantes du modèle. Nous l’écartons ici pour garder le TP simple.
+      </p>
+      <label><input class="check" type="checkbox"> Imatrix désactivée</label>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">5</div>
+    <div>
+      <b>Laissez « Split Model » désactivé.</b>
+      <p>
+        « Split » signifie découper un gros GGUF en plusieurs fichiers. Avec un modèle de 0,5B paramètres,
+        ce n’est pas nécessaire pour cet exercice.
+      </p>
+      <label><input class="check" type="checkbox"> Split Model désactivé</label>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">6</div>
+    <div>
+      <b>Lancez la conversion.</b>
+      <p>
+        Le Space convertit le dépôt Hugging Face vers GGUF, quantifie les poids selon la méthode choisie,
+        puis crée un nouveau dépôt contenant votre GGUF.
+      </p>
+      <label>Nom / URL du dépôt GGUF créé :</label>
+      <input type="text" placeholder="https://huggingface.co/votre-compte/...">
+    </div>
+  </div>
+
+  <h2>Observation du résultat</h2>
+
+  <table>
+    <thead>
+      <tr><th>Élément</th><th>Modèle source</th><th>Version GGUF Q4_K_M</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Format</td>
+        <td>SafeTensors / Transformers</td>
+        <td><input type="text" value="GGUF"></td>
+      </tr>
+      <tr>
+        <td>Taille approximative</td>
+        <td><input type="text" placeholder="À relever"></td>
+        <td><input type="text" placeholder="À relever"></td>
+      </tr>
+      <tr>
+        <td>Quantification</td>
+        <td><input type="text" placeholder="Ex. BF16/FP16 selon la source"></td>
+        <td><input type="text" value="Q4_K_M"></td>
+      </tr>
+      <tr>
+        <td>Nombre de paramètres</td>
+        <td>≈ 0,5B</td>
+        <td><input type="text" placeholder="A-t-il changé ?"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Questions de compréhension</h2>
+  <div class="grid">
+    <div class="box">
+      <label>1. Le modèle est-il devenu « plus petit » en nombre de paramètres ?</label>
+      <textarea placeholder="Expliquez…"></textarea>
+    </div>
+    <div class="box">
+      <label>2. Qu’est-ce qui a réellement été réduit ?</label>
+      <textarea placeholder="Expliquez la précision / représentation des poids…"></textarea>
+    </div>
+    <div class="box">
+      <label>3. Quel avantage attendez-vous de Q4_K_M en local ?</label>
+      <textarea placeholder="RAM, disque, vitesse…"></textarea>
+    </div>
+    <div class="box">
+      <label>4. Quel risque introduit la quantification ?</label>
+      <textarea placeholder="Qualité / précision…"></textarea>
+    </div>
+  </div>
+
+  <h2>Bonus — comparer deux quantifications</h2>
+  <div class="box">
+    Recommencez avec <code>Q8_0</code>. Comparez ensuite la taille de Q8_0 et de Q4_K_M.
+    <label>Quelle version est la plus lourde ? Pourquoi ?</label>
+    <textarea placeholder="Votre analyse…"></textarea>
+  </div>
+
+  <div class="result">
+    <b>Résultat attendu :</b> vous devez être capable d’expliquer que la conversion GGUF prépare le modèle
+    pour des runtimes compatibles comme llama.cpp, tandis que la quantification réduit la précision numérique
+    des poids afin de diminuer la taille et la mémoire nécessaire, avec un risque de perte de qualité.
+  </div>
+
+  <div class="footer">
+    Sources : documentation officielle llama.cpp / GGUF My Repo et fiche du modèle Qwen2.5-0.5B-Instruct.
+    Le Space propose actuellement notamment Q2_K, Q3_K, Q4_K_M, Q5_K_M, Q6_K et Q8_0.
+  </div>
+</main>
+</body>
+</html>

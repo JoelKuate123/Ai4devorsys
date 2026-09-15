@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ChatGPT local · votre base documentaire</title>
+<style>
+  :root{--accent:#0E8C86;--accent2:#0B6E68;--navy:#0B2D48;--text:#16212B;
+        --text2:#4B5C63;--card:#EAF4F3;--border:#D7E6E4;--good:#1F9D67;--warn:#B9740A;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#F2F7F7;color:var(--text);
+       padding:1.6rem 1.2rem 4rem;}
+  .wrap{max-width:880px;margin:0 auto;}
+  h1{font-size:1.55rem;color:var(--navy);}
+  .sub{color:var(--text2);font-size:.94rem;margin:.3rem 0 1.3rem;}
+  .conv{display:flex;flex-direction:column;gap:.9rem;margin-bottom:1.3rem;min-height:120px;}
+  .msg{padding:.8rem 1.1rem;border-radius:12px;max-width:88%;line-height:1.6;font-size:.95rem;}
+  .msg.moi{align-self:flex-end;background:var(--navy);color:#fff;border-bottom-right-radius:3px;}
+  .msg.lui{align-self:flex-start;background:#fff;border:1px solid var(--border);border-bottom-left-radius:3px;}
+  .sources{margin-top:.6rem;padding-top:.5rem;border-top:1px dashed var(--border);font-size:.8rem;color:var(--text2);}
+  .sources b{color:var(--accent2);}
+  details{margin-top:.5rem;} summary{cursor:pointer;font-size:.8rem;color:var(--accent2);font-weight:600;}
+  .extrait{background:#F7FBFB;border-left:3px solid var(--accent);padding:.5rem .7rem;margin-top:.45rem;
+           font-size:.8rem;color:var(--text2);border-radius:0 6px 6px 0;white-space:pre-wrap;}
+  .extrait .meta{display:block;color:var(--accent2);font-weight:600;margin-bottom:.25rem;}
+  .barre{display:flex;gap:.6rem;}
+  input[type=text]{flex:1;padding:.7rem .9rem;border:1px solid var(--border);border-radius:9px;
+                   font-family:inherit;font-size:.95rem;background:#fff;}
+  button{background:var(--accent);color:#fff;border:none;border-radius:9px;padding:.7rem 1.3rem;
+         font-size:.92rem;font-weight:600;cursor:pointer;font-family:inherit;}
+  button:hover{background:var(--accent2);} button:disabled{opacity:.5;cursor:wait;}
+  .exemples{margin-top:.8rem;display:flex;gap:.4rem;flex-wrap:wrap;}
+  .exemples button{background:#fff;color:var(--accent2);border:1px solid var(--border);
+                   font-size:.8rem;padding:.35rem .8rem;font-weight:500;}
+  .alerte{background:#FFF6E8;border-left:4px solid var(--warn);padding:.7rem 1rem;border-radius:6px;
+          font-size:.88rem;color:var(--text2);margin-bottom:1.2rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Votre base documentaire, en conversation</h1>
+  <p class="sub">
+    Exercice 6 · Le moteur RAG tourne en Python sur votre machine. Cette page
+    ne fait que l'interroger. <b>Aucun document ne sort d'ici.</b>
+  </p>
+
+  <div class="alerte" id="alerte" style="display:none"></div>
+
+  <div class="conv" id="conversation"></div>
+
+  <div class="barre">
+    <input id="question" type="text" placeholder="Posez une question sur les procédures internes…"
+           autocomplete="off">
+    <button id="btnEnvoyer">Demander</button>
+  </div>
+
+  <div class="exemples" id="exemples"></div>
+</div>
+
+<script>
+/* --------------------------------------------------------------------------
+ * L'interface. Elle ne contient AUCUNE logique de RAG : elle appelle
+ * /api/demander et affiche ce qui revient. C'est le serveur Python qui
+ * découpe, indexe, cherche et interroge le modèle.
+ * ------------------------------------------------------------------------ */
+
+const QUESTIONS_EXEMPLE = [
+  'Combien de jours de congé annuel ?',
+  'Quel est le plafond de remboursement d\'un repas ?',
+  'Puis-je télétravailler trois jours par semaine ?',
+  'Peut-on coller du code client dans un outil d\'IA ?',
+  'Quelle est la capitale de l\'Australie ?'   // hors base : doit dire « je ne sais pas »
+];
+
+const el = function (id) { return document.getElementById(id); };
+
+// Les questions d'exemple, sous forme de boutons.
+QUESTIONS_EXEMPLE.forEach(function (q) {
+  const b = document.createElement('button');
+  b.textContent = q;
+  b.addEventListener('click', function () { el('question').value = q; envoyer(); });
+  el('exemples').appendChild(b);
+});
+
+/** Ajoute un message dans la conversation et fait défiler vers le bas. */
+function ajouterMessage(classe, contenuHtml) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + classe;
+  div.innerHTML = contenuHtml;
+  el('conversation').appendChild(div);
+  div.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  return div;
+}
+
+/** Échappe le HTML : ce qui vient du serveur ne doit jamais être injecté brut. */
+function echapper(texte) {
+  const d = document.createElement('div');
+  d.textContent = String(texte == null ? '' : texte);
+  return d.innerHTML;
+}
+
+async function envoyer() {
+  const question = el('question').value.trim();
+  if (question.length < 3) return;
+
+  ajouterMessage('moi', echapper(question));
+  el('question').value = '';
+  el('btnEnvoyer').disabled = true;
+
+  const enAttente = ajouterMessage('lui', '<i style="color:#4B5C63">Recherche dans les documents…</i>');
+
+  try {
+    const reponse = await fetch('/api/demander', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: question })
+    });
+
+    const donnees = await reponse.json();
+
+    if (!reponse.ok) {
+      enAttente.innerHTML = '<b>Erreur :</b> ' + echapper(donnees.erreur || reponse.status);
+      return;
+    }
+
+    // Le corps de la réponse.
+    let html = echapper(donnees.reponse).replace(/\n/g, '<br>');
+
+    // Les sources : sans elles, une réponse RAG ne vaut pas mieux
+    // qu'une réponse de chatbot. C'est ce qui rend la vérification possible.
+    if (donnees.sources && donnees.sources.length) {
+      html += '<div class="sources"><b>Sources :</b> '
+            + donnees.sources.map(echapper).join(', ') + '</div>';
+    } else {
+      html += '<div class="sources">Aucune source : la question sort de la base. '
+            + '<b>Le moteur a préféré le dire plutôt que d\'inventer.</b></div>';
+    }
+
+    // Les extraits réellement envoyés au modèle, repliés par défaut.
+    if (donnees.extraits && donnees.extraits.length) {
+      html += '<details><summary>Voir les ' + donnees.extraits.length
+            + ' extrait(s) transmis au modèle</summary>'
+            + donnees.extraits.map(function (e) {
+                return '<div class="extrait"><span class="meta">'
+                     + echapper(e.source) + ' · proximité ' + e.score
+                     + '</span>' + echapper(e.texte) + '</div>';
+              }).join('')
+            + '</details>';
+    }
+
+    enAttente.innerHTML = html;
+
+  } catch (erreur) {
+    // Cas typique : la page a été ouverte par double-clic, sans le serveur.
+    enAttente.innerHTML = '<b>Le serveur ne répond pas.</b><br>'
+      + 'Lancez <code>python interface_web/serveur_rag.py</code> puis ouvrez '
+      + '<code>http://localhost:8000</code>.';
+  } finally {
+    el('btnEnvoyer').disabled = false;
+    el('question').focus();
+  }
+}
+
+el('btnEnvoyer').addEventListener('click', envoyer);
+el('question').addEventListener('keydown', function (e) {
+  if (e.key === 'Enter') envoyer();
+});
+
+// Avertissement si la page est ouverte en file:// : rien ne marchera.
+if (location.protocol === 'file:') {
+  el('alerte').style.display = 'block';
+  el('alerte').innerHTML = 'Cette page a été ouverte par double-clic. Le moteur RAG '
+    + 'est en Python : lancez <code>python interface_web/serveur_rag.py</code>, '
+    + 'puis ouvrez <b>http://localhost:8000</b>.';
+}
+
+el('question').focus();
+</script>
+</body>
+</html>

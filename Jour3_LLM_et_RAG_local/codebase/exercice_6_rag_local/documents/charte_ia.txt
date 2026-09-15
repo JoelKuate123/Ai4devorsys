@@ -1,0 +1,31 @@
+CHARTE D'USAGE DE L'INTELLIGENCE ARTIFICIELLE
+Document interne. Adoptée par le comité de direction le 20 avril 2026.
+
+Article 1 — Champ d'application
+La présente charte s'applique à tout usage d'un système d'intelligence
+artificielle générative dans le cadre professionnel, qu'il soit gratuit ou payant.
+
+Article 2 — Données interdites
+Il est formellement interdit de transmettre à un service d'IA en ligne :
+des données personnelles d'usagers, des données de santé, des documents
+classés confidentiels, des identifiants ou mots de passe, du code source
+propriétaire.
+
+Article 3 — Outils autorisés
+Seuls les outils validés par le service informatique peuvent être utilisés.
+La liste est publiée sur l'intranet et mise à jour chaque trimestre.
+Les modèles hébergés en local sur l'infrastructure de l'organisation sont
+autorisés pour tous les types de documents, y compris confidentiels.
+
+Article 4 — Responsabilité
+L'agent reste responsable de tout contenu produit avec l'aide d'une IA.
+Toute production destinée à un usage externe doit être relue et validée
+par un humain avant diffusion.
+
+Article 5 — Transparence
+Tout document produit majoritairement par une IA porte la mention
+"document généré avec l'assistance d'un outil d'intelligence artificielle".
+
+Article 6 — Formation
+Chaque agent utilisant ces outils suit une formation de sensibilisation
+d'une demi-journée au minimum, renouvelée tous les deux ans.

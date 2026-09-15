@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code base — Journee 3</title>
+<style>
+  :root{--accent:#0E8C86;--accent2:#0B6E68;--navy:#0B2D48;--text:#16212B;
+        --text2:#4B5C63;--card:#EAF4F3;--border:#D7E6E4;--good:#1F9D67;--warn:#B9740A;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#F2F7F7;color:var(--text);
+       padding:2.4rem 1.2rem 5rem;line-height:1.55;}
+  .wrap{max-width:880px;margin:0 auto;}
+  .org{font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+  h1{font-size:2rem;color:var(--navy);margin:.5rem 0 .4rem;line-height:1.2;}
+  .sub{color:var(--text2);font-size:1rem;margin-bottom:2rem;max-width:68ch;}
+  h2{font-size:1.15rem;color:var(--navy);margin:2rem 0 .8rem;padding-left:.7rem;border-left:4px solid var(--accent);}
+  .cartes{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;}
+  a.carte{display:block;background:#fff;border:1px solid var(--border);border-radius:11px;padding:1.1rem 1.2rem;
+          text-decoration:none;color:inherit;transition:border-color .15s,transform .15s;}
+  a.carte:hover{border-color:var(--accent);transform:translateY(-2px);}
+  a.carte .tag{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+  a.carte h3{font-size:1.02rem;color:var(--navy);margin:.35rem 0 .35rem;}
+  a.carte p{font-size:.86rem;color:var(--text2);}
+  .note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;padding:.85rem 1.1rem;
+        font-size:.92rem;color:var(--text2);margin:1.2rem 0;}
+  .note code, p code, li code{font-family:'JetBrains Mono',Consolas,monospace;background:#fff;color:var(--accent2);
+        padding:.08rem .34rem;border-radius:4px;font-size:.88em;border:1px solid var(--border);}
+  ol,ul{margin:.5rem 0 1rem 1.3rem;color:var(--text2);font-size:.93rem;}
+  li{margin-bottom:.3rem;}
+  footer{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text2);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="org">Digital House Company · L'IA pour les developpeurs</div>
+  <h1>Code base de la journée 3</h1>
+  <p class="sub">Les LLM · RAG local · MCP. Ici le moteur est en <b>Python</b> : il lit des fichiers sur votre disque, ce qu'un navigateur ne sait pas faire. L'interface, elle, reste en HTML/CSS/JS.</p>
+<div class="cartes"><a class="carte" href="exercice_5_embeddings/embeddings_maison.py"><span class="tag">Exercice 5 · Module 5</span><h3>Embeddings et similarité</h3><p>Fabriquer un embedding à la main, mesurer la similarité cosinus, construire une base vectorielle en trente lignes. Python.</p></a><a class="carte" href="exercice_6_rag_local/rag.py"><span class="tag">Exercice 6 · Module 6</span><h3>Un « ChatGPT » local sur vos documents</h3><p>L'exercice de synthèse : découper, indexer, chercher, répondre en citant ses sources. Aucun document ne quitte la machine. Python.</p></a><a class="carte" href="interface_web/index.html"><span class="tag">Exercice 6 · Interface</span><h3>La conversation, dans le navigateur</h3><p>L'interface web du RAG. Lancez d'abord <code>python interface_web/serveur_rag.py</code>.</p></a><a class="carte" href="exercice_7_mcp/serveur_mcp.py"><span class="tag">Exercice 7 · MCP</span><h3>Brancher un assistant sur votre base</h3><p>Un serveur MCP complet en Python. Cinq messages JSON, et Claude Code, Codex ou Copilot interrogent vos documents tout seuls.</p></a><a class="carte" href="exercice_7_mcp/configuration_mcp.md"><span class="tag">Exercice 7 · Configuration</span><h3>Le branchement, outil par outil</h3><p>Claude Code, Codex, Copilot CLI, VS Code : les quatre fichiers de configuration, et ce qui coince en pratique.</p></a><a class="carte" href="README.md"><span class="tag">Documentation</span><h3>Lire le README</h3><p>Installer Python, créer l'environnement virtuel, lancer pytest.</p></a></div><h2>Pourquoi cette journée est en Python</h2><ul><li>Le RAG lit des fichiers sur le disque et calcule des vecteurs : c'est du travail de serveur, pas de navigateur.</li><li>Le serveur MCP communique par l'entrée et la sortie standard d'un processus : un navigateur n'a pas accès à cela.</li><li>C'est l'écosystème réel de l'IA : <code>transformers</code>, <code>datasets</code>, <code>langchain</code> sont en Python.</li></ul><div class="note"><b>Les commandes de la journée</b><br><code>python -m venv .venv</code> puis <code>.venv\Scripts\activate</code> (Windows) ou <code>source .venv/bin/activate</code><br><code>pip install -r requirements.txt</code><br><code>pytest -v</code> — tous les tests<br><code>python exercice_6_rag_local/rag.py</code> — la conversation en terminal<br><code>python interface_web/serveur_rag.py</code> — la conversation dans le navigateur<br><code>python exercice_7_mcp/serveur_mcp.py --demo</code> — le protocole MCP en cinq messages</div>
+  <footer>
+    Formation animee par <b>Kuate Joel Parfait</b> — hello@dhcompany.pro
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GGUF démystifié — version débutant explicite</title>
+<style>
+:root{
+  --paper:#fffdf9;--ink:#151515;--muted:#6c665f;--line:#ded7ce;
+  --orange:#c94f12;--orange2:#8f2f08;--soft:#f3dfd2;--dark:#171717;
+  --green:#1c6b4a;--red:#a63224;--shadow:0 22px 70px rgba(38,28,19,.12);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#ebe6df;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+.deck{height:100vh;width:100vw;position:relative}
+.slide{display:none;width:min(1180px,calc(100vw - 32px));height:min(664px,calc(100vh - 54px));aspect-ratio:16/9;background:var(--paper);margin:20px auto 0;border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);padding:38px 46px 42px;overflow:auto;position:relative}
+.slide.active{display:block}
+.kicker{font-size:12px;letter-spacing:.13em;text-transform:uppercase;font-weight:850;color:var(--orange)}
+h1{font-size:54px;line-height:1.01;margin:16px 0 18px;letter-spacing:-.045em}
+h2{font-size:34px;line-height:1.07;margin:9px 0 18px;letter-spacing:-.035em}
+h3{font-size:19px;margin:0 0 7px}
+p{font-size:16px;line-height:1.45;margin:7px 0}
+.small{font-size:12px;color:var(--muted)}
+.lead{font-size:22px;line-height:1.38;max-width:950px}
+mark{background:linear-gradient(transparent 58%,#f5c8ad 58%);color:inherit}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
+.card{border:1px solid var(--line);background:white;border-radius:17px;padding:15px}
+.card strong{display:block;margin-bottom:5px}
+.card .n,.n{width:32px;height:32px;display:inline-grid;place-items:center;border-radius:9px;background:var(--dark);color:#fff;font-weight:850;margin-bottom:8px}
+.card.orange{border-color:#e6b599;background:#fff6f0}
+.card.dark{background:var(--dark);color:#fff;border-color:var(--dark)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.badge{display:inline-flex;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:800;background:#efeae4;border:1px solid var(--line)}
+.badge.orange{background:var(--soft);color:var(--orange2);border-color:#e3b59e}
+.callout{border-left:5px solid var(--orange);background:#fff4ed;padding:12px 15px;border-radius:11px;margin:12px 0;font-size:15px;line-height:1.4}
+.flow{display:flex;align-items:stretch;gap:8px;margin-top:14px}
+.flow .step{flex:1;border:1px solid var(--line);border-radius:15px;padding:13px;background:#fff}
+.arrow{display:grid;place-items:center;font-size:22px;color:var(--orange);font-weight:900}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:8px 9px;text-align:left;vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;font-size:.91em}
+pre{white-space:pre-wrap;background:#111;color:#f5f2ef;padding:13px 16px;border-radius:15px;font-size:13px;line-height:1.42;overflow:auto;margin:9px 0}
+pre .c{color:#aaa39d}
+.big-number{font-size:54px;font-weight:900;letter-spacing:-.05em;color:var(--orange)}
+.check{list-style:none;padding:0;margin:8px 0}
+.check li{margin:6px 0;padding-left:25px;position:relative;font-size:14px;line-height:1.35}
+.check li:before{content:"✓";position:absolute;left:0;color:var(--green);font-weight:900}
+.footer{position:absolute;left:46px;right:46px;bottom:14px;display:flex;justify-content:space-between;color:#7a746d;font-size:10px;pointer-events:none}
+.nav{position:fixed;bottom:10px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:7px;z-index:10;background:rgba(18,18,18,.94);color:white;padding:7px 9px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.22)}
+.nav button{border:0;background:#2a2a2a;color:white;width:36px;height:31px;border-radius:999px;font-size:16px;cursor:pointer}
+.nav button:hover{background:#444}
+.progress{width:120px;height:6px;background:#444;border-radius:10px;overflow:hidden}.progress i{display:block;height:100%;background:#f07732;width:0}
+.counter{font-size:11px;min-width:52px;text-align:center}
+.title-block{min-height:450px;display:flex;flex-direction:column;justify-content:center}
+.sourcebox{font-size:11px;color:var(--muted);margin-top:10px;line-height:1.35}
+.sourcebox a,.sources a{color:#854012}
+.diagram-model{display:grid;grid-template-columns:1.15fr .85fr;gap:24px;align-items:center}
+.file{border:2px solid var(--dark);border-radius:19px;padding:20px;position:relative;background:#fff}
+.file:after{content:"";position:absolute;right:-2px;top:-2px;width:48px;height:48px;background:linear-gradient(225deg,var(--paper) 0 49%,var(--dark) 50% 53%,#fff 54%);border-top-right-radius:17px}
+.file .label{font-weight:900;font-size:27px}.file .sub{color:var(--muted);font-size:13px;margin-top:3px}.file .inside{margin-top:16px;display:grid;gap:7px}.file .inside div{background:#f3efe9;border-radius:9px;padding:8px;font-size:13px}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:17px}.zone{border-radius:17px;padding:18px;border:1px solid var(--line);background:#fff}.zone.local{background:#f5faf7}.zone.cloud{background:#f5f7fa}
+.metric{border:1px solid var(--line);border-radius:13px;padding:11px;background:#fff}.metric b{font-size:20px;display:block;margin-bottom:2px}
+.quiz{border:2px dashed #d9c6b9;border-radius:17px;padding:16px;background:#fffaf5}
+.sources li{margin:7px 0;line-height:1.3;font-size:13px}.sources a{word-break:break-word}
+.timeline{margin:4px 0 0;padding-left:25px;columns:2;column-gap:34px}.timeline li{break-inside:avoid;margin:0 0 10px;font-size:15px;line-height:1.35}
+.glossary{display:grid;grid-template-columns:1fr 1fr;gap:7px 14px}.glossary div{display:grid;grid-template-columns:92px 1fr;border-bottom:1px solid var(--line);padding:6px 0}.glossary b{font-size:13px}.glossary span{font-size:12px;color:#4e4944}
+@media(max-width:900px){
+  body{overflow:auto}.slide{height:auto;min-height:calc(100vh - 70px);aspect-ratio:auto;padding:28px 24px 60px}
+  .grid2,.grid3,.grid4,.diagram-model,.compare,.glossary{grid-template-columns:1fr}
+  .flow{flex-direction:column}.arrow{transform:rotate(90deg)}h1{font-size:40px}h2{font-size:29px}.lead{font-size:19px}
+  .footer{left:24px;right:24px}.timeline{columns:1}
+}
+@media print{
+  body{background:white;overflow:visible}.nav{display:none}.deck{height:auto}
+  .slide,.slide.active{display:block;width:100%;height:auto;min-height:100vh;margin:0;border:0;border-radius:0;box-shadow:none;page-break-after:always;overflow:visible}
+}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<section class="slide active">
+  <div class="title-block">
+    <div class="kicker">Formation zéro prérequis · IA générative</div>
+    <h1>GGUF démystifié</h1>
+    <p class="lead">Du choix du modèle à son exécution : comprendre les mots, les sigles, la mémoire, la quantification, les tests, le local et le cloud.</p>
+    <div class="row" style="margin-top:20px">
+      <span class="badge orange">Chaque sigle est expliqué</span>
+      <span class="badge">Exemples concrets</span>
+      <span class="badge">Code commenté</span>
+      <span class="badge">Sources officielles</span>
+    </div>
+    <div class="callout" style="max-width:920px;margin-top:28px">
+      <strong>Le bon terme est GGUF.</strong> Dans la documentation officielle du paquet <code>gguf-py</code>,
+      GGUF signifie <b>GGML Universal File</b>. C’est un format de fichier destiné à stocker des modèles pour l’inférence.
+    </div>
+  </div>
+  <div class="footer"><span>Version débutant — tous les termes sont explicités</span><span>1</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">1 · Les sigles de base</div>
+  <h2>IA, ML, LLM, SLM : ne mélangeons pas tout</h2>
+  
+<div class="grid2">
+  <div class="card"><strong>IA — Intelligence artificielle</strong><p>Terme général pour les systèmes qui réalisent des tâches habituellement associées à l’intelligence humaine : comprendre du texte, classer, prévoir, générer, etc.</p></div>
+  <div class="card"><strong>ML — Machine Learning</strong><p>En français : <b>apprentissage automatique</b>. Au lieu d’écrire toutes les règles à la main, on entraîne un modèle à partir de données.</p></div>
+  <div class="card orange"><strong>LLM — Large Language Model</strong><p>En français : <b>grand modèle de langage</b>. Il prédit et génère des suites de tokens. Exemples de familles : Llama, Qwen, Gemma, Mistral.</p></div>
+  <div class="card"><strong>SLM — Small Language Model</strong><p>En français : <b>petit modèle de langage</b>. Il possède généralement moins de paramètres et vise souvent une exécution plus légère.</p></div>
+</div>
+<div class="callout"><b>À retenir :</b> GGUF n’est pas un LLM. GGUF est un <b>format de fichier</b> pouvant contenir les poids et métadonnées d’un modèle.</div>
+
+  <div class="footer"><span>IA = domaine · ML = méthode · LLM/SLM = modèles</span><span>2</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">2 · Le matériel</div>
+  <h2>CPU, GPU, RAM et VRAM : où le modèle travaille-t-il ?</h2>
+  
+<div class="grid2">
+  <div class="card">
+    <strong>CPU — Central Processing Unit</strong>
+    <p>Le <b>processeur central</b> de l’ordinateur. Polyvalent. Il peut exécuter un modèle, mais est souvent moins rapide qu’un GPU pour les gros calculs matriciels.</p>
+  </div>
+  <div class="card">
+    <strong>GPU — Graphics Processing Unit</strong>
+    <p>Le <b>processeur graphique</b>. Conçu pour effectuer beaucoup de calculs en parallèle. Très utile pour l’entraînement et l’inférence des modèles.</p>
+  </div>
+  <div class="card orange">
+    <strong>RAM — Random Access Memory</strong>
+    <p>La <b>mémoire vive principale</b> du PC. Un modèle exécuté sur CPU y charge tout ou partie de ses données.</p>
+  </div>
+  <div class="card">
+    <strong>VRAM — Video Random Access Memory</strong>
+    <p>La <b>mémoire vidéo du GPU</b>. Si le modèle est envoyé sur le GPU, il doit tenir totalement ou partiellement dans cette mémoire.</p>
+  </div>
+</div>
+<div class="callout"><b>Exemple :</b> un PC avec 16 Go de RAM et une carte graphique avec 8 Go de VRAM possède deux zones de mémoire différentes. Un moteur comme llama.cpp peut répartir certains calculs entre CPU et GPU.</div>
+
+  <div class="footer"><span>CPU = processeur · GPU = processeur graphique · RAM/VRAM = mémoire</span><span>3</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">3 · Anatomie d’un modèle</div>
+  <h2>Paramètre, poids, tenseur : que contient réellement un modèle ?</h2>
+  
+<div class="grid3">
+  <div class="card"><strong>Paramètre</strong><p>Une valeur numérique apprise pendant l’entraînement. Un modèle « 8B » contient environ <b>8 milliards</b> de paramètres.</p></div>
+  <div class="card"><strong>Poids</strong><p>Le mot « poids » désigne les valeurs apprises qui contrôlent les calculs du réseau neuronal. Dans la pratique, on parle souvent des « poids du modèle ».</p></div>
+  <div class="card orange"><strong>Tenseur</strong><p>Un tableau de nombres à plusieurs dimensions. Les poids sont organisés en tenseurs : vecteurs, matrices et blocs multidimensionnels.</p></div>
+</div>
+<div class="callout">
+  <b>Image mentale :</b> un tableur contient des cellules ; un modèle contient énormément de nombres regroupés en tenseurs.
+  Pendant l’inférence, le moteur effectue des opérations mathématiques sur ces nombres.
+</div>
+
+  <div class="footer"><span>8B = environ 8 milliards de paramètres</span><span>4</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">4 · Le texte devient des nombres</div>
+  <h2>Token et tokenizer : comment le modèle lit-il une phrase ?</h2>
+  
+<div class="flow">
+  <div class="step"><strong>Texte</strong><p>« Bonjour Joël »</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>Tokenizer</strong><p>Programme qui découpe le texte.</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>Tokens</strong><p>Morceaux de mots, mots ou signes.</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>Identifiants numériques</strong><p>Chaque token reçoit un numéro que le modèle peut traiter.</p></div>
+</div>
+<div class="grid2" style="margin-top:20px">
+  <div class="card"><strong>Token</strong><p>Unité manipulée par le modèle. Un token n’est <b>pas obligatoirement un mot</b>.</p></div>
+  <div class="card orange"><strong>Tokenizer</strong><p>L’outil qui transforme le texte en tokens puis reconstruit du texte à partir des tokens générés.</p></div>
+</div>
+<div class="callout"><b>Conséquence :</b> la « longueur de contexte » d’un modèle est mesurée en tokens, pas en pages Word.</div>
+
+  <div class="footer"><span>Le modèle ne lit pas directement les mots : il traite des tokens</span><span>5</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">5 · L’inférence</div>
+  <h2>Que se passe-t-il entre votre prompt et la réponse ?</h2>
+  
+<div class="flow">
+  <div class="step"><strong>1. Prompt</strong><p>Votre consigne.</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>2. Tokenisation</strong><p>Le texte devient des tokens.</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>3. Calculs</strong><p>Le réseau calcule les probabilités du token suivant.</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>4. Génération</strong><p>Un token est choisi, puis le cycle recommence.</p></div>
+</div>
+<div class="grid2" style="margin-top:18px">
+  <div class="card orange"><strong>Inférence</strong><p>Nom donné à la phase où un modèle déjà entraîné est <b>utilisé pour produire une sortie</b>. Ici, il ne réapprend pas son métier à chaque prompt.</p></div>
+  <div class="card"><strong>Sampling — échantillonnage</strong><p>Méthode utilisée pour choisir le prochain token parmi les candidats probables. Des réglages comme la température influencent cette sélection.</p></div>
+</div>
+
+  <div class="footer"><span>Inférence = utiliser un modèle entraîné pour produire une réponse</span><span>6</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">6 · Contexte et mémoire</div>
+  <h2>Context window et KV cache : pourquoi un long prompt consomme plus ?</h2>
+  
+<div class="grid2">
+  <div>
+    <div class="card"><strong>Context window — fenêtre de contexte</strong><p>Nombre maximal de tokens que le modèle peut prendre en compte dans une séquence donnée selon sa configuration et le moteur.</p></div>
+    <div class="card orange" style="margin-top:12px"><strong>KV cache — Key-Value cache</strong><p>En français : <b>cache clé-valeur</b>. Il conserve des résultats intermédiaires de l’attention afin d’éviter de recalculer tout l’historique à chaque nouveau token.</p></div>
+  </div>
+  <div class="card dark">
+    <div class="big-number">+</div>
+    <p style="font-size:22px"><b>Plus de contexte</b> → plus de mémoire utilisée par le cache → parfois moins de vitesse.</p>
+    <p style="color:#c9c4be">La taille du fichier GGUF n’est donc pas la seule mémoire à prévoir.</p>
+  </div>
+</div>
+<div class="callout"><b>Erreur fréquente :</b> « mon fichier fait 5 Go, donc 5 Go de RAM suffisent ». Faux : il faut aussi de la marge pour le moteur, les buffers, le contexte et le système.</div>
+
+  <div class="footer"><span>KV = Key-Value · le contexte augmente la mémoire d’exécution</span><span>7</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">7 · Qu’est-ce que GGUF ?</div>
+  <h2>GGUF = GGML Universal File</h2>
+  
+<div class="diagram-model">
+  <div>
+    <p class="lead"><b>GGUF</b> est un format binaire conçu pour stocker des modèles destinés à l’inférence avec GGML et des moteurs basés sur GGML.</p>
+    <ul class="check">
+      <li><b>GGML</b> : bibliothèque/projet de calcul sur tenseurs à l’origine de l’écosystème de llama.cpp.</li>
+      <li><b>Universal File</b> : l’objectif est de réunir dans un format cohérent les tenseurs et les métadonnées nécessaires au chargement.</li>
+      <li>Le format est pensé pour être extensible et pour permettre un chargement efficace.</li>
+    </ul>
+  </div>
+  <div class="file">
+    <div class="label">modele.gguf</div>
+    <div class="sub">fichier binaire</div>
+    <div class="inside">
+      <div>Tenseurs / poids</div>
+      <div>Types numériques / quantification</div>
+      <div>Métadonnées</div>
+      <div>Informations de tokenizer</div>
+    </div>
+  </div>
+</div>
+<div class="sourcebox">Source officielle : ggml <a href="https://github.com/ggml-org/ggml/blob/master/docs/gguf.md">spécification GGUF</a> et <a href="https://github.com/ggml-org/llama.cpp/blob/master/gguf-py/README.md">gguf-py</a>.</div>
+
+  <div class="footer"><span>GGUF est un format de fichier, pas un nouveau modèle</span><span>8</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">8 · À l’intérieur du fichier</div>
+  <h2>Que trouve-t-on concrètement dans un GGUF ?</h2>
+  
+<div class="grid3">
+  <div class="card"><strong>1. En-tête</strong><p>Le fichier commence par une signature permettant au logiciel d’identifier le format GGUF et sa version.</p></div>
+  <div class="card"><strong>2. Métadonnées</strong><p>Paires clé-valeur décrivant par exemple l’architecture, le tokenizer, des paramètres de configuration et d’autres informations.</p></div>
+  <div class="card orange"><strong>3. Tenseurs</strong><p>Nom, dimensions, type de données, emplacement puis données numériques qui représentent les poids.</p></div>
+</div>
+<div class="callout"><b>mmap — memory mapping / mappage mémoire :</b> technique qui permet au système d’exploitation de mapper le fichier dans l’espace mémoire, ce qui peut rendre le chargement plus efficace.</div>
+<div class="sourcebox">La spécification officielle GGUF décrit la structure : signature, version, paires clé-valeur, informations des tenseurs et bloc de données.</div>
+
+  <div class="footer"><span>GGUF rassemble données du modèle + métadonnées</span><span>9</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">9 · GGUF vs autres formats</div>
+  <h2>Pourquoi convertir un modèle vers GGUF ?</h2>
+  
+<table>
+<thead><tr><th>Format / terme</th><th>Explication simple</th><th>Usage courant</th></tr></thead>
+<tbody>
+<tr><td><b>SafeTensors</b></td><td>Format de stockage de tenseurs fréquemment utilisé dans l’écosystème Hugging Face.</td><td>Distribution et chargement de poids dans des frameworks comme Transformers.</td></tr>
+<tr><td><b>GGUF</b></td><td>Format de modèle + métadonnées pour les moteurs GGML.</td><td>Inférence locale ou serveur avec llama.cpp, Ollama, LM Studio et outils compatibles.</td></tr>
+<tr><td><b>PyTorch</b></td><td>Framework d’apprentissage profond, pas seulement un format de fichier.</td><td>Entraînement, fine-tuning, recherche et inférence.</td></tr>
+</tbody>
+</table>
+<div class="callout"><b>Conversion ≠ amélioration intellectuelle.</b> Passer de SafeTensors à GGUF ne rend pas le modèle plus intelligent. On change surtout la manière dont les poids et métadonnées sont stockés et consommés par un moteur.</div>
+<div class="sourcebox">Source : Hugging Face explique que les modèles développés avec PyTorch peuvent être convertis en GGUF pour être utilisés avec des moteurs GGML.</div>
+
+  <div class="footer"><span>Changer de format n’est pas réentraîner le modèle</span><span>10</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">10 · Bien choisir son modèle</div>
+  <h2>Étape 1 : partir de la tâche, jamais du buzz</h2>
+  
+<div class="grid3">
+  <div class="card"><strong>Chat / rédaction</strong><p>Choisir un modèle <b>instruction-tuned</b> : adapté à suivre des consignes et dialoguer.</p></div>
+  <div class="card"><strong>Code</strong><p>Choisir un modèle entraîné ou ajusté pour comprendre et générer du code.</p></div>
+  <div class="card"><strong>Vision</strong><p>Choisir un modèle <b>multimodal</b> capable de traiter texte + image. Vérifier que le moteur local supporte aussi sa partie vision.</p></div>
+  <div class="card"><strong>Embeddings</strong><p>Choisir un modèle d’<b>embeddings</b>, qui transforme un texte en vecteur pour mesurer la proximité sémantique.</p></div>
+  <div class="card"><strong>RAG</strong><p><b>Retrieval-Augmented Generation</b> : génération augmentée par recherche documentaire. On combine recherche + LLM.</p></div>
+  <div class="card orange"><strong>Extraction structurée</strong><p>Tester la capacité à respecter un schéma : JSON, champs obligatoires, valeurs attendues.</p></div>
+</div>
+
+  <div class="footer"><span>Le cas d’usage détermine la famille de modèle</span><span>11</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">11 · Base ou Instruct ?</div>
+  <h2>Un modèle « Base » n’a pas le même rôle qu’un modèle « Instruct »</h2>
+  
+<div class="compare">
+  <div class="zone">
+    <h3>Base model — modèle de base</h3>
+    <p>Pré-entraîné pour prédire le texte. Il peut être utile pour la recherche ou comme point de départ d’un fine-tuning, mais il n’est pas forcément optimisé pour suivre une instruction utilisateur.</p>
+  </div>
+  <div class="zone local">
+    <h3>Instruct model — modèle instruction</h3>
+    <p>Modèle ajusté pour mieux suivre des consignes, dialoguer et répondre dans un format attendu. Pour un assistant, c’est souvent le choix le plus simple.</p>
+  </div>
+</div>
+<div class="callout"><b>Fine-tuning — ajustement fin :</b> phase d’entraînement supplémentaire qui spécialise un modèle sur des données, comportements ou tâches ciblées.</div>
+
+  <div class="footer"><span>Pour un assistant débutant : commencer par une variante Instruct</span><span>12</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">12 · Taille du modèle</div>
+  <h2>3B, 8B, 14B, 32B… que signifie « B » ?</h2>
+  
+<div class="grid2">
+  <div class="card dark"><div class="big-number">B</div><p style="font-size:22px"><b>B = billion</b> en anglais, donc <b>milliard</b> en français.</p></div>
+  <div class="card"><strong>Exemples</strong><p><b>3B</b> ≈ 3 milliards de paramètres<br><b>8B</b> ≈ 8 milliards<br><b>32B</b> ≈ 32 milliards</p></div>
+</div>
+<div class="callout"><b>Attention :</b> plus de paramètres peut augmenter les capacités, mais aussi le besoin en mémoire et en calcul. Un modèle plus gros n’est pas automatiquement meilleur sur votre tâche précise.</div>
+<div class="grid3">
+  <div class="card"><strong>Petit modèle</strong><p>Rapide, économique, utile pour tâches simples et spécialisées.</p></div>
+  <div class="card orange"><strong>Modèle intermédiaire</strong><p>Bon compromis pour de nombreux usages locaux.</p></div>
+  <div class="card"><strong>Grand modèle</strong><p>Plus de capacité potentielle, mais infrastructure et coût supérieurs.</p></div>
+</div>
+
+  <div class="footer"><span>B = billion = milliard de paramètres</span><span>13</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">13 · Critères avant téléchargement</div>
+  <h2>La fiche de sélection en 7 questions</h2>
+  
+<div class="grid4">
+  <div class="card"><div class="n">1</div><strong>Tâche</strong><p>Que doit-il réussir ?</p></div>
+  <div class="card"><div class="n">2</div><strong>Langue</strong><p>Français réellement bon ?</p></div>
+  <div class="card"><div class="n">3</div><strong>Licence</strong><p>Usage commercial autorisé ?</p></div>
+  <div class="card"><div class="n">4</div><strong>Taille</strong><p>Combien de paramètres ?</p></div>
+  <div class="card"><div class="n">5</div><strong>Contexte</strong><p>Combien de tokens nécessaires ?</p></div>
+  <div class="card"><div class="n">6</div><strong>Matériel</strong><p>RAM / VRAM disponibles ?</p></div>
+  <div class="card orange"><div class="n">7</div><strong>Tests</strong><p>Qualité mesurée sur vos cas ?</p></div>
+</div>
+<div class="callout"><b>Règle :</b> ne choisissez pas un modèle parce qu’il est « numéro 1 » sur un classement général. Vérifiez qu’il répond à votre tâche, votre langue, votre matériel et votre licence.</div>
+
+  <div class="footer"><span>Tâche + langue + licence + matériel + tests</span><span>14</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">14 · Estimer la mémoire</div>
+  <h2>Un calcul simple pour les poids — puis ajouter la marge</h2>
+  
+<div class="grid2">
+  <div>
+    <div class="card dark">
+      <strong style="font-size:22px">Approximation pédagogique</strong>
+      <p style="font-size:24px">mémoire des poids ≈ paramètres × bits / 8</p>
+    </div>
+    <p>Pourquoi « / 8 » ? Parce que <b>8 bits = 1 octet</b>.</p>
+  </div>
+  <div>
+    <table>
+      <thead><tr><th>Exemple</th><th>Calcul simplifié</th><th>Poids théoriques</th></tr></thead>
+      <tbody>
+        <tr><td>8B en 16 bits</td><td>8 Md × 16 / 8</td><td>≈ 16 Go</td></tr>
+        <tr><td>8B en 8 bits</td><td>8 Md × 8 / 8</td><td>≈ 8 Go</td></tr>
+        <tr><td>8B en 4 bits</td><td>8 Md × 4 / 8</td><td>≈ 4 Go</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="callout"><b>Mais ce n’est pas la consommation finale.</b> La quantification par blocs ajoute des échelles et métadonnées ; le moteur ajoute aussi contexte, cache, buffers et structures internes.</div>
+
+  <div class="footer"><span>8 bits = 1 octet · prévoir toujours une marge</span><span>15</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">15 · Les nombres dans le modèle</div>
+  <h2>FP32, FP16, BF16, INT8 : que veulent dire ces sigles ?</h2>
+  
+<table>
+<thead><tr><th>Sigle</th><th>Nom complet</th><th>Explication simple</th></tr></thead>
+<tbody>
+<tr><td><b>FP32</b></td><td>32-bit Floating Point</td><td>Nombre à virgule flottante sur 32 bits. Haute précision, mais lourd.</td></tr>
+<tr><td><b>FP16</b></td><td>16-bit Floating Point</td><td>Virgule flottante sur 16 bits. Environ moitié moins de stockage que FP32 pour les poids.</td></tr>
+<tr><td><b>BF16</b></td><td>BFloat16 / Brain Floating Point 16</td><td>Format 16 bits très utilisé en apprentissage profond ; conserve une grande plage de valeurs.</td></tr>
+<tr><td><b>INT8</b></td><td>8-bit Integer</td><td>Entier sur 8 bits, utilisé dans certaines méthodes de quantification.</td></tr>
+<tr><td><b>Q4 / Q5 / Q6</b></td><td>Quantification 4 / 5 / 6 bits environ</td><td>Familles de représentations compactes des poids dans llama.cpp/GGML.</td></tr>
+</tbody>
+</table>
+<div class="callout"><b>Bit :</b> plus petite unité binaire, 0 ou 1. Moins de bits par poids = fichier généralement plus petit, mais approximation plus forte.</div>
+
+  <div class="footer"><span>FP = Floating Point · INT = Integer · Q = Quantization</span><span>16</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">16 · Quantification</div>
+  <h2>Compresser un modèle sans le zipper</h2>
+  
+<div class="grid2">
+  <div class="card orange">
+    <h3>Quantifier</h3>
+    <p>Transformer les poids vers une représentation numérique plus compacte. On cherche à réduire disque et mémoire tout en gardant suffisamment de qualité.</p>
+  </div>
+  <div class="card">
+    <h3>Ce n’est pas ZIP</h3>
+    <p>Un fichier ZIP réduit la taille pour le transport puis doit être décompressé. Une quantification modifie la représentation des poids de façon à les utiliser directement sous cette forme compacte avec les kernels compatibles.</p>
+  </div>
+</div>
+<div class="flow">
+  <div class="step"><strong>BF16 / FP16</strong><p>plus lourd</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>Q8</strong><p>compact</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>Q6 / Q5</strong><p>compromis</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>Q4</strong><p>très utilisé en local</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>Q3 / Q2</strong><p>plus agressif</p></div>
+</div>
+<div class="sourcebox">Source officielle : <a href="https://github.com/ggml-org/llama.cpp/blob/master/tools/quantize/README.md">llama.cpp — quantize</a>.</div>
+
+  <div class="footer"><span>Quantification = représentation numérique plus compacte</span><span>17</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">17 · Décoder Q4_K_M</div>
+  <h2>Que signifie exactement « Q4_K_M » ?</h2>
+  
+<div class="grid3">
+  <div class="card orange"><div class="big-number">Q4</div><p><b>Q = Quantization</b>. Le « 4 » indique une famille de quantification proche de 4 bits pour une grande partie des poids, avec des surcoûts de blocs et d’échelles.</p></div>
+  <div class="card"><div class="big-number">K</div><p><b>K-quants</b> : famille de schémas de quantification par blocs/super-blocs utilisée dans GGML/llama.cpp.</p></div>
+  <div class="card"><div class="big-number">M</div><p><b>Medium</b> : variante « Medium ». llama.cpp affiche ce type comme <code>Q4_K - Medium</code>. Le schéma peut mélanger différents types internes selon les tenseurs.</p></div>
+</div>
+<div class="callout"><b>Donc :</b> Q4_K_M n’est pas « exactement 4 bits pour chaque nombre ». C’est le nom d’un <b>schéma de quantification</b> avec une organisation précise des blocs et des types.</div>
+<div class="sourcebox">Sources : code de chargement llama.cpp (<code>Q4_K - Medium</code>) et README de quantification.</div>
+
+  <div class="footer"><span>Q4_K_M = quantification Q4 · famille K · variante Medium</span><span>18</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">18 · Quel niveau de quantification ?</div>
+  <h2>Q4, Q5 ou Q6 : une règle de décision simple</h2>
+  
+<table>
+<thead><tr><th>Option</th><th>Quand la tester</th><th>Compromis typique</th></tr></thead>
+<tbody>
+<tr><td><b>Q4_K_M</b></td><td>Premier essai local quand la mémoire est contrainte.</td><td>Bon compromis taille / qualité dans de nombreux cas.</td></tr>
+<tr><td><b>Q5_K_M</b></td><td>Quand vous avez un peu plus de mémoire et souhaitez réduire la perte.</td><td>Plus lourd, qualité souvent plus proche de la source.</td></tr>
+<tr><td><b>Q6_K</b></td><td>Quand la qualité prime et que la mémoire est suffisante.</td><td>Encore plus lourd, quantification moins agressive.</td></tr>
+<tr><td><b>Q8_0</b></td><td>Pour garder une précision élevée avec un fichier encore quantifié.</td><td>Très lourd comparé à Q4/Q5.</td></tr>
+</tbody>
+</table>
+<div class="callout"><b>La bonne réponse vient du test.</b> Une quantification acceptable en rédaction peut être insuffisante sur du code, des mathématiques ou une extraction stricte.</div>
+
+  <div class="footer"><span>Commencer raisonnablement, puis mesurer la perte</span><span>19</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">19 · Expérimenter proprement</div>
+  <h2>Un benchmark n’est utile que si vous testez la même chose</h2>
+  
+<div class="grid3">
+  <div class="metric"><b>Qualité</b><span>Exactitude, complétude, respect du format.</span></div>
+  <div class="metric"><b>TTFT</b><span><b>Time To First Token</b> : temps avant le premier token visible.</span></div>
+  <div class="metric"><b>tok/s</b><span><b>tokens par seconde</b> pendant la génération.</span></div>
+  <div class="metric"><b>RAM / VRAM</b><span>Mémoire réellement utilisée.</span></div>
+  <div class="metric"><b>Stabilité</b><span>Le modèle donne-t-il des résultats cohérents plusieurs fois ?</span></div>
+  <div class="metric"><b>Coût</b><span>Prix machine, GPU cloud ou appels API.</span></div>
+</div>
+<div class="callout"><b>Protocole :</b> 30 prompts métier identiques × plusieurs modèles × même température × même longueur maximale × mêmes critères de notation.</div>
+<div class="sourcebox">llama.cpp fournit aussi <code>llama-bench</code>, un outil de benchmark pour mesurer les performances du moteur.</div>
+
+  <div class="footer"><span>TTFT = Time To First Token · tok/s = tokens par seconde</span><span>20</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">20 · Exemple de grille de test</div>
+  <h2>Décider avec des critères, pas avec une impression</h2>
+  
+<table>
+<thead><tr><th>Test métier</th><th>Poids</th><th>Modèle A</th><th>Modèle B</th><th>Modèle C</th></tr></thead>
+<tbody>
+<tr><td>Résumé fidèle</td><td>30 %</td><td>8/10</td><td>9/10</td><td>7/10</td></tr>
+<tr><td>Français naturel</td><td>20 %</td><td>9/10</td><td>9/10</td><td>8/10</td></tr>
+<tr><td>JSON valide</td><td>25 %</td><td>7/10</td><td>9/10</td><td>8/10</td></tr>
+<tr><td>Vitesse</td><td>15 %</td><td>9/10</td><td>6/10</td><td>10/10</td></tr>
+<tr><td>Mémoire</td><td>10 %</td><td>9/10</td><td>5/10</td><td>10/10</td></tr>
+</tbody>
+</table>
+<div class="callout"><b>Poids</b> ici signifie « importance du critère dans la note finale », et non « poids neuronaux du modèle ». Le contexte du mot compte.</div>
+
+  <div class="footer"><span>Construire une note métier avant de choisir</span><span>21</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">21 · Le pipeline complet</div>
+  <h2>Du dépôt Hugging Face au modèle GGUF local</h2>
+  
+<div class="flow">
+  <div class="step"><strong>1. Modèle source</strong><p>Poids + configuration sur un dépôt.</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>2. Conversion</strong><p>Transformer vers GGUF.</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>3. Quantification</strong><p>Ex. Q4_K_M.</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>4. Runtime</strong><p>Moteur d’exécution.</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>5. Application</strong><p>Chat, API, RAG…</p></div>
+</div>
+<div class="grid2" style="margin-top:18px">
+  <div class="card"><strong>Runtime</strong><p>En français : environnement/moteur d’exécution. Exemples : <b>llama.cpp</b> ou <b>Ollama</b>.</p></div>
+  <div class="card orange"><strong>Hugging Face Hub</strong><p>Plateforme où de nombreux auteurs publient modèles, fichiers, configurations et licences.</p></div>
+</div>
+
+  <div class="footer"><span>Source → conversion → quantification → moteur → application</span><span>22</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">22 · Conversion expliquée</div>
+  <h2>Exemple : produire un GGUF BF16 puis le quantifier</h2>
+  
+<pre><code><span class="c"># Étape 1 — convertir le modèle source vers GGUF en BF16</span>
+python convert_hf_to_gguf.py   --outfile modele-bf16.gguf   --outtype bf16   --remote organisation/nom-du-modele
+
+<span class="c"># Étape 2 — créer une version Q4_K_M plus compacte</span>
+./build/bin/llama-quantize   modele-bf16.gguf   modele-Q4_K_M.gguf   Q4_K_M
+</code></pre>
+<div class="grid2">
+  <div class="card"><strong><code>--outfile</code></strong><p>Nom du fichier GGUF à créer.</p><strong><code>--outtype bf16</code></strong><p>Demande une sortie en BFloat16 avant quantification.</p></div>
+  <div class="card orange"><strong><code>llama-quantize</code></strong><p>Outil de llama.cpp qui applique une quantification.</p><strong><code>Q4_K_M</code></strong><p>Schéma choisi pour le fichier final.</p></div>
+</div>
+<div class="sourcebox">Source officielle : <a href="https://github.com/ggml-org/llama.cpp/blob/master/tools/quantize/README.md">llama.cpp — Quantize the GGUF</a>.</div>
+
+  <div class="footer"><span>Toujours comprendre ce que fait chaque argument</span><span>23</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">23 · Pourquoi partir d’une bonne précision ?</div>
+  <h2>Éviter la requantification agressive</h2>
+  
+<div class="compare">
+  <div class="zone local">
+    <h3>Bon chemin</h3>
+    <p><b>BF16 / FP16 → Q4_K_M</b></p>
+    <p>On part d’une version de qualité élevée, puis on quantifie une fois vers la cible.</p>
+  </div>
+  <div class="zone">
+    <h3>Chemin risqué</h3>
+    <p><b>Q3 → Q4 → Q5</b></p>
+    <p>Changer une version déjà fortement quantifiée ne recrée pas l’information qui a été perdue.</p>
+  </div>
+</div>
+<div class="callout"><b>La documentation llama.cpp avertit</b> que la requantification de tenseurs déjà quantifiés peut fortement dégrader la qualité comparée à une quantification depuis des poids 16 ou 32 bits.</div>
+<div class="sourcebox">Source : README officiel de <code>llama-quantize</code>, option <code>--allow-requantize</code>.</div>
+
+  <div class="footer"><span>Quantifier de préférence depuis une source de bonne précision</span><span>24</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">24 · Lancer en local</div>
+  <h2>llama.cpp : le moteur d’inférence minimaliste</h2>
+  
+<pre><code><span class="c"># -m signifie : chemin vers le modèle</span>
+llama-cli   -m ./modele-Q4_K_M.gguf   -p "Explique la RAM à un débutant en 5 lignes."
+</code></pre>
+<div class="grid2">
+  <div class="card"><strong>CLI — Command Line Interface</strong><p>En français : <b>interface en ligne de commande</b>. On pilote le programme depuis le terminal.</p></div>
+  <div class="card orange"><strong><code>-p</code> — prompt</strong><p>Le texte envoyé au modèle. Le moteur le tokenize, exécute l’inférence et imprime la réponse.</p></div>
+</div>
+<div class="callout"><b>Local</b> signifie ici que les poids et l’inférence restent sur votre machine, sauf si votre application appelle par ailleurs des services externes.</div>
+<div class="sourcebox">Source : <a href="https://github.com/ggml-org/llama.cpp/blob/master/docs/models.md">llama.cpp — models</a>.</div>
+
+  <div class="footer"><span>CLI = Command Line Interface</span><span>25</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">25 · Lancer avec Ollama</div>
+  <h2>Ollama : simplifier le chargement et l’API locale</h2>
+  
+<pre><code><span class="c"># Fichier nommé : Modelfile</span>
+FROM ./modele-Q4_K_M.gguf
+
+<span class="c"># Enregistrer ce modèle dans Ollama</span>
+ollama create mon-modele -f Modelfile
+
+<span class="c"># Démarrer une conversation</span>
+ollama run mon-modele
+</code></pre>
+<div class="grid2">
+  <div class="card"><strong>Modelfile</strong><p>Fichier de configuration d’Ollama. La ligne <code>FROM</code> indique le modèle de départ.</p></div>
+  <div class="card orange"><strong>API — Application Programming Interface</strong><p>En français : <b>interface de programmation</b>. Une application peut envoyer une requête à Ollama au lieu de manipuler directement les calculs du modèle.</p></div>
+</div>
+<div class="sourcebox">Source officielle : <a href="https://docs.ollama.com/import">Ollama — Importing a Model</a>.</div>
+
+  <div class="footer"><span>API = Application Programming Interface</span><span>26</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">26 · Appeler le modèle depuis Python</div>
+  <h2>Exemple complet d’une requête vers l’API locale</h2>
+  
+<pre><code>import requests
+
+<span class="c"># Données envoyées à Ollama</span>
+payload = {
+    "model": "mon-modele",
+    "prompt": "Résume ce texte en 5 points.",
+    "stream": False
+}
+
+<span class="c"># HTTP = Hypertext Transfer Protocol</span>
+response = requests.post(
+    "http://localhost:11434/api/generate",
+    json=payload,
+    timeout=120
+)
+
+response.raise_for_status()
+print(response.json()["response"])
+</code></pre>
+<div class="grid3">
+  <div class="card"><strong>localhost</strong><p>Nom qui désigne la machine actuelle.</p></div>
+  <div class="card"><strong>HTTP</strong><p><b>Hypertext Transfer Protocol</b> : protocole utilisé ici pour communiquer avec l’API.</p></div>
+  <div class="card orange"><strong>JSON</strong><p><b>JavaScript Object Notation</b> : format texte structuré très utilisé par les API.</p></div>
+</div>
+
+  <div class="footer"><span>HTTP = protocole · JSON = format de données · API = interface</span><span>27</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">27 · Local ou cloud ?</div>
+  <h2>Choisir l’endroit où le modèle s’exécute</h2>
+  
+<div class="compare">
+  <div class="zone local">
+    <h3>Local</h3>
+    <ul class="check">
+      <li>données sensibles ou fonctionnement hors ligne ;</li>
+      <li>charge relativement prévisible ;</li>
+      <li>machine suffisamment puissante ;</li>
+      <li>contrôle maximal recherché.</li>
+    </ul>
+  </div>
+  <div class="zone cloud">
+    <h3>Cloud</h3>
+    <ul class="check">
+      <li>besoin d’un GPU puissant ponctuellement ;</li>
+      <li>beaucoup d’utilisateurs simultanés ;</li>
+      <li>montée en charge rapide ;</li>
+      <li>centralisation du service via une API.</li>
+    </ul>
+  </div>
+</div>
+<div class="callout"><b>GPU cloud</b> = carte graphique louée chez un fournisseur distant. Votre application envoie les requêtes au serveur où le modèle est chargé.</div>
+
+  <div class="footer"><span>Local = votre machine · Cloud = infrastructure distante</span><span>28</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">28 · Servir dans le cloud</div>
+  <h2>vLLM : exemple de moteur orienté serveur</h2>
+  
+<div class="grid2">
+  <div class="card">
+    <strong>vLLM</strong>
+    <p>Projet d’inférence et de serving de modèles orienté débit et usage serveur. Il prend en charge plusieurs méthodes de quantification, avec une compatibilité qui dépend du matériel et de la méthode.</p>
+  </div>
+  <div class="card orange">
+    <strong>Serving</strong>
+    <p>Le fait d’exposer un modèle comme un <b>service</b> accessible par une API pour plusieurs applications ou utilisateurs.</p>
+  </div>
+</div>
+<div class="callout"><b>Important :</b> GGUF est particulièrement associé à GGML/llama.cpp et outils compatibles. Pour un serveur GPU à fort débit, on peut choisir d’autres formats et moteurs selon le modèle, le GPU et la méthode de quantification.</div>
+<div class="sourcebox">Source officielle : <a href="https://docs.vllm.ai/en/latest/features/quantization/">vLLM — Quantization</a>.</div>
+
+  <div class="footer"><span>vLLM = moteur de serving/inférence ; compatibilité à vérifier</span><span>29</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">29 · Cas complet</div>
+  <h2>Exemple : PME avec 16 Go de RAM, sans GPU dédié</h2>
+  
+<div class="quiz">
+  <p><b>Besoin :</b> résumer des documents internes en français, sans envoyer les documents sur Internet.</p>
+  <div class="flow">
+    <div class="step"><strong>1. Tâche</strong><p>Résumé en français.</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><strong>2. Contrainte</strong><p>16 Go RAM, CPU, hors ligne.</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><strong>3. Candidats</strong><p>Petits / moyens modèles Instruct.</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><strong>4. Quantification</strong><p>Tester Q4_K_M puis Q5 si possible.</p></div>
+  </div>
+</div>
+<div class="callout"><b>Pourquoi pas un 70B BF16 ?</b> Parce que le besoin mémoire serait complètement disproportionné. Le bon modèle est celui qui respecte d’abord vos contraintes tout en atteignant la qualité minimale.</div>
+
+  <div class="footer"><span>Cas réel : dimensionner le modèle au matériel et au besoin</span><span>30</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">30 · Cas complet cloud</div>
+  <h2>Exemple : application avec 500 utilisateurs</h2>
+  
+<div class="grid2">
+  <div class="card">
+    <strong>Problème</strong>
+    <p>Beaucoup de requêtes simultanées, besoin de disponibilité, surveillance, authentification et montée en charge.</p>
+  </div>
+  <div class="card orange">
+    <strong>Choix possible</strong>
+    <p>Déployer un moteur serveur sur GPU cloud, exposer une API interne, mesurer le coût par requête et conserver éventuellement un modèle local de secours.</p>
+  </div>
+</div>
+<div class="flow">
+  <div class="step"><strong>Application</strong><p>Web / mobile</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>API</strong><p>Authentification + quotas</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>Serveur d’inférence</strong><p>GPU + runtime</p></div>
+  <div class="arrow">→</div>
+  <div class="step"><strong>Modèle</strong><p>chargé en mémoire</p></div>
+</div>
+
+  <div class="footer"><span>Cloud = penser aussi sécurité, coût, concurrence et disponibilité</span><span>31</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">31 · Local + Cloud</div>
+  <h2>Le mode hybride peut être le meilleur compromis</h2>
+  
+<div class="grid3">
+  <div class="card"><strong>Petit modèle local</strong><p>Classification, résumé court, données très sensibles, fonctionnement hors ligne.</p></div>
+  <div class="card orange"><strong>Routeur</strong><p>Décide si la demande peut être traitée localement ou doit être envoyée vers un modèle plus puissant.</p></div>
+  <div class="card"><strong>Grand modèle cloud</strong><p>Cas complexes, long raisonnement, très grands contextes ou pics de charge.</p></div>
+</div>
+<div class="callout"><b>Attention :</b> hybride ne veut pas automatiquement dire conforme ou sécurisé. Il faut définir quelles données peuvent quitter l’environnement local.</div>
+
+  <div class="footer"><span>Hybride = router la bonne tâche vers le bon modèle</span><span>32</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">32 · Les erreurs classiques</div>
+  <h2>Ce qu’un débutant doit éviter</h2>
+  
+<div class="grid2">
+  <div class="card"><strong>« Le plus gros est forcément le meilleur »</strong><p>Non : coût, latence, tâche et langue comptent.</p></div>
+  <div class="card"><strong>« GGUF = modèle compressé »</strong><p>Pas forcément : GGUF est un format qui peut contenir différents types, y compris des représentations fortement ou peu quantifiées.</p></div>
+  <div class="card"><strong>« 4 bits = exactement 4 bits par poids »</strong><p>Une quantification par blocs ajoute échelles et structures ; la moyenne réelle peut être différente.</p></div>
+  <div class="card orange"><strong>« Le modèle tient sur disque, donc il tient en RAM »</strong><p>Il faut ajouter le moteur, le contexte, le KV cache, les buffers et le système.</p></div>
+</div>
+
+  <div class="footer"><span>Ne jamais confondre taille du fichier et mémoire totale d’exécution</span><span>33</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">33 · Checklist finale</div>
+  <h2>La procédure simple à suivre à chaque nouveau projet</h2>
+  
+<ol class="timeline">
+  <li><b>Décrire la tâche</b> avec 20 à 100 exemples réels.</li>
+  <li><b>Fixer les contraintes</b> : langue, licence, données, RAM, VRAM, latence, budget.</li>
+  <li><b>Présélectionner 2 à 5 modèles</b> adaptés au cas d’usage.</li>
+  <li><b>Choisir un format/runtime</b> compatible avec votre matériel.</li>
+  <li><b>Tester une première quantification</b>, par exemple Q4_K_M.</li>
+  <li><b>Mesurer</b> qualité, TTFT, tokens/s, RAM/VRAM et coût.</li>
+  <li><b>Comparer Q4/Q5/Q6</b> si la qualité ou la mémoire ne convient pas.</li>
+  <li><b>Déployer local, cloud ou hybride</b> selon les résultats.</li>
+</ol>
+<div class="callout"><b>Principe :</b> choisir le plus petit système qui atteint de façon fiable votre niveau de qualité cible.</div>
+
+  <div class="footer"><span>Mesurer avant de décider</span><span>34</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">34 · Glossaire A–Z</div>
+  <h2>Les sigles à retenir</h2>
+  
+<div class="glossary">
+  <div><b>API</b><span>Application Programming Interface — interface de programmation</span></div>
+  <div><b>BF16</b><span>BFloat16 — format flottant 16 bits</span></div>
+  <div><b>CLI</b><span>Command Line Interface — interface en ligne de commande</span></div>
+  <div><b>CPU</b><span>Central Processing Unit — processeur central</span></div>
+  <div><b>FP16/FP32</b><span>Floating Point 16/32 bits — nombres à virgule flottante</span></div>
+  <div><b>GGUF</b><span>GGML Universal File — format de fichier de modèle</span></div>
+  <div><b>GPU</b><span>Graphics Processing Unit — processeur graphique</span></div>
+  <div><b>HTTP</b><span>Hypertext Transfer Protocol — protocole de communication</span></div>
+  <div><b>IA</b><span>Intelligence artificielle</span></div>
+  <div><b>INT8</b><span>8-bit Integer — entier sur 8 bits</span></div>
+  <div><b>JSON</b><span>JavaScript Object Notation — format de données texte</span></div>
+  <div><b>KV cache</b><span>Key-Value cache — cache clé-valeur</span></div>
+  <div><b>LLM</b><span>Large Language Model — grand modèle de langage</span></div>
+  <div><b>ML</b><span>Machine Learning — apprentissage automatique</span></div>
+  <div><b>Q4/Q5/Q6</b><span>Familles de quantification numérique</span></div>
+  <div><b>RAG</b><span>Retrieval-Augmented Generation — génération augmentée par recherche</span></div>
+  <div><b>RAM</b><span>Random Access Memory — mémoire vive</span></div>
+  <div><b>SLM</b><span>Small Language Model — petit modèle de langage</span></div>
+  <div><b>TTFT</b><span>Time To First Token — temps avant le premier token</span></div>
+  <div><b>VRAM</b><span>Video Random Access Memory — mémoire vidéo du GPU</span></div>
+</div>
+
+  <div class="footer"><span>Un sigle inconnu doit toujours être traduit avant d’être utilisé</span><span>35</span></div>
+</section>
+
+<section class="slide">
+  <div class="kicker">35 · Sources officielles</div>
+  <h2>Documentation à conserver comme référence</h2>
+  
+<ol class="sources">
+  <li><b>GGUF — spécification ggml :</b> <a href="https://github.com/ggml-org/ggml/blob/master/docs/gguf.md">github.com/ggml-org/ggml/blob/master/docs/gguf.md</a></li>
+  <li><b>gguf-py — nom GGML Universal File :</b> <a href="https://github.com/ggml-org/llama.cpp/blob/master/gguf-py/README.md">github.com/ggml-org/llama.cpp/blob/master/gguf-py/README.md</a></li>
+  <li><b>llama.cpp — modèles GGUF :</b> <a href="https://github.com/ggml-org/llama.cpp/blob/master/docs/models.md">github.com/ggml-org/llama.cpp/blob/master/docs/models.md</a></li>
+  <li><b>llama.cpp — quantification :</b> <a href="https://github.com/ggml-org/llama.cpp/blob/master/tools/quantize/README.md">github.com/ggml-org/llama.cpp/blob/master/tools/quantize/README.md</a></li>
+  <li><b>Hugging Face — GGUF :</b> <a href="https://huggingface.co/docs/hub/gguf">huggingface.co/docs/hub/gguf</a></li>
+  <li><b>Hugging Face Transformers — GGUF :</b> <a href="https://huggingface.co/docs/transformers/quantization/gguf">huggingface.co/docs/transformers/quantization/gguf</a></li>
+  <li><b>Ollama — Importing a Model :</b> <a href="https://docs.ollama.com/import">docs.ollama.com/import</a></li>
+  <li><b>Ollama — Modelfile :</b> <a href="https://docs.ollama.com/modelfile">docs.ollama.com/modelfile</a></li>
+  <li><b>vLLM — Quantization :</b> <a href="https://docs.vllm.ai/en/latest/features/quantization/">docs.vllm.ai/en/latest/features/quantization/</a></li>
+</ol>
+<div class="callout"><b>Conseil :</b> ces outils évoluent rapidement. Pour une formation technique, vérifiez les options de commande et les compatibilités matérielles dans la documentation officielle au moment de l’exercice.</div>
+
+  <div class="footer"><span>Sources techniques officielles — vérifiées pour cette version</span><span>36</span></div>
+</section>
+
+</div>
+
+<div class="nav" aria-label="Navigation des slides">
+  <button id="prev" title="Slide précédente">←</button>
+  <div class="progress"><i id="bar"></i></div>
+  <div class="counter" id="counter">1 / 36</div>
+  <button id="next" title="Slide suivante">→</button>
+</div>
+
+<script>
+const slides = [...document.querySelectorAll('.slide')];
+let current = 0;
+const counter = document.getElementById('counter');
+const bar = document.getElementById('bar');
+function show(i){
+  current = Math.max(0, Math.min(slides.length - 1, i));
+  slides.forEach((s, idx) => s.classList.toggle('active', idx === current));
+  counter.textContent = `${current + 1} / ${slides.length}`;
+  bar.style.width = `${((current + 1) / slides.length) * 100}%`;
+  history.replaceState(null, '', `#slide-${current + 1}`);
+}
+document.getElementById('prev').onclick = () => show(current - 1);
+document.getElementById('next').onclick = () => show(current + 1);
+document.addEventListener('keydown', (e) => {
+  if(['ArrowRight','PageDown',' '].includes(e.key)) { e.preventDefault(); show(current + 1); }
+  if(['ArrowLeft','PageUp'].includes(e.key)) { e.preventDefault(); show(current - 1); }
+  if(e.key === 'Home') show(0);
+  if(e.key === 'End') show(slides.length - 1);
+});
+const m = location.hash.match(/slide-(\d+)/);
+if(m) current = Math.min(slides.length-1, Math.max(0, Number(m[1])-1));
+show(current);
+</script>
+</body>
+</html>

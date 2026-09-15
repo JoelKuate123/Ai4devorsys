@@ -1,0 +1,26 @@
+PROCÉDURE TT-2026-01 — LE TÉLÉTRAVAIL
+Document interne confidentiel. En vigueur depuis le 1er février 2026.
+
+1. Principe
+Le télétravail est autorisé jusqu'à trois jours par semaine pour les fonctions
+compatibles. Les fonctions d'accueil et de guichet sont exclues du dispositif.
+
+2. Demande
+La demande se fait auprès du responsable hiérarchique, par le formulaire
+intranet, au moins quinze jours avant la première journée souhaitée.
+L'accord est donné pour une durée de douze mois renouvelable.
+
+3. Équipement
+L'employeur fournit un ordinateur portable et un écran externe.
+L'agent utilise sa propre connexion internet. Une indemnité forfaitaire de
+40 euros par mois couvre les frais de connexion et d'électricité.
+
+4. Sécurité informatique
+Le VPN est obligatoire pour tout accès aux applications internes.
+Il est interdit d'utiliser un ordinateur personnel pour traiter des données
+de l'organisation. Les documents ne peuvent pas être stockés sur un service
+de cloud grand public.
+
+5. Joignabilité
+L'agent en télétravail est joignable de 9h à 12h et de 14h à 16h.
+Les réunions d'équipe hebdomadaires se tiennent en présentiel le mardi.

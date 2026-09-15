@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "meteo-africa": {
+      "command": "python",
+      "args": ["C:\\Users\\axiat\\Desktop\\orsys\\AI pour les developpeurs\\Jour3_LLM_et_RAG_local\\Mcp explication\\server.py"]
+    }
+  }
+}

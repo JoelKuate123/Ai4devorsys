@@ -1,0 +1,907 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "gpuType": "V5E1",
+      "toc_visible": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    },
+    "accelerator": "TPU"
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "source": [
+        "### Étape 1 : Installer les dépendances\n",
+        "\n",
+        "Nous installons ici les paquets et bibliothèques nécessaires au système :\n",
+        "\n",
+        "- **llama-index** : utilisé pour la recherche de documents, la gestion des embeddings et la construction d’index.\n",
+        "- **langchain** : permet de créer et d’orchestrer des agents, des outils et des chaînes de traitement.\n",
+        "- **langchain_community** : nécessaire pour intégrer `ChatOpenAI` avec LangChain (version 0.3.x).\n",
+        "- **openai** : donne accès à l’API des modèles LLM.\n",
+        "- **wikipedia** : outil optionnel permettant à l’agent de récupérer des informations directement depuis Wikipédia.\n"
+      ],
+      "metadata": {
+        "id": "HZJ8i6h62AEo"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!pip install --upgrade pip\n",
+        "!pip install llama-index==0.9.41 langchain==0.3.27 langchain_community openai==1.101.0"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "x2nrfLCeWlQk",
+        "outputId": "30a9fa7f-fbc9-4dad-c3b2-a1dc28b88861"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Requirement already satisfied: pip in /usr/local/lib/python3.13/dist-packages (26.2.1)\n",
+            "Requirement already satisfied: llama-index==0.9.41 in /usr/local/lib/python3.13/dist-packages (0.9.41)\n",
+            "Requirement already satisfied: langchain==0.3.27 in /usr/local/lib/python3.13/dist-packages (0.3.27)\n",
+            "Requirement already satisfied: langchain_community in /usr/local/lib/python3.13/dist-packages (0.3.31)\n",
+            "Requirement already satisfied: openai==1.101.0 in /usr/local/lib/python3.13/dist-packages (1.101.0)\n",
+            "Requirement already satisfied: SQLAlchemy>=1.4.49 in /usr/local/lib/python3.13/dist-packages (from SQLAlchemy[asyncio]>=1.4.49->llama-index==0.9.41) (2.0.52)\n",
+            "Requirement already satisfied: aiohttp<4.0.0,>=3.8.6 in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (3.14.3)\n",
+            "Requirement already satisfied: dataclasses-json in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (0.6.7)\n",
+            "Requirement already satisfied: deprecated>=1.2.9.3 in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (1.3.1)\n",
+            "Requirement already satisfied: dirtyjson<2.0.0,>=1.0.8 in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (1.0.8)\n",
+            "Requirement already satisfied: fsspec>=2023.5.0 in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (2026.2.0)\n",
+            "Requirement already satisfied: httpx in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (0.28.1)\n",
+            "Requirement already satisfied: nest-asyncio<2.0.0,>=1.5.8 in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (1.6.0)\n",
+            "Requirement already satisfied: networkx>=3.0 in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (3.6.1)\n",
+            "Requirement already satisfied: nltk<4.0.0,>=3.8.1 in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (3.9.1)\n",
+            "Requirement already satisfied: numpy in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (2.1.3)\n",
+            "Requirement already satisfied: pandas in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (2.2.3)\n",
+            "Requirement already satisfied: requests>=2.31.0 in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (2.34.2)\n",
+            "Requirement already satisfied: tenacity<9.0.0,>=8.2.0 in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (8.5.0)\n",
+            "Requirement already satisfied: tiktoken>=0.3.3 in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (0.14.0)\n",
+            "Requirement already satisfied: typing-extensions>=4.5.0 in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (4.16.0)\n",
+            "Requirement already satisfied: typing-inspect>=0.8.0 in /usr/local/lib/python3.13/dist-packages (from llama-index==0.9.41) (0.9.0)\n",
+            "Requirement already satisfied: langchain-core<1.0.0,>=0.3.72 in /usr/local/lib/python3.13/dist-packages (from langchain==0.3.27) (0.3.86)\n",
+            "Requirement already satisfied: langchain-text-splitters<1.0.0,>=0.3.9 in /usr/local/lib/python3.13/dist-packages (from langchain==0.3.27) (0.3.11)\n",
+            "Requirement already satisfied: langsmith>=0.1.17 in /usr/local/lib/python3.13/dist-packages (from langchain==0.3.27) (0.12.4)\n",
+            "Requirement already satisfied: pydantic<3.0.0,>=2.7.4 in /usr/local/lib/python3.13/dist-packages (from langchain==0.3.27) (2.13.5)\n",
+            "Requirement already satisfied: PyYAML>=5.3 in /usr/local/lib/python3.13/dist-packages (from langchain==0.3.27) (6.0.3)\n",
+            "Requirement already satisfied: anyio<5,>=3.5.0 in /usr/local/lib/python3.13/dist-packages (from openai==1.101.0) (4.14.2)\n",
+            "Requirement already satisfied: distro<2,>=1.7.0 in /usr/local/lib/python3.13/dist-packages (from openai==1.101.0) (1.9.0)\n",
+            "Requirement already satisfied: jiter<1,>=0.4.0 in /usr/local/lib/python3.13/dist-packages (from openai==1.101.0) (0.17.0)\n",
+            "Requirement already satisfied: sniffio in /usr/local/lib/python3.13/dist-packages (from openai==1.101.0) (1.3.1)\n",
+            "Requirement already satisfied: tqdm>4 in /usr/local/lib/python3.13/dist-packages (from openai==1.101.0) (4.67.3)\n",
+            "Requirement already satisfied: aiohappyeyeballs>=2.5.0 in /usr/local/lib/python3.13/dist-packages (from aiohttp<4.0.0,>=3.8.6->llama-index==0.9.41) (2.7.1)\n",
+            "Requirement already satisfied: aiosignal>=1.4.0 in /usr/local/lib/python3.13/dist-packages (from aiohttp<4.0.0,>=3.8.6->llama-index==0.9.41) (1.4.0)\n",
+            "Requirement already satisfied: attrs>=17.3.0 in /usr/local/lib/python3.13/dist-packages (from aiohttp<4.0.0,>=3.8.6->llama-index==0.9.41) (26.1.0)\n",
+            "Requirement already satisfied: frozenlist>=1.1.1 in /usr/local/lib/python3.13/dist-packages (from aiohttp<4.0.0,>=3.8.6->llama-index==0.9.41) (1.8.0)\n",
+            "Requirement already satisfied: multidict<7.0,>=4.5 in /usr/local/lib/python3.13/dist-packages (from aiohttp<4.0.0,>=3.8.6->llama-index==0.9.41) (6.7.1)\n",
+            "Requirement already satisfied: propcache>=0.2.0 in /usr/local/lib/python3.13/dist-packages (from aiohttp<4.0.0,>=3.8.6->llama-index==0.9.41) (0.5.2)\n",
+            "Requirement already satisfied: yarl<2.0,>=1.17.0 in /usr/local/lib/python3.13/dist-packages (from aiohttp<4.0.0,>=3.8.6->llama-index==0.9.41) (1.24.5)\n",
+            "Requirement already satisfied: idna>=2.8 in /usr/local/lib/python3.13/dist-packages (from anyio<5,>=3.5.0->openai==1.101.0) (3.19)\n",
+            "Requirement already satisfied: certifi in /usr/local/lib/python3.13/dist-packages (from httpx->llama-index==0.9.41) (2026.7.22)\n",
+            "Requirement already satisfied: httpcore==1.* in /usr/local/lib/python3.13/dist-packages (from httpx->llama-index==0.9.41) (1.0.9)\n",
+            "Requirement already satisfied: h11>=0.16 in /usr/local/lib/python3.13/dist-packages (from httpcore==1.*->httpx->llama-index==0.9.41) (0.16.0)\n",
+            "Requirement already satisfied: jsonpatch<2.0.0,>=1.33.0 in /usr/local/lib/python3.13/dist-packages (from langchain-core<1.0.0,>=0.3.72->langchain==0.3.27) (1.33)\n",
+            "Requirement already satisfied: packaging<26.0.0,>=23.2.0 in /usr/local/lib/python3.13/dist-packages (from langchain-core<1.0.0,>=0.3.72->langchain==0.3.27) (25.0)\n",
+            "Requirement already satisfied: uuid-utils<1.0,>=0.12.0 in /usr/local/lib/python3.13/dist-packages (from langchain-core<1.0.0,>=0.3.72->langchain==0.3.27) (0.17.1)\n",
+            "Requirement already satisfied: jsonpointer>=1.9 in /usr/local/lib/python3.13/dist-packages (from jsonpatch<2.0.0,>=1.33.0->langchain-core<1.0.0,>=0.3.72->langchain==0.3.27) (3.1.1)\n",
+            "Requirement already satisfied: httpx2<3,>=2 in /usr/local/lib/python3.13/dist-packages (from langsmith>=0.1.17->langchain==0.3.27) (2.12.0)\n",
+            "Requirement already satisfied: orjson>=3.9.14 in /usr/local/lib/python3.13/dist-packages (from langsmith>=0.1.17->langchain==0.3.27) (3.12.0)\n",
+            "Requirement already satisfied: requests-toolbelt>=1.0.0 in /usr/local/lib/python3.13/dist-packages (from langsmith>=0.1.17->langchain==0.3.27) (1.0.0)\n",
+            "Requirement already satisfied: websockets>=15.0 in /usr/local/lib/python3.13/dist-packages (from langsmith>=0.1.17->langchain==0.3.27) (16.1.1)\n",
+            "Requirement already satisfied: xxhash>=3.0.0 in /usr/local/lib/python3.13/dist-packages (from langsmith>=0.1.17->langchain==0.3.27) (4.0.1)\n",
+            "Requirement already satisfied: zstandard>=0.23.0 in /usr/local/lib/python3.13/dist-packages (from langsmith>=0.1.17->langchain==0.3.27) (0.25.0)\n",
+            "Requirement already satisfied: httpcore2==2.12.0 in /usr/local/lib/python3.13/dist-packages (from httpx2<3,>=2->langsmith>=0.1.17->langchain==0.3.27) (2.12.0)\n",
+            "Requirement already satisfied: truststore>=0.10 in /usr/local/lib/python3.13/dist-packages (from httpx2<3,>=2->langsmith>=0.1.17->langchain==0.3.27) (0.10.4)\n",
+            "Requirement already satisfied: click in /usr/local/lib/python3.13/dist-packages (from nltk<4.0.0,>=3.8.1->llama-index==0.9.41) (8.5.0)\n",
+            "Requirement already satisfied: joblib in /usr/local/lib/python3.13/dist-packages (from nltk<4.0.0,>=3.8.1->llama-index==0.9.41) (1.6.0)\n",
+            "Requirement already satisfied: regex>=2021.8.3 in /usr/local/lib/python3.13/dist-packages (from nltk<4.0.0,>=3.8.1->llama-index==0.9.41) (2026.9.3)\n",
+            "Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.13/dist-packages (from pydantic<3.0.0,>=2.7.4->langchain==0.3.27) (0.8.0)\n",
+            "Requirement already satisfied: pydantic-core==2.46.5 in /usr/local/lib/python3.13/dist-packages (from pydantic<3.0.0,>=2.7.4->langchain==0.3.27) (2.46.5)\n",
+            "Requirement already satisfied: typing-inspection>=0.4.2 in /usr/local/lib/python3.13/dist-packages (from pydantic<3.0.0,>=2.7.4->langchain==0.3.27) (0.4.4)\n",
+            "Requirement already satisfied: charset_normalizer<4,>=2 in /usr/local/lib/python3.13/dist-packages (from requests>=2.31.0->llama-index==0.9.41) (3.4.9)\n",
+            "Requirement already satisfied: urllib3<3,>=1.26 in /usr/local/lib/python3.13/dist-packages (from requests>=2.31.0->llama-index==0.9.41) (2.5.0)\n",
+            "Requirement already satisfied: greenlet>=1 in /usr/local/lib/python3.13/dist-packages (from SQLAlchemy>=1.4.49->SQLAlchemy[asyncio]>=1.4.49->llama-index==0.9.41) (3.5.6)\n",
+            "Requirement already satisfied: pydantic-settings<3.0.0,>=2.10.1 in /usr/local/lib/python3.13/dist-packages (from langchain_community) (2.15.0)\n",
+            "Requirement already satisfied: httpx-sse<1.0.0,>=0.4.0 in /usr/local/lib/python3.13/dist-packages (from langchain_community) (0.4.3)\n",
+            "Requirement already satisfied: marshmallow<4.0.0,>=3.18.0 in /usr/local/lib/python3.13/dist-packages (from dataclasses-json->llama-index==0.9.41) (3.26.2)\n",
+            "Requirement already satisfied: python-dotenv>=0.21.0 in /usr/local/lib/python3.13/dist-packages (from pydantic-settings<3.0.0,>=2.10.1->langchain_community) (1.2.3)\n",
+            "Requirement already satisfied: mypy-extensions>=0.3.0 in /usr/local/lib/python3.13/dist-packages (from typing-inspect>=0.8.0->llama-index==0.9.41) (1.1.0)\n",
+            "Requirement already satisfied: wrapt<3,>=1.10 in /usr/local/lib/python3.13/dist-packages (from deprecated>=1.2.9.3->llama-index==0.9.41) (2.4.0)\n",
+            "Requirement already satisfied: cloudpickle>=3.0 in /usr/local/lib/python3.13/dist-packages (from joblib->nltk<4.0.0,>=3.8.1->llama-index==0.9.41) (3.1.2)\n",
+            "Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.13/dist-packages (from pandas->llama-index==0.9.41) (2.9.0.post0)\n",
+            "Requirement already satisfied: pytz>=2020.1 in /usr/local/lib/python3.13/dist-packages (from pandas->llama-index==0.9.41) (2026.3.post1)\n",
+            "Requirement already satisfied: tzdata>=2022.7 in /usr/local/lib/python3.13/dist-packages (from pandas->llama-index==0.9.41) (2026.3)\n",
+            "Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.13/dist-packages (from python-dateutil>=2.8.2->pandas->llama-index==0.9.41) (1.17.0)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "1. **Requête utilisateur**  \n",
+        "   Tout commence par une question de l’utilisateur. La requête est transmise au composant central : **l’agent**.\n",
+        "\n",
+        "2. **L'agent**  \n",
+        "   L'agent joue le rôle de « cerveau » du système. Il analyse la requête et détermine quel outil spécialisé doit traiter les différentes parties.  \n",
+        "   Contrairement à un pipeline figé, l’agent **prend des décisions dynamiques** selon les besoins de la requête.\n",
+        "\n",
+        "3. **Prise de décision et outils**  \n",
+        "   En fonction de la requête, l’agent peut choisir parmi plusieurs outils :\n",
+        "\n",
+        "   - **Outil DocumentRetriever** : trouve et récupère les documents pertinents pour enrichir le contexte.  \n",
+        "   - **Outil Calculatrice** : résout les problèmes mathématiques ou les calculs complexes.  \n",
+        "   - **Outil Wikipédia** : recherche des informations factuelles directement sur Wikipédia.\n",
+        "\n",
+        "   L'agent peut appeler un outil **une ou plusieurs fois** ou **combiner plusieurs outils** selon la complexité de la tâche.\n",
+        "   4. **Moteur de requêtes LlamaIndex**  \n",
+        "   Certains outils, comme **DocumentRetriever** ou **Calculator Tool**, transmettent leurs résultats au **moteur de requêtes LlamaIndex** (un moteur de recherche et de synthèse spécialisé).  \n",
+        "   \n",
+        "   LlamaIndex traite, fusionne et structure les informations fournies par ces outils afin de produire une réponse cohérente, détaillée et précise.\n",
+        "\n",
+        "5. **Résultat final**  \n",
+        "   Une fois que l’agent estime que les informations sont suffisantes et correctement combinées, il renvoie la réponse finale à l’utilisateur.\n",
+        "\n",
+        "---\n",
+        "\n",
+        "### **Remarque**  \n",
+        "Contrairement à un pipeline traditionnel, ce système permet à l’agent de prendre des **décisions intelligentes, dynamiques et contextuelles** quant aux outils, aux sources de données et au moment optimal pour les utiliser.  \n",
+        "Cela imite un véritable **processus de raisonnement et de planification**, faisant de l’ensemble un **système agentique avancé**.\n",
+        "\n"
+      ],
+      "metadata": {
+        "id": "zN5v0Rjh1kBo"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from llama_index import SimpleDirectoryReader, GPTVectorStoreIndex, LLMPredictor, ServiceContext\n",
+        "from langchain.chat_models import ChatOpenAI\n",
+        "from langchain.agents import Tool, initialize_agent, AgentType\n",
+        "import os\n"
+      ],
+      "metadata": {
+        "id": "aZDS0E1aW6v9",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "34604989-61f7-4cc5-a618-b8f6d6151913"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.13/dist-packages/llama_index/download/module.py:12: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.\n",
+            "  import pkg_resources\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "os.environ[\"OPENAI_API_KEY\"] = \"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\""
+      ],
+      "metadata": {
+        "id": "kDG2lw5LW7Rm"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import drive\n",
+        "drive.mount('/content/drive')"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "YMaj0xoBckiE",
+        "outputId": "74f13a4e-8435-411b-b059-433650027d49"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Mounted at /content/drive\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from google.colab import files\n",
+        "import os\n",
+        "import shutil\n",
+        "\n",
+        "os.makedirs(\"/content/drive/MyDrive/AGENTIC\", exist_ok=True)\n",
+        "\n",
+        "uploaded = files.upload()\n",
+        "\n",
+        "for filename in uploaded.keys():\n",
+        "    shutil.move(filename, f\"/content/drive/MyDrive/AGENTIC/{filename}\")\n",
+        "\n",
+        "print(\"Uploaded files:\", os.listdir(\"/content/drive/MyDrive/AGENTIC\"))"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 110
+        },
+        "id": "tnFg86ISXqwM",
+        "outputId": "f65b003d-e8a0-4146-f4cc-66333af5bf1b"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "display_data",
+          "data": {
+            "text/plain": [
+              "<IPython.core.display.HTML object>"
+            ],
+            "text/html": [
+              "\n",
+              "     <input type=\"file\" id=\"files-03c3256f-ae8c-43a4-8b13-1c7f2c8943af\" name=\"files[]\" multiple disabled\n",
+              "        style=\"border:none\" />\n",
+              "     <output id=\"result-03c3256f-ae8c-43a4-8b13-1c7f2c8943af\">\n",
+              "      Upload widget is only available when the cell has been executed in the\n",
+              "      current browser session. Please rerun this cell to enable.\n",
+              "      </output>\n",
+              "      <script>// Copyright 2017 Google LLC\n",
+              "//\n",
+              "// Licensed under the Apache License, Version 2.0 (the \"License\");\n",
+              "// you may not use this file except in compliance with the License.\n",
+              "// You may obtain a copy of the License at\n",
+              "//\n",
+              "//      http://www.apache.org/licenses/LICENSE-2.0\n",
+              "//\n",
+              "// Unless required by applicable law or agreed to in writing, software\n",
+              "// distributed under the License is distributed on an \"AS IS\" BASIS,\n",
+              "// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n",
+              "// See the License for the specific language governing permissions and\n",
+              "// limitations under the License.\n",
+              "\n",
+              "/**\n",
+              " * @fileoverview Helpers for google.colab Python module.\n",
+              " */\n",
+              "(function(scope) {\n",
+              "function span(text, styleAttributes = {}) {\n",
+              "  const element = document.createElement('span');\n",
+              "  element.textContent = text;\n",
+              "  for (const key of Object.keys(styleAttributes)) {\n",
+              "    element.style[key] = styleAttributes[key];\n",
+              "  }\n",
+              "  return element;\n",
+              "}\n",
+              "\n",
+              "// Max number of bytes which will be uploaded at a time.\n",
+              "const MAX_PAYLOAD_SIZE = 100 * 1024;\n",
+              "\n",
+              "function _uploadFiles(inputId, outputId) {\n",
+              "  const steps = uploadFilesStep(inputId, outputId);\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  // Cache steps on the outputElement to make it available for the next call\n",
+              "  // to uploadFilesContinue from Python.\n",
+              "  outputElement.steps = steps;\n",
+              "\n",
+              "  return _uploadFilesContinue(outputId);\n",
+              "}\n",
+              "\n",
+              "// This is roughly an async generator (not supported in the browser yet),\n",
+              "// where there are multiple asynchronous steps and the Python side is going\n",
+              "// to poll for completion of each step.\n",
+              "// This uses a Promise to block the python side on completion of each step,\n",
+              "// then passes the result of the previous step as the input to the next step.\n",
+              "function _uploadFilesContinue(outputId) {\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  const steps = outputElement.steps;\n",
+              "\n",
+              "  const next = steps.next(outputElement.lastPromiseValue);\n",
+              "  return Promise.resolve(next.value.promise).then((value) => {\n",
+              "    // Cache the last promise value to make it available to the next\n",
+              "    // step of the generator.\n",
+              "    outputElement.lastPromiseValue = value;\n",
+              "    return next.value.response;\n",
+              "  });\n",
+              "}\n",
+              "\n",
+              "/**\n",
+              " * Generator function which is called between each async step of the upload\n",
+              " * process.\n",
+              " * @param {string} inputId Element ID of the input file picker element.\n",
+              " * @param {string} outputId Element ID of the output display.\n",
+              " * @return {!Iterable<!Object>} Iterable of next steps.\n",
+              " */\n",
+              "function* uploadFilesStep(inputId, outputId) {\n",
+              "  const inputElement = document.getElementById(inputId);\n",
+              "  inputElement.disabled = false;\n",
+              "\n",
+              "  const outputElement = document.getElementById(outputId);\n",
+              "  outputElement.innerHTML = '';\n",
+              "\n",
+              "  const pickedPromise = new Promise((resolve) => {\n",
+              "    inputElement.addEventListener('change', (e) => {\n",
+              "      resolve(e.target.files);\n",
+              "    });\n",
+              "  });\n",
+              "\n",
+              "  const cancel = document.createElement('button');\n",
+              "  inputElement.parentElement.appendChild(cancel);\n",
+              "  cancel.textContent = 'Cancel upload';\n",
+              "  const cancelPromise = new Promise((resolve) => {\n",
+              "    cancel.onclick = () => {\n",
+              "      resolve(null);\n",
+              "    };\n",
+              "  });\n",
+              "\n",
+              "  // Wait for the user to pick the files.\n",
+              "  const files = yield {\n",
+              "    promise: Promise.race([pickedPromise, cancelPromise]),\n",
+              "    response: {\n",
+              "      action: 'starting',\n",
+              "    }\n",
+              "  };\n",
+              "\n",
+              "  cancel.remove();\n",
+              "\n",
+              "  // Disable the input element since further picks are not allowed.\n",
+              "  inputElement.disabled = true;\n",
+              "\n",
+              "  if (!files) {\n",
+              "    return {\n",
+              "      response: {\n",
+              "        action: 'complete',\n",
+              "      }\n",
+              "    };\n",
+              "  }\n",
+              "\n",
+              "  for (const file of files) {\n",
+              "    const li = document.createElement('li');\n",
+              "    li.append(span(file.name, {fontWeight: 'bold'}));\n",
+              "    li.append(span(\n",
+              "        `(${file.type || 'n/a'}) - ${file.size} bytes, ` +\n",
+              "        `last modified: ${\n",
+              "            file.lastModifiedDate ? file.lastModifiedDate.toLocaleDateString() :\n",
+              "                                    'n/a'} - `));\n",
+              "    const percent = span('0% done');\n",
+              "    li.appendChild(percent);\n",
+              "\n",
+              "    outputElement.appendChild(li);\n",
+              "\n",
+              "    const fileDataPromise = new Promise((resolve) => {\n",
+              "      const reader = new FileReader();\n",
+              "      reader.onload = (e) => {\n",
+              "        resolve(e.target.result);\n",
+              "      };\n",
+              "      reader.readAsArrayBuffer(file);\n",
+              "    });\n",
+              "    // Wait for the data to be ready.\n",
+              "    let fileData = yield {\n",
+              "      promise: fileDataPromise,\n",
+              "      response: {\n",
+              "        action: 'continue',\n",
+              "      }\n",
+              "    };\n",
+              "\n",
+              "    // Use a chunked sending to avoid message size limits. See b/62115660.\n",
+              "    let position = 0;\n",
+              "    do {\n",
+              "      const length = Math.min(fileData.byteLength - position, MAX_PAYLOAD_SIZE);\n",
+              "      const chunk = new Uint8Array(fileData, position, length);\n",
+              "      position += length;\n",
+              "\n",
+              "      const base64 = btoa(String.fromCharCode.apply(null, chunk));\n",
+              "      yield {\n",
+              "        response: {\n",
+              "          action: 'append',\n",
+              "          file: file.name,\n",
+              "          data: base64,\n",
+              "        },\n",
+              "      };\n",
+              "\n",
+              "      let percentDone = fileData.byteLength === 0 ?\n",
+              "          100 :\n",
+              "          Math.round((position / fileData.byteLength) * 100);\n",
+              "      percent.textContent = `${percentDone}% done`;\n",
+              "\n",
+              "    } while (position < fileData.byteLength);\n",
+              "  }\n",
+              "\n",
+              "  // All done.\n",
+              "  yield {\n",
+              "    response: {\n",
+              "      action: 'complete',\n",
+              "    }\n",
+              "  };\n",
+              "}\n",
+              "\n",
+              "scope.google = scope.google || {};\n",
+              "scope.google.colab = scope.google.colab || {};\n",
+              "scope.google.colab._files = {\n",
+              "  _uploadFiles,\n",
+              "  _uploadFilesContinue,\n",
+              "};\n",
+              "})(self);\n",
+              "</script> "
+            ]
+          },
+          "metadata": {}
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Saving GGUF_demystifie_debutant.html to GGUF_demystifie_debutant.html\n",
+            "Uploaded files: ['dataset_belgium (1).txt', 'Societe-Generale-Pilier-3_T2-2022_FR.pdf', \"Lien vers l'explication du RAG.txt\", 'GGUF_demystifie_debutant.html']\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "!pip install wikipedia"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "collapsed": true,
+        "id": "m60W4XxQYnHj",
+        "outputId": "acd5e6d9-ccdd-4902-a5ae-b9ec15616864"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Collecting wikipedia\n",
+            "  Downloading wikipedia-1.4.0.tar.gz (27 kB)\n",
+            "  Installing build dependencies ... \u001b[?25l\u001b[?25hdone\n",
+            "  Getting requirements to build wheel ... \u001b[?25l\u001b[?25hdone\n",
+            "  Preparing metadata (pyproject.toml) ... \u001b[?25l\u001b[?25hdone\n",
+            "Requirement already satisfied: beautifulsoup4 in /usr/local/lib/python3.13/dist-packages (from wikipedia) (4.13.5)\n",
+            "Requirement already satisfied: requests<3.0.0,>=2.0.0 in /usr/local/lib/python3.13/dist-packages (from wikipedia) (2.34.2)\n",
+            "Requirement already satisfied: charset_normalizer<4,>=2 in /usr/local/lib/python3.13/dist-packages (from requests<3.0.0,>=2.0.0->wikipedia) (3.4.9)\n",
+            "Requirement already satisfied: idna<4,>=2.5 in /usr/local/lib/python3.13/dist-packages (from requests<3.0.0,>=2.0.0->wikipedia) (3.19)\n",
+            "Requirement already satisfied: urllib3<3,>=1.26 in /usr/local/lib/python3.13/dist-packages (from requests<3.0.0,>=2.0.0->wikipedia) (2.5.0)\n",
+            "Requirement already satisfied: certifi>=2023.5.7 in /usr/local/lib/python3.13/dist-packages (from requests<3.0.0,>=2.0.0->wikipedia) (2026.7.22)\n",
+            "Requirement already satisfied: soupsieve>1.2 in /usr/local/lib/python3.13/dist-packages (from beautifulsoup4->wikipedia) (2.9.2)\n",
+            "Requirement already satisfied: typing-extensions>=4.0.0 in /usr/local/lib/python3.13/dist-packages (from beautifulsoup4->wikipedia) (4.16.0)\n",
+            "Building wheels for collected packages: wikipedia\n",
+            "  Building wheel for wikipedia (pyproject.toml) ... \u001b[?25l\u001b[?25hdone\n",
+            "  Created wheel for wikipedia: filename=wikipedia-1.4.0-py3-none-any.whl size=11757 sha256=372598f32bd8d4685264444163f568a95bd1700664c2aaee4650a3721d36d8dc\n",
+            "  Stored in directory: /root/.cache/pip/wheels/79/1d/c8/b64e19423cc5a2a339450ea5d145e7c8eb3d4aa2b150cde33b\n",
+            "Successfully built wikipedia\n",
+            "Installing collected packages: wikipedia\n",
+            "Successfully installed wikipedia-1.4.0\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "### Importation des bibliothèques nécessaires\n",
+        "\n",
+        "Nous importons ensuite les modules indispensables au fonctionnement du système :\n",
+        "\n",
+        "- **SimpleDirectoryReader** : charge les documents depuis un dossier afin de les indexer.\n",
+        "- **GPTVectorStoreIndex** : crée un index vectoriel pour la recherche d'information basée sur les embeddings.\n",
+        "- **LLMPredictor** et **ServiceContext** : servent d’enveloppe LLM et de contexte d’exécution pour LlamaIndex.\n",
+        "- **ChatOpenAI** : modèle GPT d’OpenAI utilisé pour la génération de texte et les tâches cognitives.\n",
+        "- **Tool**, **initialize_agent**, **AgentType** : nécessaires pour construire un agent capable de raisonner et d'appeler dynamiquement des outils.\n",
+        "- **ConversationBufferMemory** : conserve l’historique des échanges afin d’améliorer la cohérence de l’agent au fil des interactions.\n",
+        "- **wikipedia** : outil permettant d’interroger Wikipédia pour obtenir des connaissances générales extérieures au système.\n"
+      ],
+      "metadata": {
+        "id": "1YyzAIL02ZeH"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "from llama_index import SimpleDirectoryReader, GPTVectorStoreIndex, LLMPredictor, ServiceContext\n",
+        "from langchain.chat_models import ChatOpenAI\n",
+        "from langchain.agents import Tool, initialize_agent, AgentType\n",
+        "from langchain.agents import AgentExecutor\n",
+        "from langchain.memory import ConversationBufferMemory\n",
+        "import wikipedia\n"
+      ],
+      "metadata": {
+        "id": "uCME3vbwZk-M"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "8de5ddd3",
+        "outputId": "60fb70ab-8eaf-4758-dce2-9fdbdb4b845c"
+      },
+      "source": [
+        "!pip install pypdf"
+      ],
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Collecting pypdf\n",
+            "  Downloading pypdf-6.18.1-py3-none-any.whl.metadata (7.5 kB)\n",
+            "Downloading pypdf-6.18.1-py3-none-any.whl (394 kB)\n",
+            "Installing collected packages: pypdf\n",
+            "Successfully installed pypdf-6.18.1\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "### Construction du système de recherche LlamaIndex\n",
+        "\n",
+        "Nous mettons en place l’architecture de recherche basée sur LlamaIndex :\n",
+        "\n",
+        "- **SimpleDirectoryReader** : lit automatiquement tous les documents présents dans le dossier fourni.\n",
+        "- **LLMPredictor** : encapsule le modèle `gpt-3.5-turbo` pour l’utiliser comme moteur de génération et d’analyse au sein de LlamaIndex.\n",
+        "- **GPTVectorStoreIndex** : transforme les documents en **vecteurs** (embeddings) et les stocke dans une base vectorielle optimisée pour la recherche sémantique.\n",
+        "- **Moteur de requêtes** : à chaque requête, il renvoie les **3 documents les plus pertinents**, sur base de leur similarité vectorielle.\n"
+      ],
+      "metadata": {
+        "id": "COgbBCkH28Kg"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "documents = SimpleDirectoryReader(\n",
+        "    input_files=[\"/content/drive/MyDrive/AGENTIC/Societe-Generale-Pilier-3_T2-2022_FR.pdf\"]\n",
+        ").load_data()\n",
+        "\n",
+        "# Initialize LLM predictor\n",
+        "llm_predictor = LLMPredictor(llm=ChatOpenAI(temperature=0, model_name=\"gpt-3.5-turbo\"))\n",
+        "\n",
+        "# Service context\n",
+        "service_context = ServiceContext.from_defaults(llm_predictor=llm_predictor)\n",
+        "\n",
+        "# Vector store index (top_k retrieval)\n",
+        "index = GPTVectorStoreIndex.from_documents(documents, service_context=service_context)\n",
+        "query_engine = index.as_query_engine(retriever_mode=\"default\", similarity_top_k=3)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "jxOrZO32ZlhL",
+        "outputId": "f1c72430-6da1-488d-9de6-c50e8cff578a"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/tmp/ipykernel_858/1541818955.py:6: LangChainDeprecationWarning: The class `ChatOpenAI` was deprecated in LangChain 0.0.10 and will be removed in 1.0. An updated version of the class exists in the :class:`~langchain-openai package and should be used instead. To use it run `pip install -U :class:`~langchain-openai` and import as `from :class:`~langchain_openai import ChatOpenAI``.\n",
+            "  llm_predictor = LLMPredictor(llm=ChatOpenAI(temperature=0, model_name=\"gpt-3.5-turbo\"))\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "LLMPredictor is deprecated, please use LLM instead.\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "### Définition des outils à disposition de l’agent\n",
+        "\n",
+        "Nous définissons les différents outils que l’agent pourra utiliser :\n",
+        "\n",
+        "- **DocumentRetriever** : utilise LlamaIndex pour récupérer les documents les plus pertinents en fonction de la requête.\n",
+        "- **Calculatrice** : gère les requêtes numériques (opérations, calculs, problèmes mathématiques).\n",
+        "- **Wikipédia** : permet de récupérer des connaissances générales qui ne figurent pas dans les documents locaux.\n",
+        "- **Outils** : chacun de ces outils est ensuite rendu **automatiquement accessible** par l’agent, qui peut les appeler dynamiquement selon les besoins de la requête.\n"
+      ],
+      "metadata": {
+        "id": "pvy9fvJy3PDo"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Document retrieval tool\n",
+        "def retrieve_docs(query: str) -> str:\n",
+        "    response = query_engine.query(query)\n",
+        "    return str(response)\n",
+        "\n",
+        "# Simple calculator tool\n",
+        "def calculator(query: str) -> str:\n",
+        "    try:\n",
+        "        return str(eval(query))\n",
+        "    except:\n",
+        "        return \"Cannot calculate that.\"\n",
+        "\n",
+        "# Wikipedia search tool\n",
+        "def wiki_search(query: str) -> str:\n",
+        "    try:\n",
+        "        summary = wikipedia.summary(query, sentences=2)\n",
+        "        return summary\n",
+        "    except:\n",
+        "        return \"No Wikipedia info found.\"\n"
+      ],
+      "metadata": {
+        "id": "d5i9gCt8ZpV1"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "tools = [\n",
+        "    Tool(name=\"DocumentRetriever\", func=retrieve_docs, description=\"Use this tool to answer questions using uploaded documents.\"),\n",
+        "    Tool(name=\"Calculator\", func=calculator, description=\"Use this tool to solve math expressions.\"),\n",
+        "    Tool(name=\"Wikipedia\", func=wiki_search, description=\"Use this tool to get Wikipedia summaries.\")\n",
+        "]\n"
+      ],
+      "metadata": {
+        "id": "uy5mu7U9Zpy9"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "### Initialisation de la mémoire de l’agent\n",
+        "\n",
+        "Nous initialisons une **mémoire de conversation** pour permettre à l’agent de garder le contexte durant la session :\n",
+        "\n",
+        "- **ConversationBufferMemory** : conserve une trace des requêtes et des réponses précédentes, afin que l’agent puisse tenir compte de l’historique dans ses réponses.\n",
+        "- **AgentType.ZERO_SHOT_REACT_DESCRIPTION** : configure un agent capable de décider **quel outil appeler** à partir de la description de la tâche, sans phase de pré-entraînement spécifique.\n",
+        "- **verbose = True** : permet d’afficher les différentes étapes de raisonnement et les appels d’outils dans les logs, ce qui est utile pour le **débogage** et la compréhension du comportement de l’agent.\n"
+      ],
+      "metadata": {
+        "id": "XoMqhSZf3mya"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Conversation memory\n",
+        "memory = ConversationBufferMemory(memory_key=\"chat_history\")\n",
+        "\n",
+        "agent = initialize_agent(\n",
+        "    tools=tools,\n",
+        "    llm=ChatOpenAI(temperature=0, model_name=\"gpt-3.5-turbo\"),\n",
+        "    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,\n",
+        "    memory=memory,\n",
+        "    handle_parsing_errors=True,\n",
+        "    verbose=True\n",
+        ")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Jo642HfwZro9",
+        "outputId": "f71739a9-1747-4a44-f356-98fb3d9b9310"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/tmp/ipykernel_858/2059506799.py:2: LangChainDeprecationWarning: Please see the migration guide at: https://python.langchain.com/docs/versions/migrating_memory/\n",
+            "  memory = ConversationBufferMemory(memory_key=\"chat_history\")\n",
+            "/tmp/ipykernel_858/2059506799.py:4: LangChainDeprecationWarning: LangChain agents will continue to be supported, but it is recommended for new use cases to be built with LangGraph. LangGraph offers a more flexible and full-featured framework for building agents, including support for tool-calling, persistence of state, and human-in-the-loop workflows. For details, refer to the `LangGraph documentation <https://langchain-ai.github.io/langgraph/>`_ as well as guides for `Migrating from AgentExecutor <https://python.langchain.com/docs/how_to/migrate_agent/>`_ and LangGraph's `Pre-built ReAct agent <https://langchain-ai.github.io/langgraph/how-tos/create-react-agent/>`_.\n",
+            "  agent = initialize_agent(\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "### Interaction avec l’agent\n",
+        "\n",
+        "- Les utilisateurs peuvent **interagir directement avec l’agent** en lui posant des questions ou en soumettant des requêtes.\n",
+        "- L’agent **choisit automatiquement l’outil le plus adapté**, récupère les informations pertinentes, puis **génère une réponse structurée**.\n",
+        "- Le système prend en charge :\n",
+        "  - les **requêtes documentaires** (via LlamaIndex / DocumentRetriever),\n",
+        "  - les **calculs mathématiques** (via l’outil Calculatrice),\n",
+        "  - la **recherche de connaissances générales** (via Wikipédia).\n"
+      ],
+      "metadata": {
+        "id": "arUe-59M4GS_"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(\"Agentic RAG activer, ecrire EXIT  pour arreter\")\n",
+        "\n",
+        "while True:\n",
+        "    query = input(\"You: \")\n",
+        "    if query.lower() in [\"exit\", \"quit\"]:\n",
+        "        break\n",
+        "    response = agent.run(query)\n",
+        "    print(\"Agent:\", response)\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 1000
+        },
+        "id": "n-PKu0XwZvxl",
+        "outputId": "85c0da58-3891-413a-9144-00a33f051d54"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "name": "stdout",
+          "output_type": "stream",
+          "text": [
+            "Agentic RAG activer, ecrire EXIT  pour arreter\n",
+            "You: que dit le document\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/tmp/ipykernel_858/1939407745.py:7: LangChainDeprecationWarning: The method `Chain.run` was deprecated in langchain 0.1.0 and will be removed in 1.0. Use :meth:`~invoke` instead.\n",
+            "  response = agent.run(query)\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "\n",
+            "\u001b[1m> Entering new AgentExecutor chain...\u001b[0m\n",
+            "\u001b[32;1m\u001b[1;3mI should use the DocumentRetriever tool to find out what the document says.\n",
+            "Action: DocumentRetriever(\"que dit le document\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI need to provide the input for the DocumentRetriever tool.\n",
+            "Action: DocumentRetriever(\"que dit le document\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI need to provide the input for the DocumentRetriever tool.\n",
+            "Action: DocumentRetriever(\"What does the document say?\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI need to provide the input for the DocumentRetriever tool in the correct format.\n",
+            "Action: DocumentRetriever(\"What does the document say?\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI need to provide the input for the DocumentRetriever tool in the correct format.\n",
+            "Action: DocumentRetriever(\"document\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI need to provide a specific query for the DocumentRetriever tool to find out what the document says.\n",
+            "Action: DocumentRetriever(\"content of the document\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI need to provide a specific query for the DocumentRetriever tool to find out what the document says.\n",
+            "Action: DocumentRetriever(\"content of the document\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI should provide a more specific query to the DocumentRetriever tool to get the content of the document.\n",
+            "Action: DocumentRetriever(\"content of the document in section 1\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI should provide a more specific query to the DocumentRetriever tool to get the content of the document.\n",
+            "Action: DocumentRetriever(\"content of the document in section 1\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI should provide a specific query to the DocumentRetriever tool to find out what the document says.\n",
+            "Action: DocumentRetriever(\"content of the document\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI need to provide a specific query for the DocumentRetriever tool to find out what the document says.\n",
+            "Action: DocumentRetriever(\"summary of the document\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI should provide a specific query to the DocumentRetriever tool to find out what the document says.\n",
+            "Action: DocumentRetriever(\"full text of the document\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI should provide a specific query to the DocumentRetriever tool to find out what the document says.\n",
+            "Action: DocumentRetriever(\"content of the document\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI need to provide a specific query for the DocumentRetriever tool to find out what the document says.\n",
+            "Action: DocumentRetriever(\"content of the document\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI should provide a specific query for the DocumentRetriever tool to find out what the document says.\n",
+            "Action: DocumentRetriever(\"content of the document\")\u001b[0m\n",
+            "Observation: Invalid Format: Missing 'Action Input:' after 'Action:'\n",
+            "Thought:\u001b[32;1m\u001b[1;3m\u001b[0m\n",
+            "\n",
+            "\u001b[1m> Finished chain.\u001b[0m\n",
+            "Agent: Agent stopped due to iteration limit or time limit.\n",
+            "You: qui est l'auteur du document?\n",
+            "\n",
+            "\n",
+            "\u001b[1m> Entering new AgentExecutor chain...\u001b[0m\n",
+            "\u001b[32;1m\u001b[1;3mI should use the DocumentRetriever tool to find out who the author of the document is.\n",
+            "Action: DocumentRetriever\n",
+            "Action Input: document\u001b[0m"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.13/dist-packages/llama_index/llms/langchain.py:80: LangChainDeprecationWarning: The method `BaseChatModel.predict_messages` was deprecated in langchain-core 0.1.7 and will be removed in 1.0. Use :meth:`~invoke` instead.\n",
+            "  lc_message = self._llm.predict_messages(messages=lc_messages, **kwargs)\n"
+          ]
+        },
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "Observation: \u001b[36;1m\u001b[1;3mThe document appears to be a financial report or disclosure related to Societe Generale, specifically focusing on Pillar 3 disclosures.\u001b[0m\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI should search for the author's name within the document.\n",
+            "Action: DocumentRetriever\n",
+            "Action Input: author\u001b[0m\n",
+            "Observation: \u001b[36;1m\u001b[1;3mThe author of the document is not explicitly mentioned in the provided context information.\u001b[0m\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI should try to find more information about the document or its author using Wikipedia.\n",
+            "Action: Wikipedia\n",
+            "Action Input: Societe Generale\u001b[0m\n",
+            "Observation: \u001b[38;5;200m\u001b[1;3mNo Wikipedia info found.\u001b[0m\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI should try to search for the author's name in a different document or source.\n",
+            "Action: DocumentRetriever\n",
+            "Action Input: author name\u001b[0m\n",
+            "Observation: \u001b[36;1m\u001b[1;3mThe author name is not provided in the context information.\u001b[0m\n",
+            "Thought:\u001b[32;1m\u001b[1;3mI have exhausted all available resources and unfortunately, I was unable to determine the author of the document.\n",
+            "Final Answer: The author of the document remains unknown.\u001b[0m\n",
+            "\n",
+            "\u001b[1m> Finished chain.\u001b[0m\n",
+            "Agent: The author of the document remains unknown.\n"
+          ]
+        },
+        {
+          "output_type": "error",
+          "ename": "KeyboardInterrupt",
+          "evalue": "Interrupted by user",
+          "traceback": [
+            "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+            "\u001b[0;31mKeyboardInterrupt\u001b[0m                         Traceback (most recent call last)",
+            "\u001b[0;32m/tmp/ipykernel_858/1939407745.py\u001b[0m in \u001b[0;36m<cell line: 0>\u001b[0;34m()\u001b[0m\n\u001b[1;32m      2\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m \u001b[0;32mwhile\u001b[0m \u001b[0;32mTrue\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 4\u001b[0;31m     \u001b[0mquery\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0minput\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"You: \"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      5\u001b[0m     \u001b[0;32mif\u001b[0m \u001b[0mquery\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mlower\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;32min\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0;34m\"exit\"\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m\"quit\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m         \u001b[0;32mbreak\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.13/dist-packages/ipykernel/kernelbase.py\u001b[0m in \u001b[0;36mraw_input\u001b[0;34m(self, prompt)\u001b[0m\n\u001b[1;32m   1175\u001b[0m                 \u001b[0;34m\"raw_input was called, but this frontend does not support input requests.\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1176\u001b[0m             )\n\u001b[0;32m-> 1177\u001b[0;31m         return self._input_request(\n\u001b[0m\u001b[1;32m   1178\u001b[0m             \u001b[0mstr\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mprompt\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1179\u001b[0m             \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_parent_ident\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m\"shell\"\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;32m/usr/local/lib/python3.13/dist-packages/ipykernel/kernelbase.py\u001b[0m in \u001b[0;36m_input_request\u001b[0;34m(self, prompt, ident, parent, password)\u001b[0m\n\u001b[1;32m   1217\u001b[0m             \u001b[0;32mexcept\u001b[0m \u001b[0mKeyboardInterrupt\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1218\u001b[0m                 \u001b[0;31m# re-raise KeyboardInterrupt, to truncate traceback\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1219\u001b[0;31m                 \u001b[0;32mraise\u001b[0m \u001b[0mKeyboardInterrupt\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Interrupted by user\"\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m   1220\u001b[0m             \u001b[0;32mexcept\u001b[0m \u001b[0mException\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1221\u001b[0m                 \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mlog\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mwarning\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"Invalid Message:\"\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mexc_info\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mTrue\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+            "\u001b[0;31mKeyboardInterrupt\u001b[0m: Interrupted by user"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+# ─────────────────────────────────────────────────────────────────
+#  Dépendances — Démo MCP Meteo Africa · AI4Africa Ignition
+#  Installation : pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────────────
+
+# Pour appeler l'API Open-Meteo (géocodage + météo)
+requests>=2.31.0
+
+# Pour créer le serveur MCP
+mcp>=1.0.0

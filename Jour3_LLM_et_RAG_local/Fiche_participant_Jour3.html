@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fiche participant — Jour 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#FFFFFF; --accent:#0E8C86; --accent2:#0B6E68; --navy:#0B2D48;
+  --text:#16212B; --text2:#4B5C63; --card:#EAF4F3; --border:#D7E6E4;
+  --good:#1F9D67; --warn:#B9740A; --bad:#C1443B; --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:#F2F7F7;color:var(--text);line-height:1.55;}
+.page{max-width:1000px;margin:0 auto;background:var(--bg);padding:3.2rem 3.2rem 5rem;}
+header.doc{border-bottom:4px solid var(--accent);padding-bottom:1.4rem;margin-bottom:2.2rem;}
+.doc-org{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+h1{font-size:2.1rem;font-weight:800;color:var(--navy);margin:.6rem 0 .5rem;line-height:1.2;}
+.doc-sub{color:var(--text2);font-size:1.02rem;max-width:70ch;}
+.doc-meta{margin-top:1rem;display:flex;gap:1.6rem;flex-wrap:wrap;font-size:.85rem;color:var(--text2);}
+.doc-meta b{color:var(--navy);}
+h2{font-size:1.45rem;font-weight:800;color:var(--navy);margin:2.6rem 0 .9rem;padding-left:.8rem;border-left:5px solid var(--accent);}
+h3{font-size:1.1rem;font-weight:700;color:var(--accent2);margin:1.6rem 0 .6rem;}
+h4{font-size:.98rem;font-weight:700;color:var(--navy);margin:1.1rem 0 .4rem;}
+p{margin-bottom:.75rem;color:var(--text2);max-width:80ch;}
+p b, li b{color:var(--text);}
+ul,ol{margin:0 0 .9rem 1.3rem;color:var(--text2);}
+li{margin-bottom:.35rem;}
+a{color:var(--accent2);}
+pre{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1rem 1.2rem;font-family:'JetBrains Mono',Consolas,monospace;
+    font-size:.82rem;line-height:1.6;overflow-x:auto;margin:.7rem 0 1rem;white-space:pre-wrap;word-break:break-word;}
+pre .cm{color:#7FB3AE;}
+code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--card);color:var(--accent2);
+     padding:.08rem .34rem;border-radius:4px;font-size:.88em;}
+pre code{background:none;color:inherit;padding:0;}
+table{border-collapse:collapse;width:100%;margin:.8rem 0 1.4rem;font-size:.9rem;}
+th,td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left;vertical-align:top;}
+th{background:var(--card);color:var(--accent2);font-weight:700;}
+td{color:var(--text2);}
+td b{color:var(--text);}
+td code{white-space:nowrap;}
+.note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.warn{background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.good{background:#EEF9F3;border-left:4px solid var(--good);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.step{border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.4rem;margin:1.1rem 0;background:#FBFDFD;}
+.step-h{display:flex;align-items:baseline;gap:.7rem;margin-bottom:.5rem;}
+.step-n{background:var(--accent);color:#fff;font-weight:800;font-size:.8rem;border-radius:20px;padding:.18rem .7rem;white-space:nowrap;}
+.step-t{font-size:1.05rem;font-weight:700;color:var(--navy);}
+.badge{display:inline-block;background:var(--card);color:var(--accent2);border-radius:20px;padding:.12rem .65rem;
+       font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-right:.4rem;}
+.badge.deb{background:#EEF9F3;color:var(--good);}
+.badge.int{background:#FFF6E8;color:var(--warn);}
+.badge.avc{background:#FDEDEC;color:var(--bad);}
+.fill{width:100%;border:none;border-bottom:1px dashed #9FBDBA;background:#FCFEFE;font-family:'Inter',sans-serif;
+      font-size:.95rem;color:var(--text);padding:.35rem .2rem;}
+.fill:focus{outline:none;border-bottom-color:var(--accent);background:#F4FBFA;}
+textarea.fill{border:1px dashed #9FBDBA;border-radius:8px;padding:.6rem .8rem;min-height:5.5rem;resize:vertical;line-height:1.5;}
+.ck{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem 0;border-bottom:1px dotted var(--border);}
+.ck input{margin-top:.32rem;width:1.05rem;height:1.05rem;accent-color:var(--accent);flex:none;}
+.ck label{font-size:.95rem;color:var(--text2);}
+.ck label b{color:var(--text);}
+.toolbar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;display:flex;gap:.7rem;align-items:center;
+         padding:.6rem 1rem;flex-wrap:wrap;}
+.toolbar span{font-size:.82rem;color:#B9D6D3;margin-right:auto;}
+.toolbar button{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:.45rem .95rem;
+                font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;}
+.toolbar button:hover{background:#12A79F;}
+.toolbar button.ghost{background:transparent;border:1px solid #2A4C63;}
+footer.doc{margin-top:3.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text2);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.kpi{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;}
+.kpi div{flex:1;min-width:150px;background:var(--card);border-radius:10px;padding:.9rem 1.1rem;}
+.kpi b{display:block;font-size:1.5rem;color:var(--navy);}
+.kpi span{font-size:.82rem;color:var(--text2);}
+@media (max-width:820px){
+  .page{padding:1.6rem 1.1rem 3rem;}
+  h1{font-size:1.55rem;} h2{font-size:1.2rem;}
+  .grid2{grid-template-columns:1fr;}
+  table{display:block;overflow-x:auto;}
+}
+@media print{
+  body{background:#fff;}
+  .toolbar{display:none !important;}
+  .page{max-width:none;padding:0;}
+  h2{page-break-after:avoid;} .step,table,pre{page-break-inside:avoid;}
+  .fill{border-bottom:1px solid #999;background:none;}
+  textarea.fill{border:1px solid #999;min-height:4.5rem;}
+  a{color:#0B6E68;text-decoration:none;}
+  @page{margin:14mm 12mm;}
+}
+
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span>JOUR 3 · FICHE PARTICIPANT</span>
+  <span id="compteur"></span>
+  <button id="btnPdf">&#11015; Exporter en PDF</button>
+  <button id="btnRaz" class="ghost">Effacer mes reponses</button>
+</div>
+<div class="page">
+<header class="doc">
+  <div class="doc-org">Digital House Company</div>
+  <h1>Journée 3 · Ma fiche de suivi</h1>
+  <p class="doc-sub">Les LLM · RAG local · MCP. À remplir au fur et à mesure, puis à exporter en PDF. Cette fiche contient le bilan des trois jours.</p>
+  <div class="doc-meta"><span><b>Formation</b> L'IA pour les développeurs</span> <span><b>Journée</b> 3 sur 3</span> <span><b>Format</b> à remplir à l'écran</span></div>
+</header>
+<div class="note">Cette fiche est <b>votre</b> carnet de bord. Remplissez-la au fur et à mesure, pas à la fin : ce qui n'est pas noté sur le moment est perdu. La page retient ce que vous écrivez, et le bouton <b>Exporter en PDF</b> vous en donne une copie à garder.</div>
+<h2>Qui remplit cette fiche</h2><div class="grid2"><div><h4>Nom</h4><input class="fill" type="text" placeholder=""></div><div><h4>Fonction</h4><input class="fill" type="text" placeholder=""></div></div><div class="grid2"><div><h4>Organisation</h4><input class="fill" type="text" placeholder=""></div><div><h4>Date</h4><input class="fill" type="text" placeholder=""></div></div>
+<h2>Reprise des journées 1 et 2</h2>
+<h4>Ce que je retiens des deux premiers jours, sans relire mes notes</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<h2>Auto-évaluation</h2>
+<table><thead><tr><th>Je sais…</th><th>Ce matin</th><th>Ce soir</th></tr></thead><tbody><tr><td>expliquer à quoi sert la température, et quand la mettre à zéro</td><td><input class='fill' type='text' placeholder='1 à 5'></td><td><input class='fill' type='text' placeholder='1 à 5'></td></tr><tr><td>choisir une quantification en fonction de ma machine</td><td><input class='fill' type='text' placeholder='1 à 5'></td><td><input class='fill' type='text' placeholder='1 à 5'></td></tr><tr><td>installer un modèle en local et l'interroger depuis du code</td><td><input class='fill' type='text' placeholder='1 à 5'></td><td><input class='fill' type='text' placeholder='1 à 5'></td></tr><tr><td>expliquer ce qu'est un RAG à quelqu'un qui n'est pas développeur</td><td><input class='fill' type='text' placeholder='1 à 5'></td><td><input class='fill' type='text' placeholder='1 à 5'></td></tr><tr><td>dire pourquoi on préfère un RAG à un réentraînement</td><td><input class='fill' type='text' placeholder='1 à 5'></td><td><input class='fill' type='text' placeholder='1 à 5'></td></tr><tr><td>découper un document en morceaux, et justifier ma taille de morceau</td><td><input class='fill' type='text' placeholder='1 à 5'></td><td><input class='fill' type='text' placeholder='1 à 5'></td></tr><tr><td>écrire un serveur MCP et le brancher sur un assistant</td><td><input class='fill' type='text' placeholder='1 à 5'></td><td><input class='fill' type='text' placeholder='1 à 5'></td></tr><tr><td>dire ce qu'il ne faut pas exposer à un agent</td><td><input class='fill' type='text' placeholder='1 à 5'></td><td><input class='fill' type='text' placeholder='1 à 5'></td></tr></tbody></table>
+<h2>Module 5 · Les LLM</h2>
+<h3>Mon glossaire, suite</h3>
+<table><thead><tr><th>Terme</th><th>Ma définition</th></tr></thead><tbody><tr><td>Température</td><td><input class='fill' type='text'></td></tr><tr><td>top_p</td><td><input class='fill' type='text'></td></tr><tr><td>Quantification (Q4_K_M…)</td><td><input class='fill' type='text'></td></tr><tr><td>Similarité cosinus</td><td><input class='fill' type='text'></td></tr><tr><td>Chunk / morceau</td><td><input class='fill' type='text'></td></tr><tr><td>RAG</td><td><input class='fill' type='text'></td></tr><tr><td>MCP</td><td><input class='fill' type='text'></td></tr><tr><td>Appel d'outils</td><td><input class='fill' type='text'></td></tr></tbody></table>
+<h2>Exercice 5 · Les embeddings</h2>
+<h4>Que mesure la similarité cosinus, avec mes mots ?</h4><textarea class="fill" rows="2" placeholder=""></textarea>
+<h4>Pourquoi divise-t-on par la longueur des vecteurs ?</h4><textarea class="fill" rows="2" placeholder=""></textarea>
+<h2>Exercice 6 · Le RAG local</h2>
+<h4>Ce qu'il a répondu à « quelle est la capitale de l'Australie ? »</h4><textarea class="fill" rows="2" placeholder="C'est la réponse la plus importante de la journée."></textarea>
+<h4>Deux avantages à ne PAS appeler le modèle quand aucun extrait ne dépasse le seuil</h4><textarea class="fill" rows="2" placeholder=""></textarea>
+<div class="ck"><input type="checkbox"><label>Le RAG répond sur les documents fournis, en citant ses sources</label></div><div class="ck"><input type="checkbox"><label>Il refuse de répondre aux questions hors base</label></div><div class="ck"><input type="checkbox"><label>J'ai ajouté MON document et il est indexé</label></div><div class="ck"><input type="checkbox"><label>L'interface web fonctionne</label></div>
+<h3>Mon projet RAG</h3>
+<table><thead><tr><th></th><th>Ma réponse</th></tr></thead><tbody><tr><td>Quels documents j'indexerais en premier</td><td><input class='fill' type='text'></td></tr><tr><td>Combien de documents, et quel volume</td><td><input class='fill' type='text'></td></tr><tr><td>Qui a le droit de les consulter aujourd'hui</td><td><input class='fill' type='text'></td></tr><tr><td>Ce que je n'indexerais surtout PAS</td><td><input class='fill' type='text'></td></tr><tr><td>Cloud ou local, et pourquoi</td><td><input class='fill' type='text'></td></tr><tr><td>Comment je saurai que ça marche (critère chiffré)</td><td><input class='fill' type='text'></td></tr></tbody></table>
+<h2>Exercice 7 · MCP</h2>
+<h4>Les cinq messages du protocole, avec mes mots</h4><textarea class="fill" rows="4" placeholder=""></textarea>
+<h4>Ce qui s'est passé quand j'ai dégradé la description d'un outil</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<h4>Le système interne de mon organisation qui gagnerait le plus à être exposé — <b>en lecture seule</b></h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<div class="ck"><input type="checkbox"><label>J'ai vu les cinq messages passer</label></div><div class="ck"><input type="checkbox"><label>J'ai lancé le client minimal</label></div><div class="ck"><input type="checkbox"><label>J'ai ajouté un quatrième outil, avec son test</label></div><div class="ck"><input type="checkbox"><label>J'ai branché le serveur sur un assistant réel</label></div>
+<h2>Bilan des trois jours</h2>
+<p>Reprenez vos trois fiches. Relisez ce que vous attendiez le premier matin.</p>
+<h4>Ce que je venais chercher — l'ai-je trouvé ?</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<h4>Les trois choses les plus utiles de ces trois jours</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<h4>Ce qui manquait, ou ce que j'aurais voulu approfondir</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<h2>Mon plan d'action</h2><p>Trois actions maximum. Une action sans date n'est pas une action.</p><table><thead><tr><th>Ce que je fais</th><th>Sur quel projet</th><th>Avant quelle date</th></tr></thead><tbody><tr><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td></tr><tr><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td></tr><tr><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td></tr></tbody></table><h4>Ce qui pourrait m'empêcher de les faire, et comment je le contourne</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<h2>Pour continuer</h2>
+<div class="ck"><input type="checkbox"><label>J'ai récupéré le dossier complet de la formation</label></div><div class="ck"><input type="checkbox"><label>J'ai repéré les trois formations outils dans <code>Outils/</code></label></div><div class="ck"><input type="checkbox"><label>J'ai ouvert le dossier <code>Bonus/</code> — projets open source et checklist</label></div><div class="ck"><input type="checkbox"><label>J'ai noté l'adresse du formateur : hello@dhcompany.pro</label></div>
+<footer class="doc">
+  Formation animee par <b>Kuate Joel Parfait</b> — Digital House Company · hello@dhcompany.pro<br>
+  Ce document est prevu pour etre rempli a l'ecran puis exporte en PDF
+  (bouton « Exporter en PDF » ou <code>Ctrl</code>+<code>P</code> → « Enregistrer au format PDF »).
+</footer>
+</div>
+<script>
+
+// Sauvegarde locale des reponses : pratique pour reprendre une fiche entre
+// deux journees. Tout est entoure de try/catch, la page fonctionne meme
+// si le navigateur refuse le stockage (mode prive, fichier local bride...).
+(function () {
+  var KEY = 'fiche::' + (document.title || 'sans-titre');
+  var champs = document.querySelectorAll('.fill, .ck input[type=checkbox]');
+
+  function charger() {
+    try {
+      var brut = localStorage.getItem(KEY);
+      if (!brut) return;
+      var data = JSON.parse(brut);
+      champs.forEach(function (el, i) {
+        if (data[i] === undefined) return;
+        if (el.type === 'checkbox') { el.checked = data[i]; } else { el.value = data[i]; }
+      });
+      majCompteur();
+    } catch (e) { /* stockage indisponible : on continue sans */ }
+  }
+
+  function sauver() {
+    try {
+      var data = [];
+      champs.forEach(function (el) { data.push(el.type === 'checkbox' ? el.checked : el.value); });
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) { /* idem */ }
+  }
+
+  function majCompteur() {
+    var cases = document.querySelectorAll('.ck input[type=checkbox]');
+    var faits = document.querySelectorAll('.ck input[type=checkbox]:checked');
+    var out = document.getElementById('compteur');
+    if (out && cases.length) { out.textContent = faits.length + ' / ' + cases.length + ' coche(s)'; }
+  }
+
+  champs.forEach(function (el) {
+    el.addEventListener('input', function () { sauver(); majCompteur(); });
+    el.addEventListener('change', function () { sauver(); majCompteur(); });
+  });
+
+  var bPdf = document.getElementById('btnPdf');
+  if (bPdf) bPdf.addEventListener('click', function () { window.print(); });
+
+  var bRaz = document.getElementById('btnRaz');
+  if (bRaz) bRaz.addEventListener('click', function () {
+    if (!confirm('Effacer toutes vos reponses de cette fiche ?')) return;
+    champs.forEach(function (el) { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    majCompteur();
+  });
+
+  charger();
+  majCompteur();
+})();
+
+</script>
+</body>
+</html>
