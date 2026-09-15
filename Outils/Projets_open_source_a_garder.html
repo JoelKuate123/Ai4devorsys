@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projets open source a garder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#FFFFFF; --accent:#0E8C86; --accent2:#0B6E68; --navy:#0B2D48;
+  --text:#16212B; --text2:#4B5C63; --card:#EAF4F3; --border:#D7E6E4;
+  --good:#1F9D67; --warn:#B9740A; --bad:#C1443B; --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:#F2F7F7;color:var(--text);line-height:1.55;}
+.page{max-width:1000px;margin:0 auto;background:var(--bg);padding:3.2rem 3.2rem 5rem;}
+header.doc{border-bottom:4px solid var(--accent);padding-bottom:1.4rem;margin-bottom:2.2rem;}
+.doc-org{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+h1{font-size:2.1rem;font-weight:800;color:var(--navy);margin:.6rem 0 .5rem;line-height:1.2;}
+.doc-sub{color:var(--text2);font-size:1.02rem;max-width:70ch;}
+.doc-meta{margin-top:1rem;display:flex;gap:1.6rem;flex-wrap:wrap;font-size:.85rem;color:var(--text2);}
+.doc-meta b{color:var(--navy);}
+h2{font-size:1.45rem;font-weight:800;color:var(--navy);margin:2.6rem 0 .9rem;padding-left:.8rem;border-left:5px solid var(--accent);}
+h3{font-size:1.1rem;font-weight:700;color:var(--accent2);margin:1.6rem 0 .6rem;}
+h4{font-size:.98rem;font-weight:700;color:var(--navy);margin:1.1rem 0 .4rem;}
+p{margin-bottom:.75rem;color:var(--text2);max-width:80ch;}
+p b, li b{color:var(--text);}
+ul,ol{margin:0 0 .9rem 1.3rem;color:var(--text2);}
+li{margin-bottom:.35rem;}
+a{color:var(--accent2);}
+pre{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1rem 1.2rem;font-family:'JetBrains Mono',Consolas,monospace;
+    font-size:.82rem;line-height:1.6;overflow-x:auto;margin:.7rem 0 1rem;white-space:pre-wrap;word-break:break-word;}
+pre .cm{color:#7FB3AE;}
+code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--card);color:var(--accent2);
+     padding:.08rem .34rem;border-radius:4px;font-size:.88em;}
+pre code{background:none;color:inherit;padding:0;}
+table{border-collapse:collapse;width:100%;margin:.8rem 0 1.4rem;font-size:.9rem;}
+th,td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left;vertical-align:top;}
+th{background:var(--card);color:var(--accent2);font-weight:700;}
+td{color:var(--text2);}
+td b{color:var(--text);}
+td code{white-space:nowrap;}
+.note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.warn{background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.good{background:#EEF9F3;border-left:4px solid var(--good);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.step{border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.4rem;margin:1.1rem 0;background:#FBFDFD;}
+.step-h{display:flex;align-items:baseline;gap:.7rem;margin-bottom:.5rem;}
+.step-n{background:var(--accent);color:#fff;font-weight:800;font-size:.8rem;border-radius:20px;padding:.18rem .7rem;white-space:nowrap;}
+.step-t{font-size:1.05rem;font-weight:700;color:var(--navy);}
+.badge{display:inline-block;background:var(--card);color:var(--accent2);border-radius:20px;padding:.12rem .65rem;
+       font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-right:.4rem;}
+.badge.deb{background:#EEF9F3;color:var(--good);}
+.badge.int{background:#FFF6E8;color:var(--warn);}
+.badge.avc{background:#FDEDEC;color:var(--bad);}
+.fill{width:100%;border:none;border-bottom:1px dashed #9FBDBA;background:#FCFEFE;font-family:'Inter',sans-serif;
+      font-size:.95rem;color:var(--text);padding:.35rem .2rem;}
+.fill:focus{outline:none;border-bottom-color:var(--accent);background:#F4FBFA;}
+textarea.fill{border:1px dashed #9FBDBA;border-radius:8px;padding:.6rem .8rem;min-height:5.5rem;resize:vertical;line-height:1.5;}
+.ck{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem 0;border-bottom:1px dotted var(--border);}
+.ck input{margin-top:.32rem;width:1.05rem;height:1.05rem;accent-color:var(--accent);flex:none;}
+.ck label{font-size:.95rem;color:var(--text2);}
+.ck label b{color:var(--text);}
+.toolbar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;display:flex;gap:.7rem;align-items:center;
+         padding:.6rem 1rem;flex-wrap:wrap;}
+.toolbar span{font-size:.82rem;color:#B9D6D3;margin-right:auto;}
+.toolbar button{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:.45rem .95rem;
+                font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;}
+.toolbar button:hover{background:#12A79F;}
+.toolbar button.ghost{background:transparent;border:1px solid #2A4C63;}
+footer.doc{margin-top:3.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text2);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.kpi{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;}
+.kpi div{flex:1;min-width:150px;background:var(--card);border-radius:10px;padding:.9rem 1.1rem;}
+.kpi b{display:block;font-size:1.5rem;color:var(--navy);}
+.kpi span{font-size:.82rem;color:var(--text2);}
+@media (max-width:820px){
+  .page{padding:1.6rem 1.1rem 3rem;}
+  h1{font-size:1.55rem;} h2{font-size:1.2rem;}
+  .grid2{grid-template-columns:1fr;}
+  table{display:block;overflow-x:auto;}
+}
+@media print{
+  body{background:#fff;}
+  .toolbar{display:none !important;}
+  .page{max-width:none;padding:0;}
+  h2{page-break-after:avoid;} .step,table,pre{page-break-inside:avoid;}
+  .fill{border-bottom:1px solid #999;background:none;}
+  textarea.fill{border:1px solid #999;min-height:4.5rem;}
+  a{color:#0B6E68;text-decoration:none;}
+  @page{margin:14mm 12mm;}
+}
+
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span>BONUS · PROJETS OPEN SOURCE</span>
+  <span id="compteur"></span>
+  <button id="btnPdf">&#11015; Exporter en PDF</button>
+  <button id="btnRaz" class="ghost">Effacer mes reponses</button>
+</div>
+<div class="page">
+<header class="doc">
+  <div class="doc-org">Digital House Company</div>
+  <h1>Les projets open source à garder quand on est développeur</h1>
+  <p class="doc-sub">Une sélection par domaine — front, back, données et IA, architecture, outillage. Le critère n'est pas la popularité, c'est la durée de vie. Cochez ce que vous connaissez : la colonne vide est votre plan de lecture.</p>
+  <div class="doc-meta"><span><b>Formation</b> L'IA pour les développeurs</span> <span><b>Dossier</b> Bonus</span> <span><b>Mise à jour</b> septembre 2026</span></div>
+</header>
+<div class="note">Une sélection, pas un annuaire. Le critère retenu n'est pas la popularité : c'est la <b>durée de vie</b>. Chacun de ces projets est là depuis des années, a une gouvernance claire, et a des chances raisonnables d'être encore là dans cinq ans. Cochez ce que vous connaissez déjà : la colonne vide est votre plan de lecture.</div>
+<div class="warn"><b>Avant d'ajouter une dépendance, trois questions.</b> Depuis combien de temps le projet existe-t-il ? Combien de personnes ont le droit de publier une version ? Que se passe-t-il si le mainteneur principal s'arrête demain ? Un projet brillant maintenu par une seule personne est un risque, pas une aubaine — et cela n'a rien à voir avec la qualité de son code.</div>
+<h2>1 · Front — l'interface</h2>
+<h3>Les socles</h3>
+<table><thead><tr><th>Projet</th><th>Ce que c'est</th><th>Pourquoi le garder</th></tr></thead><tbody><tr><td><b>React</b></td><td>La bibliothèque d'interface la plus répandue</td><td>Ce n'est pas la meilleure sur tous les points, mais c'est celle que votre prochain collègue connaîtra. L'écosystème est son vrai atout.</td></tr><tr><td><b>Vue</b></td><td>L'alternative la plus lisible</td><td>Courbe d'apprentissage plus douce, documentation exemplaire. Excellent premier framework pour une équipe qui vient du HTML/CSS.</td></tr><tr><td><b>Svelte</b></td><td>Compile au lieu d'embarquer un moteur</td><td>Le code produit est petit et rapide. À regarder pour un site public où le poids de la page compte vraiment.</td></tr><tr><td><b>Astro</b></td><td>Sites orientés contenu, JavaScript minimal</td><td>Une documentation, un blog, un site vitrine : il envoie zéro JavaScript par défaut. Le bon outil pour ce que 80 % des sites font réellement.</td></tr><tr><td><b>htmx</b></td><td>L'interactivité sans framework</td><td>Des attributs HTML au lieu d'une application cliente. À connaître ne serait-ce que pour se rappeler qu'un framework n'est pas toujours nécessaire.</td></tr></tbody></table>
+<h3>Le style et les composants</h3>
+<table><thead><tr><th>Projet</th><th>Ce que c'est</th><th>Pourquoi le garder</th></tr></thead><tbody><tr><td><b>Tailwind CSS</b></td><td>Des classes utilitaires plutôt qu'une feuille de style</td><td>Divise beaucoup les débats de nommage en équipe. On aime ou on déteste ; il faut l'avoir essayé pour avoir un avis.</td></tr><tr><td><b>Open Props</b></td><td>Des variables CSS prêtes à l'emploi</td><td>Couleurs, ombres, espacements, animations. Du CSS standard, aucune dépendance à l'exécution.</td></tr><tr><td><b>Radix / Headless UI</b></td><td>Des composants sans style, mais accessibles</td><td>Le clavier, les rôles ARIA et le focus sont traités correctement — ce qui prend des semaines à faire soi-même, et que presque personne ne fait bien.</td></tr><tr><td><b>Shoelace / Web Awesome</b></td><td>Des composants web natifs</td><td>Fonctionnent dans n'importe quel framework, et sans framework. Utile quand on ne veut pas parier sur un écosystème.</td></tr></tbody></table>
+<h3>La visualisation</h3>
+<table><thead><tr><th>Projet</th><th>Ce que c'est</th><th>Pourquoi le garder</th></tr></thead><tbody><tr><td><b>D3</b></td><td>La référence de la visualisation de données</td><td>Difficile, mais rien ne fait ce qu'il fait. À connaître, même si on utilise autre chose au quotidien.</td></tr><tr><td><b>Observable Plot</b></td><td>La couche simple au-dessus de D3</td><td>Un graphique correct en trois lignes. Le bon choix pour 90 % des besoins.</td></tr><tr><td><b>Chart.js</b></td><td>Des graphiques classiques, sans effort</td><td>Barres, lignes, camemberts. Documentation claire, résultat honnête.</td></tr><tr><td><b>Mermaid</b></td><td>Des diagrammes écrits en texte</td><td>Un organigramme, une séquence, une architecture — versionnés avec le code, donc à jour. GitHub et GitLab les affichent nativement.</td></tr></tbody></table>
+<div class="ck"><input type="checkbox"><label>Je connais et j'ai déjà utilisé au moins un socle front de cette liste</label></div><div class="ck"><input type="checkbox"><label>Je sais ce qu'est un composant « headless », et pourquoi c'est utile</label></div><div class="ck"><input type="checkbox"><label>J'ai déjà écrit un diagramme en Mermaid dans un dépôt</label></div>
+<h2>2 · Back — le serveur</h2>
+<h3>Les frameworks</h3>
+<table><thead><tr><th>Projet</th><th>Langage</th><th>Pourquoi le garder</th></tr></thead><tbody><tr><td><b>FastAPI</b></td><td>Python</td><td>Une API documentée automatiquement, avec validation des données. Le chemin le plus court entre une idée et une API propre.</td></tr><tr><td><b>Django</b></td><td>Python</td><td>Tout est fourni : administration, authentification, migrations. Le bon choix quand le métier compte plus que l'architecture.</td></tr><tr><td><b>Express / Fastify</b></td><td>Node.js</td><td>Le minimum, et le minimum rapide. Fastify quand la charge compte.</td></tr><tr><td><b>Spring Boot</b></td><td>Java</td><td>L'incontournable en entreprise. Verbeux, mais personne n'est jamais licencié pour l'avoir choisi.</td></tr><tr><td><b>Laravel</b></td><td>PHP</td><td>PHP moderne, écosystème très complet. À ne pas mépriser : il fait tourner une part énorme du web.</td></tr><tr><td><b>Go / net-http</b></td><td>Go</td><td>La bibliothèque standard suffit souvent. Binaire unique, déploiement trivial.</td></tr></tbody></table>
+<h3>Les bases de données</h3>
+<table><thead><tr><th>Projet</th><th>Ce que c'est</th><th>Pourquoi le garder</th></tr></thead><tbody><tr><td><b>PostgreSQL</b></td><td>La base relationnelle de référence</td><td><b>Le choix par défaut.</b> JSON, recherche plein texte, vecteurs, géographie : il fait presque tout, correctement, depuis trente ans.</td></tr><tr><td><b>SQLite</b></td><td>Une base dans un fichier</td><td>Sous-estimée. Pour un outil interne, une application de bureau, des tests, elle est souvent le meilleur choix — et le plus simple à sauvegarder.</td></tr><tr><td><b>Redis / Valkey</b></td><td>Cache et files en mémoire</td><td>Sessions, verrous, files d'attente. Valkey est la continuation ouverte de Redis, à surveiller.</td></tr><tr><td><b>DuckDB</b></td><td>L'analytique, dans un fichier</td><td>Interroge un CSV ou un Parquet de plusieurs gigaoctets en SQL, sans serveur. Remplace beaucoup de scripts pandas.</td></tr><tr><td><b>pgvector</b></td><td>Les vecteurs, dans PostgreSQL</td><td>Pour un RAG d'entreprise : inutile d'ajouter une base vectorielle dédiée si vous avez déjà PostgreSQL.</td></tr></tbody></table>
+<h3>Les files et le temps</h3>
+<table><thead><tr><th>Projet</th><th>Ce que c'est</th><th>Pourquoi le garder</th></tr></thead><tbody><tr><td><b>RabbitMQ</b></td><td>Messagerie entre services</td><td>Éprouvé, bien documenté, opérable par une petite équipe.</td></tr><tr><td><b>Kafka</b></td><td>Flux d'événements à grande échelle</td><td>Puissant et coûteux à exploiter. À ne sortir que si le volume le justifie vraiment — ce qui est plus rare qu'on ne le croit.</td></tr><tr><td><b>Temporal</b></td><td>Orchestration de traitements longs</td><td>Reprend un traitement là où il s'est arrêté, même après un redémarrage. Précieux pour les chaînes d'IA qui durent des minutes.</td></tr></tbody></table>
+<div class="ck"><input type="checkbox"><label>Je sais pourquoi PostgreSQL est le choix par défaut</label></div><div class="ck"><input type="checkbox"><label>J'ai déjà utilisé SQLite pour autre chose qu'un prototype</label></div><div class="ck"><input type="checkbox"><label>Je sais dans quel cas une file d'attente devient nécessaire</label></div>
+<h2>3 · Données et IA</h2>
+<table><thead><tr><th>Projet</th><th>Ce que c'est</th><th>Pourquoi le garder</th></tr></thead><tbody><tr><td><b>pandas</b></td><td>La manipulation de données en Python</td><td>L'outil que tout le monde connaît. Ses défauts sont documentés, ses recettes aussi.</td></tr><tr><td><b>Polars</b></td><td>L'alternative rapide à pandas</td><td>Beaucoup plus rapide sur les gros volumes, API plus cohérente. La transition vaut le coup sur un projet neuf.</td></tr><tr><td><b>Apache Arrow / Parquet</b></td><td>Le format d'échange de données</td><td>Un CSV de 2 Go devient un Parquet de 200 Mo, lisible dix fois plus vite. À connaître dès qu'on manipule des données sérieusement.</td></tr><tr><td><b>scikit-learn</b></td><td>L'apprentissage automatique classique</td><td>Avant de sortir un LLM : une régression ou un arbre de décision résolvent beaucoup de problèmes, pour mille fois moins cher.</td></tr><tr><td><b>Hugging Face transformers</b></td><td>Exécuter des modèles</td><td>Le point de passage obligé. Modèles, jeux de données, et une communauté qui documente tout.</td></tr><tr><td><b>sentence-transformers</b></td><td>Les modèles d'embedding</td><td>Petits, rapides, économiques. Le cœur de tout RAG sérieux.</td></tr><tr><td><b>llama.cpp</b></td><td>Exécuter un LLM sur du matériel modeste</td><td>Le moteur derrière LM Studio et Ollama. Le format GGUF vient de là.</td></tr><tr><td><b>Ollama</b></td><td>Un modèle local en une commande</td><td><code>ollama run mistral</code> et c'est parti. La façon la plus simple de tester du local.</td></tr><tr><td><b>LangChain / LlamaIndex</b></td><td>Frameworks d'application IA</td><td>Utiles pour prototyper vite. À réévaluer avant la production : beaucoup d'équipes finissent par écrire les cinquante lignes elles-mêmes.</td></tr><tr><td><b>Chroma / Qdrant</b></td><td>Bases vectorielles dédiées</td><td>Si vous n'avez pas déjà PostgreSQL. Chroma pour commencer, Qdrant pour passer à l'échelle.</td></tr><tr><td><b>Ragas</b></td><td>Évaluer un RAG</td><td>Le sujet dont personne ne parle. Sans mesure, on ne sait pas si une modification améliore ou dégrade le système.</td></tr></tbody></table>
+<div class="good"><b>Le réflexe qui fait la différence :</b> avant de sortir un LLM, demandez-vous si une expression régulière, une requête SQL ou une régression logistique ne ferait pas l'affaire. Elles sont plus rapides, moins chères, déterministes, et elles n'inventent rien.</div>
+<h2>4 · Architecture, exploitation, sécurité</h2>
+<h3>Empaqueter et déployer</h3>
+<table><thead><tr><th>Projet</th><th>Ce que c'est</th><th>Pourquoi le garder</th></tr></thead><tbody><tr><td><b>Docker</b></td><td>Empaqueter une application avec son environnement</td><td>Le standard. Même si vous ne l'aimez pas, vos collègues l'utilisent.</td></tr><tr><td><b>Podman</b></td><td>Docker sans démon privilégié</td><td>Compatible avec les mêmes images, sans processus root permanent. Souvent la seule option acceptée en environnement contraint.</td></tr><tr><td><b>Kubernetes</b></td><td>Orchestration de conteneurs</td><td>À connaître pour savoir quand <b>ne pas</b> l'utiliser. Trois conteneurs et deux serveurs ne justifient pas Kubernetes.</td></tr><tr><td><b>Terraform / OpenTofu</b></td><td>L'infrastructure décrite dans des fichiers</td><td>L'infrastructure devient relisable, versionnée et reproductible. OpenTofu est la continuation entièrement ouverte.</td></tr><tr><td><b>Caddy</b></td><td>Serveur web avec HTTPS automatique</td><td>Deux lignes de configuration, certificat renouvelé tout seul. Une alternative sérieuse à nginx pour les petits déploiements.</td></tr></tbody></table>
+<h3>Observer</h3>
+<table><thead><tr><th>Projet</th><th>Ce que c'est</th><th>Pourquoi le garder</th></tr></thead><tbody><tr><td><b>OpenTelemetry</b></td><td>La norme de télémétrie</td><td>Traces, métriques et journaux, dans un format unique. Instrumentez une fois, changez d'outil ensuite sans tout réécrire.</td></tr><tr><td><b>Prometheus + Grafana</b></td><td>Métriques et tableaux de bord</td><td>Le duo classique. Une alerte qui fonctionne vaut mieux qu'un tableau de bord que personne ne regarde.</td></tr><tr><td><b>Sentry</b></td><td>Le suivi des erreurs</td><td>Version auto-hébergeable disponible. Savoir qu'une erreur s'est produite avant que le client n'appelle change tout.</td></tr></tbody></table>
+<h3>Sécurité et qualité</h3>
+<table><thead><tr><th>Projet</th><th>Ce que c'est</th><th>Pourquoi le garder</th></tr></thead><tbody><tr><td><b>OWASP Top 10 / ASVS</b></td><td>La référence des risques applicatifs</td><td>Ce n'est pas un outil, c'est une liste. La lire une fois par an suffit à éviter la majorité des incidents.</td></tr><tr><td><b>Trivy</b></td><td>Scanner d'images et de dépendances</td><td>Une commande, un rapport. À brancher dans l'intégration continue.</td></tr><tr><td><b>gitleaks</b></td><td>Détecte les secrets dans un dépôt</td><td>À installer en pré-commit <b>aujourd'hui</b>. Un secret publié est un secret compromis, même supprimé cinq minutes plus tard.</td></tr><tr><td><b>pre-commit</b></td><td>Des vérifications avant chaque commit</td><td>Formatage, secrets, taille des fichiers. Empêche les erreurs bêtes d'atteindre le dépôt.</td></tr><tr><td><b>Semgrep</b></td><td>Analyse statique par règles lisibles</td><td>On écrit ses propres règles en quelques lignes. Utile pour faire respecter une règle maison — par exemple : « jamais d'innerHTML sans échappement ».</td></tr></tbody></table>
+<div class="ck"><input type="checkbox"><label><code>gitleaks</code> ou équivalent tourne sur mes dépôts</label></div><div class="ck"><input type="checkbox"><label>J'ai lu l'OWASP Top 10 au moins une fois</label></div><div class="ck"><input type="checkbox"><label>Je sais où regarder quand une erreur se produit en production</label></div>
+<h2>5 · Outillage — ce qui fait gagner une heure par jour</h2>
+<table><thead><tr><th>Projet</th><th>Ce que c'est</th><th>Pourquoi le garder</th></tr></thead><tbody><tr><td><b>ripgrep (rg)</b></td><td>Chercher dans du code, très vite</td><td>Remplace <code>grep -r</code>. Respecte le <code>.gitignore</code> tout seul.</td></tr><tr><td><b>fd</b></td><td>Trouver des fichiers, très vite</td><td>Remplace <code>find</code>, avec une syntaxe qu'on retient.</td></tr><tr><td><b>jq</b></td><td>Manipuler du JSON en ligne de commande</td><td>Indispensable dès qu'on travaille avec des API. Une heure d'apprentissage, rentabilisée en une semaine.</td></tr><tr><td><b>bat</b></td><td><code>cat</code> avec coloration et numéros de ligne</td><td>Un petit confort qu'on ne quitte plus.</td></tr><tr><td><b>delta</b></td><td>Des diffs git lisibles</td><td>Change réellement l'expérience de relecture de code.</td></tr><tr><td><b>lazygit</b></td><td>Git en interface texte</td><td>Rend les opérations git complexes compréhensibles. Excellent pour apprendre.</td></tr><tr><td><b>direnv</b></td><td>Variables d'environnement par dossier</td><td>Plus besoin de se souvenir d'activer un environnement virtuel.</td></tr><tr><td><b>just</b></td><td>Un lanceur de commandes moderne</td><td>Comme <code>make</code>, mais sans les pièges. Les commandes du projet dans un fichier, documentées.</td></tr><tr><td><b>mise / asdf</b></td><td>Gérer les versions de langages</td><td>La bonne version de Node et de Python par projet, automatiquement.</td></tr><tr><td><b>Playwright</b></td><td>Tests de bout en bout dans un navigateur</td><td>Rapide, fiable, multi-navigateurs. Le meilleur de sa catégorie aujourd'hui.</td></tr><tr><td><b>Vitest</b></td><td>Tests unitaires en JavaScript</td><td>Rapide, compatible avec l'API de Jest. Le choix par défaut sur un projet neuf.</td></tr><tr><td><b>pytest</b></td><td>Tests en Python</td><td>Simple à écrire, extensible à l'infini. C'est celui de la journée 3.</td></tr><tr><td><b>Ruff</b></td><td>Formatage et analyse Python</td><td>Remplace une demi-douzaine d'outils, et il est très rapide.</td></tr><tr><td><b>Biome</b></td><td>Formatage et analyse JavaScript</td><td>Une alternative unifiée à ESLint et Prettier.</td></tr></tbody></table>
+<h2>6 · Pour apprendre et se tenir à jour</h2>
+<table><thead><tr><th>Ressource</th><th>Ce que c'est</th></tr></thead><tbody><tr><td><b>MDN Web Docs</b></td><td>La documentation du web. La référence, pas un blog.</td></tr><tr><td><b>The Twelve-Factor App</b></td><td>Douze principes pour une application déployable. Vingt minutes de lecture, valables depuis quinze ans.</td></tr><tr><td><b>Refactoring Guru</b></td><td>Patrons de conception et refactorisations, illustrés.</td></tr><tr><td><b>Roadmap.sh</b></td><td>Des parcours d'apprentissage par métier, ouverts et à jour.</td></tr><tr><td><b>Awesome Lists</b></td><td>Une liste par domaine, maintenue par la communauté. Le point de départ quand on découvre un sujet.</td></tr><tr><td><b>Papers with Code / Hugging Face Papers</b></td><td>Les publications d'IA, avec le code qui va avec.</td></tr><tr><td><b>Le blog d'ingénierie de vos fournisseurs</b></td><td>Souvent la meilleure documentation sur les limites réelles de leurs produits.</td></tr></tbody></table>
+<h2>Ma liste à moi</h2>
+<p>Trois projets de cette page à essayer dans le mois. Pas dix : trois.</p>
+<table><thead><tr><th>Projet</th><th>Sur quel projet je l'essaie</th><th>Avant quelle date</th></tr></thead><tbody><tr><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td></tr><tr><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td></tr><tr><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td></tr></tbody></table>
+<h4>Un projet open source que j'utilise et qui manque à cette liste</h4><textarea class="fill" rows="3" placeholder="Écrivez-le, et dites pourquoi il mérite d'y figurer."></textarea>
+<div class="warn"><b>Rendre, aussi.</b> Si un projet de cette liste vous fait gagner du temps chaque semaine, la contribution la plus utile n'est pas forcément du code : une documentation corrigée, un rapport de bogue reproductible, une réponse sur une discussion. C'est ce qui manque le plus aux mainteneurs.</div>
+<footer class="doc">
+  Formation animee par <b>Kuate Joel Parfait</b> — Digital House Company · hello@dhcompany.pro<br>
+  Ce document est prevu pour etre rempli a l'ecran puis exporte en PDF
+  (bouton « Exporter en PDF » ou <code>Ctrl</code>+<code>P</code> → « Enregistrer au format PDF »).
+</footer>
+</div>
+<script>
+
+// Sauvegarde locale des reponses : pratique pour reprendre une fiche entre
+// deux journees. Tout est entoure de try/catch, la page fonctionne meme
+// si le navigateur refuse le stockage (mode prive, fichier local bride...).
+(function () {
+  var KEY = 'fiche::' + (document.title || 'sans-titre');
+  var champs = document.querySelectorAll('.fill, .ck input[type=checkbox]');
+
+  function charger() {
+    try {
+      var brut = localStorage.getItem(KEY);
+      if (!brut) return;
+      var data = JSON.parse(brut);
+      champs.forEach(function (el, i) {
+        if (data[i] === undefined) return;
+        if (el.type === 'checkbox') { el.checked = data[i]; } else { el.value = data[i]; }
+      });
+      majCompteur();
+    } catch (e) { /* stockage indisponible : on continue sans */ }
+  }
+
+  function sauver() {
+    try {
+      var data = [];
+      champs.forEach(function (el) { data.push(el.type === 'checkbox' ? el.checked : el.value); });
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) { /* idem */ }
+  }
+
+  function majCompteur() {
+    var cases = document.querySelectorAll('.ck input[type=checkbox]');
+    var faits = document.querySelectorAll('.ck input[type=checkbox]:checked');
+    var out = document.getElementById('compteur');
+    if (out && cases.length) { out.textContent = faits.length + ' / ' + cases.length + ' coche(s)'; }
+  }
+
+  champs.forEach(function (el) {
+    el.addEventListener('input', function () { sauver(); majCompteur(); });
+    el.addEventListener('change', function () { sauver(); majCompteur(); });
+  });
+
+  var bPdf = document.getElementById('btnPdf');
+  if (bPdf) bPdf.addEventListener('click', function () { window.print(); });
+
+  var bRaz = document.getElementById('btnRaz');
+  if (bRaz) bRaz.addEventListener('click', function () {
+    if (!confirm('Effacer toutes vos reponses de cette fiche ?')) return;
+    champs.forEach(function (el) { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    majCompteur();
+  });
+
+  charger();
+  majCompteur();
+})();
+
+</script>
+</body>
+</html>

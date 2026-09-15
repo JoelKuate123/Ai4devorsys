@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist des bonnes pratiques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+
+:root{
+  --bg:#FFFFFF; --accent:#0E8C86; --accent2:#0B6E68; --navy:#0B2D48;
+  --text:#16212B; --text2:#4B5C63; --card:#EAF4F3; --border:#D7E6E4;
+  --good:#1F9D67; --warn:#B9740A; --bad:#C1443B; --code:#0F2733;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;background:#F2F7F7;color:var(--text);line-height:1.55;}
+.page{max-width:1000px;margin:0 auto;background:var(--bg);padding:3.2rem 3.2rem 5rem;}
+header.doc{border-bottom:4px solid var(--accent);padding-bottom:1.4rem;margin-bottom:2.2rem;}
+.doc-org{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-weight:700;}
+h1{font-size:2.1rem;font-weight:800;color:var(--navy);margin:.6rem 0 .5rem;line-height:1.2;}
+.doc-sub{color:var(--text2);font-size:1.02rem;max-width:70ch;}
+.doc-meta{margin-top:1rem;display:flex;gap:1.6rem;flex-wrap:wrap;font-size:.85rem;color:var(--text2);}
+.doc-meta b{color:var(--navy);}
+h2{font-size:1.45rem;font-weight:800;color:var(--navy);margin:2.6rem 0 .9rem;padding-left:.8rem;border-left:5px solid var(--accent);}
+h3{font-size:1.1rem;font-weight:700;color:var(--accent2);margin:1.6rem 0 .6rem;}
+h4{font-size:.98rem;font-weight:700;color:var(--navy);margin:1.1rem 0 .4rem;}
+p{margin-bottom:.75rem;color:var(--text2);max-width:80ch;}
+p b, li b{color:var(--text);}
+ul,ol{margin:0 0 .9rem 1.3rem;color:var(--text2);}
+li{margin-bottom:.35rem;}
+a{color:var(--accent2);}
+pre{background:var(--code);color:#E8F1F0;border-radius:10px;padding:1rem 1.2rem;font-family:'JetBrains Mono',Consolas,monospace;
+    font-size:.82rem;line-height:1.6;overflow-x:auto;margin:.7rem 0 1rem;white-space:pre-wrap;word-break:break-word;}
+pre .cm{color:#7FB3AE;}
+code{font-family:'JetBrains Mono',Consolas,monospace;background:var(--card);color:var(--accent2);
+     padding:.08rem .34rem;border-radius:4px;font-size:.88em;}
+pre code{background:none;color:inherit;padding:0;}
+table{border-collapse:collapse;width:100%;margin:.8rem 0 1.4rem;font-size:.9rem;}
+th,td{border:1px solid var(--border);padding:.5rem .7rem;text-align:left;vertical-align:top;}
+th{background:var(--card);color:var(--accent2);font-weight:700;}
+td{color:var(--text2);}
+td b{color:var(--text);}
+td code{white-space:nowrap;}
+.note{background:var(--card);border-left:4px solid var(--accent);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.warn{background:#FFF6E8;border-left:4px solid var(--warn);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.good{background:#EEF9F3;border-left:4px solid var(--good);border-radius:6px;padding:.85rem 1.1rem;margin:1rem 0;font-size:.95rem;color:var(--text2);}
+.step{border:1px solid var(--border);border-radius:10px;padding:1.2rem 1.4rem;margin:1.1rem 0;background:#FBFDFD;}
+.step-h{display:flex;align-items:baseline;gap:.7rem;margin-bottom:.5rem;}
+.step-n{background:var(--accent);color:#fff;font-weight:800;font-size:.8rem;border-radius:20px;padding:.18rem .7rem;white-space:nowrap;}
+.step-t{font-size:1.05rem;font-weight:700;color:var(--navy);}
+.badge{display:inline-block;background:var(--card);color:var(--accent2);border-radius:20px;padding:.12rem .65rem;
+       font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-right:.4rem;}
+.badge.deb{background:#EEF9F3;color:var(--good);}
+.badge.int{background:#FFF6E8;color:var(--warn);}
+.badge.avc{background:#FDEDEC;color:var(--bad);}
+.fill{width:100%;border:none;border-bottom:1px dashed #9FBDBA;background:#FCFEFE;font-family:'Inter',sans-serif;
+      font-size:.95rem;color:var(--text);padding:.35rem .2rem;}
+.fill:focus{outline:none;border-bottom-color:var(--accent);background:#F4FBFA;}
+textarea.fill{border:1px dashed #9FBDBA;border-radius:8px;padding:.6rem .8rem;min-height:5.5rem;resize:vertical;line-height:1.5;}
+.ck{display:flex;gap:.7rem;align-items:flex-start;padding:.45rem 0;border-bottom:1px dotted var(--border);}
+.ck input{margin-top:.32rem;width:1.05rem;height:1.05rem;accent-color:var(--accent);flex:none;}
+.ck label{font-size:.95rem;color:var(--text2);}
+.ck label b{color:var(--text);}
+.toolbar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;display:flex;gap:.7rem;align-items:center;
+         padding:.6rem 1rem;flex-wrap:wrap;}
+.toolbar span{font-size:.82rem;color:#B9D6D3;margin-right:auto;}
+.toolbar button{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:.45rem .95rem;
+                font-family:'Inter',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;}
+.toolbar button:hover{background:#12A79F;}
+.toolbar button.ghost{background:transparent;border:1px solid #2A4C63;}
+footer.doc{margin-top:3.5rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.85rem;color:var(--text2);}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+.kpi{display:flex;gap:1rem;flex-wrap:wrap;margin:1rem 0;}
+.kpi div{flex:1;min-width:150px;background:var(--card);border-radius:10px;padding:.9rem 1.1rem;}
+.kpi b{display:block;font-size:1.5rem;color:var(--navy);}
+.kpi span{font-size:.82rem;color:var(--text2);}
+@media (max-width:820px){
+  .page{padding:1.6rem 1.1rem 3rem;}
+  h1{font-size:1.55rem;} h2{font-size:1.2rem;}
+  .grid2{grid-template-columns:1fr;}
+  table{display:block;overflow-x:auto;}
+}
+@media print{
+  body{background:#fff;}
+  .toolbar{display:none !important;}
+  .page{max-width:none;padding:0;}
+  h2{page-break-after:avoid;} .step,table,pre{page-break-inside:avoid;}
+  .fill{border-bottom:1px solid #999;background:none;}
+  textarea.fill{border:1px solid #999;min-height:4.5rem;}
+  a{color:#0B6E68;text-decoration:none;}
+  @page{margin:14mm 12mm;}
+}
+
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span>BONUS · CHECKLIST BONNES PRATIQUES</span>
+  <span id="compteur"></span>
+  <button id="btnPdf">&#11015; Exporter en PDF</button>
+  <button id="btnRaz" class="ghost">Effacer mes reponses</button>
+</div>
+<div class="page">
+<header class="doc">
+  <div class="doc-org">Digital House Company</div>
+  <h1>Les bonnes pratiques à retenir — checklist</h1>
+  <p class="doc-sub">Six sections, de l'idée à la production. À cocher à l'écran, à garder à côté du clavier. Prenez une section par semaine sur un projet réel : la parcourir d'un trait ne sert à rien.</p>
+  <div class="doc-meta"><span><b>Formation</b> L'IA pour les développeurs</span> <span><b>Dossier</b> Bonus</span> <span><b>Usage</b> une section par semaine</span></div>
+</header>
+<div class="note">Une checklist, pas un manuel. Elle est faite pour être <b>cochée à l'écran</b> et gardée à côté du clavier. Le compteur en haut de page suit votre progression. Toutes les lignes ne s'appliquent pas à tous les projets : cochez ce qui est vrai, et regardez ce qui reste vide.</div>
+<div class="warn"><b>Comment s'en servir.</b> Ne la parcourez pas d'un bout à l'autre en une fois : vous cocheriez sans réfléchir. Prenez <b>une section</b>, appliquez-la à un projet réel, corrigez ce qui manque, puis passez à la suivante. Six sections, six semaines.</div>
+<h2>1 · Avant d'écrire une ligne</h2>
+<p>La moitié du temps perdu sur un projet vient de cette section.</p>
+<div class="ck"><input type="checkbox"><label><b>Je peux écrire en une phrase</b> le problème que ce code résout — sans le mot « permettre »</label></div><div class="ck"><input type="checkbox"><label>Je sais <b>qui</b> l'utilisera, et à quelle fréquence</label></div><div class="ck"><input type="checkbox"><label>Je sais <b>comment je saurai que ça marche</b> : un critère chiffré, pas une intention</label></div><div class="ck"><input type="checkbox"><label>J'ai cherché si ça existait déjà, en interne et en open source</label></div><div class="ck"><input type="checkbox"><label>J'ai écrit ce que le projet <b>ne fera pas</b> — c'est ce qui le protège</label></div><div class="ck"><input type="checkbox"><label>J'ai estimé le coût d'exploitation, pas seulement le coût de développement</label></div><div class="ck"><input type="checkbox"><label>Je sais qui répond si ça tombe à 3 h du matin</label></div><div class="ck"><input type="checkbox"><label>Le dépôt existe, avec un README qui dit comment lancer le projet</label></div>
+<div class="good"><b>Le test du critère chiffré.</b> « Les utilisateurs sont contents » n'est pas un critère. « 90 % des demandes traitées en moins de 2 secondes » en est un. Si aucun de vos critères ne contient de chiffre, vous n'avez que des intentions.</div>
+<h2>2 · Pendant qu'on code</h2>
+<h3>Le code lui-même</h3>
+<div class="ck"><input type="checkbox"><label>Une fonction fait <b>une</b> chose. Son nom le dit, et son nom ne contient pas « et »</label></div><div class="ck"><input type="checkbox"><label>Les noms sont dans <b>une seule langue</b>, la même partout dans le projet</label></div><div class="ck"><input type="checkbox"><label>Les commentaires expliquent <b>pourquoi</b>, jamais <b>quoi</b></label></div><div class="ck"><input type="checkbox"><label>Chaque valeur qui n'est pas évidente est une constante nommée, en haut du fichier</label></div><div class="ck"><input type="checkbox"><label>Les cas d'erreur sont traités <b>en premier</b>, avant le cas nominal</label></div><div class="ck"><input type="checkbox"><label>Aucune erreur n'est avalée en silence — si on l'ignore, un commentaire dit pourquoi</label></div><div class="ck"><input type="checkbox"><label>Aucune valeur venue de l'extérieur n'entre dans du HTML, du SQL ou un shell sans traitement</label></div><div class="ck"><input type="checkbox"><label>Aucun secret n'est écrit dans le code, jamais, même temporairement</label></div><div class="ck"><input type="checkbox"><label>Le code qui manipule de l'argent arrondit explicitement, et je sais dans quel sens</label></div><div class="ck"><input type="checkbox"><label>Une date est stockée au format <code>AAAA-MM-JJ</code> ou en UTC — jamais « 12/05/26 »</label></div>
+<h3>Les couches</h3>
+<div class="ck"><input type="checkbox"><label>Les règles métier sont dans <b>un</b> endroit, pas éparpillées dans l'interface</label></div><div class="ck"><input type="checkbox"><label>La couche d'affichage ne calcule rien</label></div><div class="ck"><input type="checkbox"><label>La couche de données ne contient aucune règle métier</label></div><div class="ck"><input type="checkbox"><label>Je peux tester la logique <b>sans</b> lancer l'interface ni la base de données</label></div><div class="ck"><input type="checkbox"><label>Une couche ne connaît jamais celle du dessus</label></div>
+<h3>Les tests</h3>
+<div class="ck"><input type="checkbox"><label>Chaque fonction publique a au moins <b>trois</b> tests : nominal, limite, erreur</label></div><div class="ck"><input type="checkbox"><label>Les cas limites sont couverts : liste vide, valeur nulle, division par zéro, date invalide, accent, apostrophe</label></div><div class="ck"><input type="checkbox"><label>Le nom de chaque test se lit comme <b>une phrase de spécification</b></label></div><div class="ck"><input type="checkbox"><label>Aucun test n'appelle un vrai modèle, une vraie API, ni la vraie base de production</label></div><div class="ck"><input type="checkbox"><label><b>Je casse volontairement le code</b> pour vérifier que les tests deviennent rouges</label></div><div class="ck"><input type="checkbox"><label>La suite complète tourne en moins d'une minute — sinon personne ne la lancera</label></div><div class="ck"><input type="checkbox"><label>Un test qui échoue par intermittence est réparé ou supprimé, jamais ignoré</label></div>
+<div class="warn"><b>Le pire résultat possible</b> n'est pas un test manquant : c'est une suite de quarante tests verts qui ne protègent de rien. Elle donne une confiance que rien ne justifie. Le seul moyen de le savoir : casser le code et regarder.</div>
+<h2>3 · Quand on code avec une IA</h2>
+<p>Cette section n'existait pas il y a trois ans. C'est aujourd'hui la plus importante pour beaucoup d'équipes.</p>
+<h3>Avant de demander</h3>
+<div class="ck"><input type="checkbox"><label>Le projet a un <b>fichier de contexte</b> versionné — <code>CLAUDE.md</code>, <code>AGENTS.md</code> ou <code>copilot-instructions.md</code></label></div><div class="ck"><input type="checkbox"><label>Ce fichier tient en <b>une page</b>, et il est à jour</label></div><div class="ck"><input type="checkbox"><label>Il contient les <b>règles métier qui ne se devinent pas</b> en lisant le code</label></div><div class="ck"><input type="checkbox"><label>Il contient les <b>commandes</b> du projet : comment lancer les tests, le linter, le serveur</label></div><div class="ck"><input type="checkbox"><label>Il contient les <b>interdits</b> : ce qu'on ne veut pas voir arriver dans ce dépôt</label></div><div class="ck"><input type="checkbox"><label>Je travaille sur une <b>branche</b>, jamais directement sur la principale</label></div><div class="ck"><input type="checkbox"><label>La suite de tests est au vert <b>avant</b> que je demande quoi que ce soit</label></div>
+<h3>Pendant</h3>
+<div class="ck"><input type="checkbox"><label>Je demande <b>un plan</b> avant toute tâche de plus de dix minutes</label></div><div class="ck"><input type="checkbox"><label>Je corrige le plan <b>dans le chat</b>, avant d'approuver</label></div><div class="ck"><input type="checkbox"><label>Je donne l'erreur <b>collée</b>, jamais paraphrasée</label></div><div class="ck"><input type="checkbox"><label>Je demande <b>une</b> chose à la fois</label></div><div class="ck"><input type="checkbox"><label>Un prompt de modification dit ce qui change <b>et</b> ce qui ne doit pas changer</label></div><div class="ck"><input type="checkbox"><label>Je repars d'un contexte propre entre deux tâches sans rapport</label></div><div class="ck"><input type="checkbox"><label>Je l'interromps dès qu'il part dans la mauvaise direction, au lieu d'attendre la fin</label></div>
+<h3>Avant d'accepter</h3>
+<div class="ck"><input type="checkbox"><label><b>Je comprends chaque ligne.</b> Sinon je demande une explication avant d'accepter</label></div><div class="ck"><input type="checkbox"><label><b>Ça fait uniquement ce que j'ai demandé</b> — rien renommé, rien « amélioré » au passage</label></div><div class="ck"><input type="checkbox"><label><b>Aucun test n'a été modifié</b> pour faire passer le code</label></div><div class="ck"><input type="checkbox"><label><b>Aucune dépendance</b> n'a été ajoutée sans que je l'aie décidé</label></div><div class="ck"><input type="checkbox"><label>Les tests couvrent ce qui vient de changer — pas seulement « ils passent »</label></div><div class="ck"><input type="checkbox"><label>J'ai lu le <b>diff en entier</b>, pas seulement les fichiers que j'attendais</label></div><div class="ck"><input type="checkbox"><label>Le message de commit décrit l'intention, pas la liste des fichiers touchés</label></div>
+<h3>Ce qu'on ne délègue pas</h3>
+<div class="ck"><input type="checkbox"><label>Une décision d'architecture qui engage plus d'un an</label></div><div class="ck"><input type="checkbox"><label>Du code que <b>personne de l'équipe</b> ne saurait relire</label></div><div class="ck"><input type="checkbox"><label>Ce qui touche à de l'argent, à de la santé ou à du droit, sans relecture ligne à ligne</label></div><div class="ck"><input type="checkbox"><label>Un accès en écriture à la production. Jamais. Aucun agent, aucune exception</label></div><div class="ck"><input type="checkbox"><label>Une tâche dont je ne saurais pas dire si elle a échoué</label></div>
+<div class="good"><b>La question à se poser n'est jamais « en est-il capable ? »</b>, mais « <b>comment saurai-je qu'il s'est trompé ?</b> ». Si vous n'avez pas de réponse, ne déléguez pas.</div>
+<h2>4 · Avant de proposer une modification</h2>
+<div class="ck"><input type="checkbox"><label>Le diff relève d'une <b>seule intention</b>. Sinon je le découpe</label></div><div class="ck"><input type="checkbox"><label>Il fait moins de 400 lignes — au-delà, personne ne relit vraiment</label></div><div class="ck"><input type="checkbox"><label>Les tests passent <b>en local</b>, pas seulement « chez moi ça marchait »</label></div><div class="ck"><input type="checkbox"><label>J'ai relu mon propre diff avant de le proposer</label></div><div class="ck"><input type="checkbox"><label>La description dit <b>pourquoi</b>, pas seulement quoi</label></div><div class="ck"><input type="checkbox"><label>Les fichiers générés, les journaux et les dossiers de dépendances ne sont pas dedans</label></div><div class="ck"><input type="checkbox"><label>Aucun <code>console.log</code>, <code>print</code> ou code commenté oublié</label></div><div class="ck"><input type="checkbox"><label>Aucun secret, aucune adresse interne, aucun jeu de données réel</label></div><div class="ck"><input type="checkbox"><label>Si l'interface change, une capture d'écran est jointe</label></div><div class="ck"><input type="checkbox"><label>Si la base de données change, la migration est réversible</label></div>
+<h3>Quand je relis le code d'un autre</h3>
+<div class="ck"><input type="checkbox"><label>Je cherche d'abord une <b>règle métier cassée</b> — le seul défaut qui ne fait rien planter</label></div><div class="ck"><input type="checkbox"><label>Je cherche ensuite les <b>cas limites non traités</b></label></div><div class="ck"><input type="checkbox"><label>Je distingue ce qui <b>doit</b> changer de ce que j'aurais fait autrement</label></div><div class="ck"><input type="checkbox"><label>Je pose des questions plutôt que des jugements</label></div><div class="ck"><input type="checkbox"><label>Je dis aussi ce qui est bien fait — une relecture qui ne contient que des reproches n'est pas lue</label></div>
+<h2>5 · Avant de mettre en production</h2>
+<div class="ck"><input type="checkbox"><label>Je sais <b>revenir en arrière</b>, et je l'ai déjà fait au moins une fois</label></div><div class="ck"><input type="checkbox"><label>Les secrets sont dans des variables d'environnement, pas dans le dépôt</label></div><div class="ck"><input type="checkbox"><label>Les journaux ne contiennent <b>ni mot de passe, ni jeton, ni donnée personnelle</b></label></div><div class="ck"><input type="checkbox"><label>Une sauvegarde existe, et <b>elle a été restaurée</b> au moins une fois pour de vrai</label></div><div class="ck"><input type="checkbox"><label>Il y a une page ou une route de santé — qui ne révèle rien de sensible</label></div><div class="ck"><input type="checkbox"><label>Une alerte se déclenche quand ça tombe, et quelqu'un la reçoit</label></div><div class="ck"><input type="checkbox"><label>Les dépendances ont été scannées</label></div><div class="ck"><input type="checkbox"><label>Les limites sont posées : débit, taille des requêtes, plafond de dépense</label></div><div class="ck"><input type="checkbox"><label>Le RGPD est traité : quelles données, quelle base légale, combien de temps, qui y accède</label></div><div class="ck"><input type="checkbox"><label>Une personne est nommée pour répondre en cas d'incident</label></div>
+<div class="warn"><b>Une sauvegarde jamais restaurée n'est pas une sauvegarde</b>, c'est une hypothèse. Bloquez deux heures ce trimestre pour la tester sur un environnement de test. C'est la ligne la plus rentable de toute cette page.</div>
+<h3>Spécifique aux applications avec IA</h3>
+<div class="ck"><input type="checkbox"><label>La clé d'API est <b>côté serveur</b>, jamais dans le navigateur</label></div><div class="ck"><input type="checkbox"><label>Un plafond de dépense est configuré chez le fournisseur</label></div><div class="ck"><input type="checkbox"><label>La réponse du modèle est <b>validée</b> avant d'être utilisée : type, valeurs autorisées, bornes</label></div><div class="ck"><input type="checkbox"><label>Une catégorie inventée par le modèle est ramenée à une valeur connue, pas propagée</label></div><div class="ck"><input type="checkbox"><label>Le cas « le modèle ne répond pas » est traité, et testé</label></div><div class="ck"><input type="checkbox"><label>Les entrées utilisateur qui entrent dans un prompt sont bornées et nettoyées</label></div><div class="ck"><input type="checkbox"><label>Ce que fait l'utilisateur ne peut pas devenir une <b>instruction</b> pour le modèle</label></div><div class="ck"><input type="checkbox"><label>Le coût réel est mesuré, pas estimé une fois pour toutes</label></div><div class="ck"><input type="checkbox"><label>L'utilisateur sait qu'il parle à une IA</label></div><div class="ck"><input type="checkbox"><label>Sur un RAG : les <b>sources sont citées</b>, et le système sait dire « je ne sais pas »</label></div>
+<h2>6 · Dans la durée</h2>
+<div class="ck"><input type="checkbox"><label>Le README permet à un nouvel arrivant de lancer le projet <b>sans demander à personne</b></label></div><div class="ck"><input type="checkbox"><label>Les décisions d'architecture sont écrites quelque part, avec leur date et leur raison</label></div><div class="ck"><input type="checkbox"><label>Les dépendances sont mises à jour régulièrement, pas tous les deux ans en catastrophe</label></div><div class="ck"><input type="checkbox"><label>Le projet peut tourner sur la machine de quelqu'un d'autre</label></div><div class="ck"><input type="checkbox"><label>Une seule personne n'est pas la seule à savoir faire quelque chose d'essentiel</label></div><div class="ck"><input type="checkbox"><label>La dette technique est <b>écrite</b> quelque part, pas seulement subie</label></div><div class="ck"><input type="checkbox"><label>On supprime du code mort : un fichier inutile coûte à chaque relecture</label></div><div class="ck"><input type="checkbox"><label>Ce qu'on répète trois fois par semaine est automatisé — script, compétence, ou fichier de prompt</label></div>
+<div class="good"><b>Le meilleur indicateur de santé d'un projet</b> n'est pas sa couverture de tests ni son nombre d'étoiles : c'est le temps qu'il faut à une nouvelle personne pour livrer sa première modification. Mesurez-le une fois. Vous saurez tout.</div>
+<h2>Mon bilan</h2>
+<p>Regardez les cases restées vides. Ce sont vos trois prochains chantiers.</p>
+<table><thead><tr><th>Ce que je corrige</th><th>Sur quel projet</th><th>Avant quelle date</th></tr></thead><tbody><tr><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td></tr><tr><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td></tr><tr><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td><td><input class='fill' type='text'></td></tr></tbody></table>
+<h4>La ligne de cette checklist qui m'a le plus gêné à cocher</h4><textarea class="fill" rows="3" placeholder="C'est généralement celle par laquelle il faut commencer."></textarea>
+<h4>Une bonne pratique qui manque à cette liste, et qui compte chez nous</h4><textarea class="fill" rows="3" placeholder=""></textarea>
+<footer class="doc">
+  Formation animee par <b>Kuate Joel Parfait</b> — Digital House Company · hello@dhcompany.pro<br>
+  Ce document est prevu pour etre rempli a l'ecran puis exporte en PDF
+  (bouton « Exporter en PDF » ou <code>Ctrl</code>+<code>P</code> → « Enregistrer au format PDF »).
+</footer>
+</div>
+<script>
+
+// Sauvegarde locale des reponses : pratique pour reprendre une fiche entre
+// deux journees. Tout est entoure de try/catch, la page fonctionne meme
+// si le navigateur refuse le stockage (mode prive, fichier local bride...).
+(function () {
+  var KEY = 'fiche::' + (document.title || 'sans-titre');
+  var champs = document.querySelectorAll('.fill, .ck input[type=checkbox]');
+
+  function charger() {
+    try {
+      var brut = localStorage.getItem(KEY);
+      if (!brut) return;
+      var data = JSON.parse(brut);
+      champs.forEach(function (el, i) {
+        if (data[i] === undefined) return;
+        if (el.type === 'checkbox') { el.checked = data[i]; } else { el.value = data[i]; }
+      });
+      majCompteur();
+    } catch (e) { /* stockage indisponible : on continue sans */ }
+  }
+
+  function sauver() {
+    try {
+      var data = [];
+      champs.forEach(function (el) { data.push(el.type === 'checkbox' ? el.checked : el.value); });
+      localStorage.setItem(KEY, JSON.stringify(data));
+    } catch (e) { /* idem */ }
+  }
+
+  function majCompteur() {
+    var cases = document.querySelectorAll('.ck input[type=checkbox]');
+    var faits = document.querySelectorAll('.ck input[type=checkbox]:checked');
+    var out = document.getElementById('compteur');
+    if (out && cases.length) { out.textContent = faits.length + ' / ' + cases.length + ' coche(s)'; }
+  }
+
+  champs.forEach(function (el) {
+    el.addEventListener('input', function () { sauver(); majCompteur(); });
+    el.addEventListener('change', function () { sauver(); majCompteur(); });
+  });
+
+  var bPdf = document.getElementById('btnPdf');
+  if (bPdf) bPdf.addEventListener('click', function () { window.print(); });
+
+  var bRaz = document.getElementById('btnRaz');
+  if (bRaz) bRaz.addEventListener('click', function () {
+    if (!confirm('Effacer toutes vos reponses de cette fiche ?')) return;
+    champs.forEach(function (el) { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    majCompteur();
+  });
+
+  charger();
+  majCompteur();
+})();
+
+</script>
+</body>
+</html>

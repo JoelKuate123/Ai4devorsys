@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playwright pour Débutants — Digital House Company</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FBFBF8;
+    --panel:#FFFFFF;
+    --accent:#1B3A5C;
+    --accent2:#2F6FA8;
+    --accent-soft:#E8EEF7;
+    --text:#16161B;
+    --text-dim:#4B5563;
+    --code-bg:#0d1321;
+    --code-text:#E4E4F0;
+    --ok:#1E8E5A;
+    --ok-soft:#E7F5EE;
+    --warn:#B7791F;
+    --warn-soft:#FFF7E6;
+    --danger:#C0392B;
+    --danger-soft:#FDECEA;
+    --border:#E3E7EE;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Poppins',sans-serif;
+    overflow:hidden;
+  }
+  .slide{
+    display:none;
+    width:100vw;
+    height:100vh;
+    padding:70px 100px;
+    flex-direction:column;
+    justify-content:center;
+    position:relative;
+    background:var(--bg);
+  }
+  .slide.active{display:flex;}
+  .slide.light-glow{
+    background:
+      radial-gradient(circle at 88% 10%, rgba(27,58,92,0.05), transparent 45%),
+      radial-gradient(circle at 8% 92%, rgba(47,111,168,0.05), transparent 40%),
+      var(--bg);
+  }
+
+  /* ---------- Barre de progression + compteur ---------- */
+  #progress-track{
+    position:fixed; top:0; left:0; width:100%; height:4px;
+    background:var(--border); z-index:100;
+  }
+  #progress{
+    height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--accent2));
+    transition:width .35s ease;
+  }
+  #counter{
+    position:fixed; bottom:22px; right:32px; font-size:13px; color:var(--text-dim);
+    font-family:'JetBrains Mono',monospace; z-index:100; letter-spacing:.5px;
+  }
+  .nav-btn{
+    position:fixed; top:50%; transform:translateY(-50%); z-index:100;
+    width:44px; height:44px; border-radius:50%; border:1px solid var(--border);
+    background:var(--panel); color:var(--accent); font-size:18px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition:.2s;
+    box-shadow:0 2px 10px rgba(0,0,0,0.06);
+  }
+  .nav-btn:hover{background:var(--accent); color:#fff; border-color:var(--accent);}
+  #prev-btn{left:24px;} #next-btn{right:24px;}
+  .logo-tag{
+    position:fixed; top:20px; left:32px; font-size:12px; color:var(--text-dim);
+    letter-spacing:2px; text-transform:uppercase; z-index:100; font-weight:600;
+  }
+  .logo-tag span{color:var(--accent2);}
+
+  /* ---------- Typo générique ---------- */
+  .slide-tag{
+    display:inline-block; font-size:13px; font-weight:600; letter-spacing:1.5px;
+    text-transform:uppercase; color:var(--accent2); margin-bottom:14px;
+  }
+  .slide-title{font-size:34px; font-weight:700; margin-bottom:16px; max-width:920px; line-height:1.25; color:var(--accent);}
+  .slide-intro{font-size:16.5px; color:var(--text-dim); max-width:880px; margin-bottom:18px; line-height:1.6;}
+  .points{list-style:none; max-width:880px;}
+  .points li{
+    position:relative; padding-left:28px; margin-bottom:12px; font-size:17px;
+    color:var(--text-dim); line-height:1.5;
+  }
+  .points li::before{
+    content:"▸"; position:absolute; left:0; color:var(--accent2); font-weight:700;
+  }
+  .points li strong{color:var(--text); font-weight:600;}
+  .note{
+    margin-top:16px; padding:14px 18px; max-width:860px; background:var(--accent-soft);
+    border-left:3px solid var(--accent); border-radius:6px; font-size:14.5px; color:var(--text-dim);
+  }
+  .note strong{color:var(--accent);}
+
+  /* ---------- Code ---------- */
+  pre.code-block{
+    background:var(--code-bg); border-radius:8px; padding:16px 20px; max-width:900px;
+    overflow-x:auto; font-family:'JetBrains Mono',monospace; font-size:13.5px; line-height:1.65;
+    margin-top:6px; box-shadow:0 4px 16px rgba(27,58,92,0.10);
+  }
+  pre.code-block code{color:var(--code-text);}
+  .cm{color:#8892A6;} .kw{color:#C792EA;} .st{color:#A5E844;} .fn{color:#82AAFF;} .pr{color:#FFCB6B;}
+
+  /* ---------- Décorticage syntaxique ---------- */
+  .breakdown{
+    margin-top:10px; max-width:900px; background:var(--panel); border:1px solid var(--border);
+    border-radius:8px; padding:12px 16px;
+  }
+  .breakdown .bd-title{font-size:11.5px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--accent2); margin-bottom:8px;}
+  .bd-row{display:flex; gap:14px; padding:4px 0; align-items:baseline; font-size:13.5px;}
+  .bd-row .bd-code{
+    font-family:'JetBrains Mono',monospace; color:var(--accent); background:var(--accent-soft);
+    padding:2px 8px; border-radius:4px; flex-shrink:0; min-width:150px; font-size:12.5px;
+  }
+  .bd-row .bd-desc{color:var(--text-dim); line-height:1.5;}
+
+  /* ---------- Mini-exemple ---------- */
+  .mini-example{
+    margin-top:10px; max-width:900px; background:#F4F8FC; border-left:3px solid var(--accent2);
+    border-radius:0 8px 8px 0; padding:12px 16px;
+  }
+  .mini-example .me-title{font-size:11.5px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; color:var(--accent2); margin-bottom:8px;}
+  .mini-example pre.code-block{margin-top:0; box-shadow:none;}
+  .mini-example .me-explain{margin-top:8px; font-size:13px; color:var(--text-dim);}
+
+  /* ---------- Cover ---------- */
+  .slide-cover{
+    align-items:flex-start; background:linear-gradient(135deg,#0d1a2e 0%, var(--accent) 60%, #123055 100%);
+    color:#fff;
+  }
+  .cover-eyebrow{font-size:14px; letter-spacing:3px; text-transform:uppercase; color:#8FC4FF; font-weight:600; margin-bottom:22px;}
+  .cover-title{font-size:60px; font-weight:800; line-height:1.1; max-width:900px; color:#fff;}
+  .cover-title .hl{color:#8FC4FF;}
+  .cover-sub{font-size:19px; color:#C9D6E8; margin-top:22px; max-width:680px; font-weight:300;}
+  .cover-meta{margin-top:46px; display:flex; gap:40px; flex-wrap:wrap;}
+  .cover-meta div{font-size:13px; color:#9FB3CC;}
+  .cover-meta div b{display:block; color:#fff; font-size:15px; font-weight:600; margin-bottom:2px;}
+  .cover-badge{position:absolute; bottom:60px; right:100px; text-align:right; font-size:13px; color:#9FB3CC;}
+  .cover-badge b{color:#8FC4FF; font-size:15px;}
+
+  /* ---------- Qui suis-je ---------- */
+  .bio-wrap{display:flex; gap:60px; align-items:center; max-width:1000px;}
+  .bio-avatar{
+    width:150px; height:150px; border-radius:24px; flex-shrink:0;
+    background:linear-gradient(135deg, var(--accent), #0d1a2e);
+    display:flex; align-items:center; justify-content:center; font-size:54px; font-weight:800; color:#fff;
+    box-shadow:0 20px 50px rgba(27,58,92,0.25);
+  }
+  .bio-name{font-size:30px; font-weight:700; color:var(--accent);}
+  .bio-role{font-size:15px; color:var(--accent2); margin-bottom:18px; font-weight:500;}
+  .bio-list{list-style:none; font-size:15px; color:var(--text-dim); line-height:1.85;}
+  .bio-list li::before{content:"— "; color:var(--accent2);}
+  .bio-contact{margin-top:16px; font-size:14px; color:var(--text);}
+
+  /* ---------- Agenda ---------- */
+  .agenda-list{max-width:820px; display:flex; flex-direction:column; gap:12px;}
+  .agenda-item{
+    display:flex; align-items:center; gap:20px; padding:13px 20px;
+    background:var(--panel); border:1px solid var(--border); border-radius:10px;
+  }
+  .agenda-num{font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--accent2); font-size:15px; width:34px; flex-shrink:0;}
+  .agenda-item div.label{font-size:16px; font-weight:500; color:var(--text);}
+  .agenda-item div.dur{margin-left:auto; font-size:12.5px; color:var(--text-dim); font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- Diviseur de module ---------- */
+  .slide-divider{align-items:center; text-align:center; background:linear-gradient(135deg,#0d1a2e 0%, var(--accent) 70%); color:#fff;}
+  .section-tag{font-size:14px; font-weight:600; letter-spacing:3px; text-transform:uppercase; color:#8FC4FF; margin-bottom:18px;}
+  .section-title{font-size:48px; font-weight:800; max-width:820px; color:#fff;}
+  .section-sub{font-size:16.5px; color:#C9D6E8; margin-top:16px;}
+
+  /* ---------- Exercice ---------- */
+  .slide-exercice{background:#F5FBF8; border-top:3px solid var(--ok);}
+  .exo-tag{font-size:13px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--ok); margin-bottom:12px;}
+  .exo-title{font-size:30px; font-weight:700; margin-bottom:8px; color:var(--accent);}
+  .exo-durée{font-size:13px; color:var(--text-dim); font-family:'JetBrains Mono',monospace; margin-bottom:18px;}
+  .exo-steps{max-width:850px; padding-left:22px; margin-bottom:14px;}
+  .exo-steps li{margin-bottom:8px; font-size:15.5px; color:var(--text-dim); line-height:1.5;}
+  .exo-steps li strong{color:var(--text);}
+  .exo-livrable{margin-top:6px; padding:12px 18px; max-width:820px; background:var(--ok-soft); border-left:3px solid var(--ok); border-radius:6px; font-size:14px; color:#155c3d;}
+  .exo-livrable strong{color:var(--ok);}
+
+  /* ---------- Récap ---------- */
+  .recap-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px 36px; max-width:940px;}
+  .recap-card{padding:16px 18px; background:var(--panel); border:1px solid var(--border); border-radius:10px; font-size:14.5px; color:var(--text-dim);}
+  .recap-card b{display:block; color:var(--accent); font-size:15px; margin-bottom:4px;}
+
+  /* ---------- CTA final ---------- */
+  .slide-cta{align-items:center; text-align:center; background:linear-gradient(135deg,#0d1a2e 0%, var(--accent) 70%); color:#fff;}
+  .slide-cta h2{font-size:52px; font-weight:800; color:#fff;}
+  .slide-cta p{font-size:17px; color:#C9D6E8; margin-top:12px;}
+  .cta-links{display:flex; gap:16px; margin-top:32px;}
+  .cta-links a{padding:13px 24px; border-radius:10px; background:#fff; color:var(--accent); text-decoration:none; font-weight:600; font-size:14.5px; transition:.2s;}
+  .cta-links a:hover{background:#8FC4FF; transform:translateY(-2px);}
+  .cta-socials{margin-top:26px; font-size:13px; color:#9FB3CC; letter-spacing:.5px;}
+
+  .two-col{display:flex; gap:44px; max-width:960px;}
+  .two-col > div{flex:1;}
+  .mini-label{font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px;}
+  .scroll-hint{font-size:11px; color:var(--text-dim); margin-top:6px; font-style:italic;}
+</style>
+</head>
+<body>
+
+<div id="progress-track"><div id="progress"></div></div>
+<div class="logo-tag">Digital House Company <span>· Playwright</span></div>
+<div id="counter">1 / 48</div>
+<div class="nav-btn" id="prev-btn">‹</div>
+<div class="nav-btn" id="next-btn">›</div>
+
+<!-- 1. COVER -->
+<section class="slide slide-cover active">
+  <div class="cover-eyebrow">Formation technique · Niveau débutant</div>
+  <h1 class="cover-title">Playwright <span class="hl">pas à pas</span><br>pour débutants</h1>
+  <p class="cover-sub">Toute la syntaxe, expliquée ligne par ligne, avec un mini-exemple à chaque notion — jusqu'à un test complet sur un site exemple.</p>
+  <div class="cover-meta">
+    <div><b>Public</b>Débutant en test automatisé</div>
+    <div><b>Format</b>Théorie détaillée + exercices guidés</div>
+    <div><b>Prérequis</b>Aucune expérience Playwright requise</div>
+  </div>
+  <div class="cover-badge">
+    <b>Digital House Company</b>
+    hello@dhcompany.pro
+  </div>
+</section>
+
+<!-- 2. QUI SUIS-JE -->
+<section class="slide light-glow">
+  <div class="slide-tag">Formateur</div>
+  <div class="bio-wrap">
+    <div class="bio-avatar">JK</div>
+    <div>
+      <div class="bio-name">Joël Parfait Kuate</div>
+      <div class="bio-role">Ingénieur IA · Consultant &amp; Formateur certifié</div>
+      <ul class="bio-list">
+        <li>Master en Architecture Logicielle &amp; Big Data</li>
+        <li>7+ ans de formation — 600+ organisations formées en Belgique</li>
+        <li>Fondateur : Digital House Company (Belgique), MS JOYCE SARL (Cameroun)</li>
+        <li>Auteur : « L'Afrique et l'Intelligence Artificielle » (2024)</li>
+        <li>Chargé de Mission — Ambassade de Côte d'Ivoire au Benelux</li>
+        <li>Projets : ia4africa.org · FormIA · SANDYKIT · Jurisis.be · Indibot.be</li>
+      </ul>
+      <div class="bio-contact">hello@dhcompany.pro · @DigitalMaker237</div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. AGENDA -->
+<section class="slide light-glow">
+  <div class="slide-tag">Programme de la session</div>
+  <h2 class="slide-title">Agenda</h2>
+  <div class="agenda-list">
+    <div class="agenda-item"><div class="agenda-num">01</div><div class="label">Découvrir Playwright</div><div class="dur">20 min</div></div>
+    <div class="agenda-item"><div class="agenda-num">02</div><div class="label">Anatomie d'un test &amp; bases de syntaxe</div><div class="dur">30 min</div></div>
+    <div class="agenda-item"><div class="agenda-num">03</div><div class="label">Les sélecteurs (locators)</div><div class="dur">40 min</div></div>
+    <div class="agenda-item"><div class="agenda-num">04</div><div class="label">Les actions utilisateur</div><div class="dur">30 min</div></div>
+    <div class="agenda-item"><div class="agenda-num">05</div><div class="label">Les assertions</div><div class="dur">30 min</div></div>
+    <div class="agenda-item"><div class="agenda-num">06</div><div class="label">Attente &amp; stabilité</div><div class="dur">20 min</div></div>
+    <div class="agenda-item"><div class="agenda-num">07</div><div class="label">Lancer &amp; déboguer ses tests</div><div class="dur">25 min</div></div>
+    <div class="agenda-item"><div class="agenda-num">08</div><div class="label">Exercices pratiques sur un site exemple</div><div class="dur">45 min</div></div>
+    <div class="agenda-item"><div class="agenda-num">09</div><div class="label">Bonnes pratiques &amp; récap</div><div class="dur">15 min</div></div>
+  </div>
+</section>
+
+<!-- 4. DIVIDER MODULE 1 -->
+<section class="slide slide-divider">
+  <div class="section-tag">Module 01</div>
+  <h1 class="section-title">Découvrir Playwright</h1>
+  <p class="section-sub">Ce que c'est, pourquoi l'utiliser, comment l'installer</p>
+</section>
+
+<!-- 5. Qu'est-ce que Playwright -->
+<section class="slide light-glow">
+  <div class="slide-tag">01.1 — Définition</div>
+  <h2 class="slide-title">Qu'est-ce que Playwright ?</h2>
+  <p class="slide-intro">Playwright est un outil qui permet d'écrire du <strong>code</strong> capable de piloter un vrai navigateur web à votre place : il ouvre une page, clique sur des boutons, remplit des formulaires, et vérifie ce qui s'affiche — exactement comme le ferait une personne devant son écran, mais de façon automatisée et répétable.</p>
+  <ul class="points">
+    <li><strong>Un framework de test end-to-end</strong> créé par Microsoft, open source et gratuit</li>
+    <li>Il pilote un <strong>vrai navigateur</strong> (Chromium, Firefox, WebKit) — pas une simulation</li>
+    <li>On écrit les tests en <strong>TypeScript, JavaScript, Python, Java ou C#</strong> ; ce cours utilise TypeScript</li>
+    <li>Chaque test est un petit programme qui <strong>reproduit un parcours utilisateur</strong> et vérifie son résultat</li>
+  </ul>
+  <div class="note"><strong>Analogie simple :</strong> écrire un test Playwright, c'est un peu comme écrire une recette de cuisine très précise que quelqu'un d'autre (l'ordinateur) va suivre à la lettre, à chaque fois, sans jamais se tromper d'étape.</div>
+</section>
+
+<!-- 6. Pourquoi Playwright -->
+<section class="slide light-glow">
+  <div class="slide-tag">01.2 — Pourquoi ce choix</div>
+  <h2 class="slide-title">Pourquoi Playwright plutôt qu'un autre outil ?</h2>
+  <p class="slide-intro">Il existe plusieurs outils pour automatiser des tests de sites web (Selenium, Cypress...). Playwright a été choisi pour cette formation pour des raisons concrètes, pas juste par tendance :</p>
+  <ul class="points">
+    <li><strong>Auto-waiting intégré</strong> : le mot "auto-waiting" signifie que Playwright attend tout seul qu'un bouton soit prêt avant de cliquer dessus — plus besoin d'écrire une pause manuelle</li>
+    <li><strong>Multi-navigateurs</strong> : le même code fonctionne sur Chromium, Firefox et WebKit (le moteur de Safari)</li>
+    <li><strong>Mode UI &amp; Trace Viewer</strong> : deux outils visuels (détaillés au Module 07) qui montrent le test se dérouler et permettent de rejouer chaque étape après coup</li>
+    <li><strong>Isolation des tests</strong> : chaque test démarre avec un navigateur "propre", sans données laissées par le test précédent</li>
+  </ul>
+</section>
+
+<!-- 7. Prérequis -->
+<section class="slide light-glow">
+  <div class="slide-tag">01.3 — Avant de commencer</div>
+  <h2 class="slide-title">Ce dont on a besoin</h2>
+  <p class="slide-intro">Playwright est un paquet qui s'installe via <strong>npm</strong>, le gestionnaire de paquets de Node.js. Avant de l'installer, il faut donc s'assurer que ces deux outils sont déjà présents sur la machine.</p>
+  <ul class="points">
+    <li><strong>Node.js</strong> (version 18 ou plus récente) : le programme qui permet d'exécuter du JavaScript/TypeScript en dehors d'un navigateur</li>
+    <li><strong>npm</strong> : installé automatiquement avec Node.js, il sert à télécharger et gérer les paquets (dont Playwright)</li>
+    <li>Un éditeur de code (VS Code recommandé, avec l'extension officielle Playwright)</li>
+    <li>Des bases en JavaScript ou TypeScript — revues en détail au Module 02</li>
+  </ul>
+  <pre class="code-block"><code><span class="cm"># Vérifier que tout est prêt (à taper dans un terminal)</span>
+node -v   <span class="cm">// doit afficher une version, ex: v20.11.0</span>
+npm -v    <span class="cm">// doit afficher une version, ex: 10.2.4</span></code></pre>
+</section>
+
+<!-- 8. Installation -->
+<section class="slide light-glow">
+  <div class="slide-tag">01.4 — Installation</div>
+  <h2 class="slide-title">Créer un projet Playwright</h2>
+  <p class="slide-intro">La commande ci-dessous fait tout le travail en une seule fois : elle crée les fichiers de configuration, installe le paquet Playwright, et télécharge les navigateurs nécessaires.</p>
+  <pre class="code-block"><code><span class="cm">// Dans le dossier de votre projet</span>
+npm init playwright@latest</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Comment lire cette commande</div>
+    <div class="bd-row"><span class="bd-code">npm init</span><span class="bd-desc">démarre un assistant d'installation interactif (pose des questions)</span></div>
+    <div class="bd-row"><span class="bd-code">playwright@latest</span><span class="bd-desc">nom du paquet à installer, "@latest" = toujours la dernière version</span></div>
+  </div>
+  <div class="note">L'assistant pose 3 questions : TypeScript ou JavaScript ? Nom du dossier de tests ? Ajouter un workflow GitHub Actions ? Répondez "Yes"/valeur par défaut si vous débutez — tout reste modifiable plus tard.</div>
+</section>
+
+<!-- 9. Structure du projet -->
+<section class="slide light-glow">
+  <div class="slide-tag">01.5 — Structure générée</div>
+  <h2 class="slide-title">Ce que l'installateur a créé</h2>
+  <p class="slide-intro">Après l'installation, quatre éléments apparaissent dans votre dossier. Voici à quoi sert chacun d'eux — vous n'aurez besoin de modifier régulièrement que le dossier <code>tests/</code>.</p>
+  <pre class="code-block"><code>mon-projet/
+├── <span class="fn">package.json</span>          <span class="cm">// liste des dépendances du projet</span>
+├── <span class="fn">playwright.config.ts</span>  <span class="cm">// réglages (navigateurs, dossier de tests...)</span>
+├── <span class="fn">tests/</span>
+│   └── <span class="fn">example.spec.ts</span>   <span class="cm">// un test d'exemple, prêt à lancer</span>
+└── <span class="fn">tests-examples/</span>       <span class="cm">// exemples fournis par Playwright</span></code></pre>
+  <div class="note"><strong>Bon réflexe débutant :</strong> lancez tout de suite <code>npx playwright test</code> pour vérifier que l'exemple fourni passe au vert, avant d'écrire votre propre code. Cela confirme que l'installation a fonctionné.</div>
+</section>
+
+<!-- 10. DIVIDER MODULE 2 -->
+<section class="slide slide-divider">
+  <div class="section-tag">Module 02</div>
+  <h1 class="section-title">Anatomie d'un test</h1>
+  <p class="section-sub">La syntaxe de base, expliquée pièce par pièce</p>
+</section>
+
+<!-- 11. Comprendre la syntaxe de base -->
+<section class="slide light-glow">
+  <div class="slide-tag">02.1 — Avant le code Playwright lui-même</div>
+  <h2 class="slide-title">Trois mots-clés à comprendre d'abord</h2>
+  <p class="slide-intro">Le code Playwright utilise en permanence trois notions de JavaScript/TypeScript. Les comprendre une fois pour toutes évite de se sentir perdu sur chaque nouvelle ligne de code du reste du cours.</p>
+  <div class="breakdown" style="max-width:900px;">
+    <div class="bd-title">Le vocabulaire qui revient partout</div>
+    <div class="bd-row"><span class="bd-code">async</span><span class="bd-desc">indique qu'une fonction contient des actions qui prennent du temps (charger une page, cliquer...). Toute fonction de test Playwright est <code>async</code>.</span></div>
+    <div class="bd-row"><span class="bd-code">await</span><span class="bd-desc">"attends que ceci se termine avant de continuer". Sans <code>await</code>, le code passerait à la ligne suivante avant que le clic ou le chargement soit fini.</span></div>
+    <div class="bd-row"><span class="bd-code">() =&gt; {}</span><span class="bd-desc">une "fonction fléchée" : un bloc de code qu'on peut passer en paramètre, exécuté plus tard par Playwright.</span></div>
+  </div>
+  <div class="mini-example">
+    <div class="me-title">🧪 Mini-exemple — l'effet du mot await</div>
+    <pre class="code-block"><code><span class="cm">// SANS await : le test essaie de vérifier le titre AVANT que la page soit chargée → échoue souvent</span>
+page.goto(<span class="st">'https://playwright.dev'</span>);
+expect(page).toHaveTitle(<span class="pr">/Playwright/</span>);
+
+<span class="cm">// AVEC await : le test attend la fin du chargement avant de continuer → fiable</span>
+<span class="kw">await</span> page.goto(<span class="st">'https://playwright.dev'</span>);
+<span class="kw">await</span> expect(page).toHaveTitle(<span class="pr">/Playwright/</span>);</code></pre>
+    <div class="me-explain">C'est l'erreur la plus fréquente chez les débutants : oublier <code>await</code> rend un test instable de façon imprévisible.</div>
+  </div>
+</section>
+
+<!-- 12. test() et expect() -->
+<section class="slide light-glow">
+  <div class="slide-tag">02.2 — Les deux briques de base</div>
+  <h2 class="slide-title"><code>test()</code> et <code>expect()</code></h2>
+  <p class="slide-intro">Chaque fichier de test importe deux fonctions fournies par Playwright : <code>test</code> pour déclarer un cas de test, et <code>expect</code> pour vérifier un résultat. C'est le squelette que l'on retrouve dans 100% des fichiers de test.</p>
+  <pre class="code-block"><code><span class="kw">import</span> { test, expect } <span class="kw">from</span> <span class="st">'@playwright/test'</span>;
+
+test(<span class="st">'mon premier test'</span>, <span class="kw">async</span> ({ page }) => {
+  <span class="cm">// "page" représente l'onglet du navigateur piloté par le test</span>
+});</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage de la ligne <code>test(...)</code></div>
+    <div class="bd-row"><span class="bd-code">'mon premier test'</span><span class="bd-desc">le nom du test, affiché dans les résultats — choisissez un nom qui décrit CE QUI est vérifié</span></div>
+    <div class="bd-row"><span class="bd-code">async ({ page })</span><span class="bd-desc">la fonction à exécuter ; Playwright lui fournit automatiquement l'objet <code>page</code> (une "fixture")</span></div>
+    <div class="bd-row"><span class="bd-code">{ page }</span><span class="bd-desc">syntaxe de "déstructuration" : on récupère uniquement la propriété <code>page</code> de l'objet fourni par Playwright</span></div>
+  </div>
+  <div class="mini-example">
+    <div class="me-title">🧪 Mini-exemple — deux tests dans un même fichier</div>
+    <pre class="code-block"><code>test(<span class="st">'le titre est correct'</span>, <span class="kw">async</span> ({ page }) => { <span class="cm">/* ... */</span> });
+test(<span class="st">'le bouton est visible'</span>, <span class="kw">async</span> ({ page }) => { <span class="cm">/* ... */</span> });</code></pre>
+    <div class="me-explain">Un fichier peut contenir plusieurs <code>test()</code> : chacun reçoit sa PROPRE page, totalement indépendante des autres.</div>
+  </div>
+</section>
+
+<!-- 13. page.goto() -->
+<section class="slide light-glow">
+  <div class="slide-tag">02.3 — Naviguer</div>
+  <h2 class="slide-title"><code>page.goto()</code></h2>
+  <p class="slide-intro">C'est presque toujours la première ligne d'un test : on demande au navigateur d'ouvrir une adresse web, comme si on la tapait dans la barre d'adresse.</p>
+  <pre class="code-block"><code>test(<span class="st">'ouvrir la page d\'accueil'</span>, <span class="kw">async</span> ({ page }) => {
+  <span class="kw">await</span> page.goto(<span class="st">'https://www.saucedemo.com'</span>);
+});</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage</div>
+    <div class="bd-row"><span class="bd-code">page</span><span class="bd-desc">l'objet qui représente l'onglet du navigateur (fourni automatiquement, voir slide précédente)</span></div>
+    <div class="bd-row"><span class="bd-code">.goto('url')</span><span class="bd-desc">une "méthode" du navigateur : elle demande le chargement d'une adresse</span></div>
+    <div class="bd-row"><span class="bd-code">await</span><span class="bd-desc">obligatoire ici : le chargement d'une page prend du temps, on attend qu'il se termine</span></div>
+  </div>
+  <div class="mini-example">
+    <div class="me-title">🧪 Mini-exemple — avec une baseURL configurée</div>
+    <pre class="code-block"><code><span class="cm">// Si playwright.config.ts définit baseURL: 'https://www.saucedemo.com'</span>
+<span class="kw">await</span> page.goto(<span class="st">'/'</span>);              <span class="cm">// équivaut à https://www.saucedemo.com/</span>
+<span class="kw">await</span> page.goto(<span class="st">'/checkout.html'</span>);  <span class="cm">// équivaut à https://www.saucedemo.com/checkout.html</span></code></pre>
+    <div class="me-explain">Utile pour ne pas répéter l'adresse complète du site dans chaque test (voir Module 07 pour la configuration).</div>
+  </div>
+</section>
+
+<!-- 14. Exemple complet -->
+<section class="slide light-glow">
+  <div class="slide-tag">02.4 — Premier test complet</div>
+  <h2 class="slide-title">Assembler les pièces : un test complet</h2>
+  <p class="slide-intro">Voici les trois notions vues jusqu'ici (import, <code>test()</code>, <code>page.goto()</code>) combinées avec une première vérification via <code>expect()</code>. C'est le plus petit test "utile" qu'on puisse écrire.</p>
+  <pre class="code-block"><code><span class="kw">import</span> { test, expect } <span class="kw">from</span> <span class="st">'@playwright/test'</span>;
+
+test(<span class="st">'la page a le bon titre'</span>, <span class="kw">async</span> ({ page }) => {
+  <span class="kw">await</span> page.goto(<span class="st">'https://playwright.dev/'</span>);          <span class="cm">// 1. on navigue</span>
+
+  <span class="kw">await</span> expect(page).toHaveTitle(<span class="pr">/Playwright/</span>);       <span class="cm">// 2. on vérifie</span>
+});</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage de la ligne 2</div>
+    <div class="bd-row"><span class="bd-code">expect(page)</span><span class="bd-desc">on déclare qu'on va vérifier quelque chose à propos de l'objet <code>page</code></span></div>
+    <div class="bd-row"><span class="bd-code">.toHaveTitle(...)</span><span class="bd-desc">l'assertion précise : "le titre de l'onglet doit correspondre à..."</span></div>
+    <div class="bd-row"><span class="bd-code">/Playwright/</span><span class="bd-desc">une expression régulière : elle matche tout titre CONTENANT le mot "Playwright" (plus souple qu'un texte exact)</span></div>
+  </div>
+  <div class="note"><strong>Le schéma à retenir :</strong> naviguer → interagir → vérifier. Presque tous les tests Playwright suivent ces trois étapes, dans cet ordre. Les Modules 03 à 05 détaillent chacune de ces trois étapes.</div>
+</section>
+
+<!-- 15. DIVIDER MODULE 3 -->
+<section class="slide slide-divider">
+  <div class="section-tag">Module 03</div>
+  <h1 class="section-title">Les sélecteurs (locators)</h1>
+  <p class="section-sub">Comment désigner un élément précis sur la page</p>
+</section>
+
+<!-- 16. Pourquoi les sélecteurs comptent -->
+<section class="slide light-glow">
+  <div class="slide-tag">03.1 — Le sujet le plus important du cours</div>
+  <h2 class="slide-title">Pourquoi bien choisir son sélecteur ?</h2>
+  <p class="slide-intro">Avant de cliquer sur un bouton ou de vérifier un texte, il faut d'abord dire à Playwright QUEL élément de la page on désigne. C'est le rôle d'un <strong>locator</strong> — littéralement, un objet qui "localise" un ou plusieurs éléments.</p>
+  <ul class="points">
+    <li>Un <strong>locator</strong> ne "cherche" pas immédiatement l'élément : il garde juste la façon de le retrouver, à chaque action</li>
+    <li>Un mauvais sélecteur rend le test <strong>fragile</strong> : il casse au moindre changement visuel du site</li>
+    <li>Playwright recommande un ordre de préférence, du plus robuste au plus fragile :</li>
+  </ul>
+  <div class="two-col" style="margin-top:10px;">
+    <div>
+      <div class="mini-label" style="color:var(--ok);">✓ À privilégier</div>
+      <ul class="points"><li>getByRole()</li><li>getByLabel()</li><li>getByTestId()</li></ul>
+    </div>
+    <div>
+      <div class="mini-label" style="color:var(--danger);">✗ À éviter</div>
+      <ul class="points"><li>Sélecteurs CSS trop précis (classes générées automatiquement)</li><li>XPath complexe</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- 17. getByRole -->
+<section class="slide light-glow">
+  <div class="slide-tag">03.2 — Le sélecteur recommandé n°1</div>
+  <h2 class="slide-title"><code>getByRole()</code></h2>
+  <p class="slide-intro">Chaque élément d'une page a un "rôle" d'accessibilité (bouton, lien, titre, case à cocher...), utilisé notamment par les lecteurs d'écran pour les personnes malvoyantes. <code>getByRole()</code> cible un élément par ce rôle, combiné à son texte visible.</p>
+  <pre class="code-block"><code>page.getByRole(<span class="st">'button'</span>, { name: <span class="st">'Se connecter'</span> });
+page.getByRole(<span class="st">'link'</span>,   { name: <span class="st">'Contact'</span>, exact: <span class="kw">true</span> });
+page.getByRole(<span class="st">'heading'</span>,{ name: <span class="st">'Bienvenue'</span>, level: <span class="pr">1</span> });</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage</div>
+    <div class="bd-row"><span class="bd-code">'button'</span><span class="bd-desc">le rôle recherché (aussi : 'link', 'checkbox', 'heading', 'textbox'...)</span></div>
+    <div class="bd-row"><span class="bd-code">{ name: '...' }</span><span class="bd-desc">le texte visible associé à cet élément — sans lui, TOUS les boutons de la page seraient ciblés</span></div>
+    <div class="bd-row"><span class="bd-code">exact: true</span><span class="bd-desc">option pour exiger une correspondance exacte plutôt qu'une simple sous-chaîne</span></div>
+  </div>
+  <div class="mini-example">
+    <div class="me-title">🧪 Mini-exemple — cibler une case à cocher</div>
+    <pre class="code-block"><code>page.getByRole(<span class="st">'checkbox'</span>, { name: <span class="st">'Se souvenir de moi'</span> });</code></pre>
+    <div class="me-explain">Même logique, quel que soit le type d'élément : rôle + nom visible.</div>
+  </div>
+  <div class="note"><strong>Pourquoi c'est le meilleur choix :</strong> c'est ce qu'un lecteur d'écran verrait aussi — donc proche de ce qu'un vrai utilisateur perçoit, et peu sensible aux changements de design (classes CSS, structure HTML).</div>
+</section>
+
+<!-- 18. getByText / getByLabel / getByPlaceholder -->
+<section class="slide light-glow">
+  <div class="slide-tag">03.3 — Cibler par contenu visible</div>
+  <h2 class="slide-title"><code>getByText</code>, <code>getByLabel</code>, <code>getByPlaceholder</code></h2>
+  <p class="slide-intro">Trois variantes plus spécialisées, utiles quand le rôle d'accessibilité n'est pas assez précis ou pas disponible.</p>
+  <pre class="code-block"><code>page.getByText(<span class="st">'Bienvenue'</span>);                    <span class="cm">// cible un texte affiché n'importe où</span>
+page.getByLabel(<span class="st">'Adresse e-mail'</span>);              <span class="cm">// cible le CHAMP associé à ce label</span>
+page.getByPlaceholder(<span class="st">'Rechercher...'</span>);         <span class="cm">// cible via le texte indicatif d'un input</span></code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Trois usages différents à ne pas confondre</div>
+    <div class="bd-row"><span class="bd-code">getByText</span><span class="bd-desc">renvoie l'élément qui AFFICHE ce texte (un titre, un paragraphe, un lien...)</span></div>
+    <div class="bd-row"><span class="bd-code">getByLabel</span><span class="bd-desc">renvoie le CHAMP DE SAISIE lié à ce label — pas le texte du label lui-même</span></div>
+    <div class="bd-row"><span class="bd-code">getByPlaceholder</span><span class="bd-desc">utile quand un champ n'a pas de label visible, seulement un texte grisé à l'intérieur</span></div>
+  </div>
+  <div class="mini-example">
+    <div class="me-title">🧪 Mini-exemple — remplir un champ trouvé par son label</div>
+    <pre class="code-block"><code><span class="kw">await</span> page.getByLabel(<span class="st">'Adresse e-mail'</span>).fill(<span class="st">'test@exemple.be'</span>);</code></pre>
+    <div class="me-explain">getByLabel() est idéal pour les formulaires : il fonctionne même si le champ n'a pas d'id ni de data-testid.</div>
+  </div>
+  <div class="note">Par défaut, la recherche est <strong>insensible à la casse</strong> et par sous-chaîne. Ajoutez <code>{ exact: true }</code> pour exiger une correspondance exacte.</div>
+</section>
+
+<!-- 19. getByTestId -->
+<section class="slide light-glow">
+  <div class="slide-tag">03.4 — Le sélecteur le plus stable</div>
+  <h2 class="slide-title"><code>getByTestId()</code></h2>
+  <p class="slide-intro">Certains sites ajoutent volontairement un attribut dédié aux tests dans leur HTML (invisible pour l'utilisateur, mais lisible par Playwright). C'est le sélecteur le plus fiable, car il ne dépend ni du texte affiché, ni du design.</p>
+  <pre class="code-block"><code><span class="cm">// Dans le HTML : &lt;button data-testid="login-button"&gt;Login&lt;/button&gt;</span>
+page.getByTestId(<span class="st">'login-button'</span>);</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage</div>
+    <div class="bd-row"><span class="bd-code">data-testid</span><span class="bd-desc">l'attribut HTML standard que Playwright recherche par défaut</span></div>
+    <div class="bd-row"><span class="bd-code">'login-button'</span><span class="bd-desc">la valeur exacte de cet attribut sur l'élément recherché</span></div>
+  </div>
+  <div class="mini-example">
+    <div class="me-title">🧪 Mini-exemple — adapter à un attribut différent</div>
+    <pre class="code-block"><code><span class="cm">// playwright.config.ts — certains sites (ex: saucedemo.com) utilisent "data-test" au lieu de "data-testid"</span>
+use: {
+  testIdAttribute: <span class="st">'data-test'</span>,
+}
+<span class="cm">// Le code de test ne change pas : page.getByTestId('login-button') fonctionne toujours</span></code></pre>
+    <div class="me-explain">Un seul réglage dans la configuration suffit à adapter getByTestId() à n'importe quel attribut personnalisé.</div>
+  </div>
+</section>
+
+<!-- 20. locator CSS -->
+<section class="slide light-glow">
+  <div class="slide-tag">03.5 — Le sélecteur généraliste</div>
+  <h2 class="slide-title"><code>locator()</code> — sélecteurs CSS</h2>
+  <p class="slide-intro">Quand rien d'autre n'est disponible, <code>locator()</code> accepte n'importe quel sélecteur CSS classique — la même syntaxe qu'en feuille de style. C'est le sélecteur le plus puissant, mais aussi le plus fragile.</p>
+  <pre class="code-block"><code>page.locator(<span class="st">'.product-card'</span>);          <span class="cm">// par classe CSS (le point .)</span>
+page.locator(<span class="st">'#login-form'</span>);            <span class="cm">// par id (le dièse #)</span>
+page.locator(<span class="st">'button[type="submit"]'</span>);  <span class="cm">// par attribut, entre crochets</span>
+page.locator(<span class="st">'ul.products li.product'</span>); <span class="cm">// combiné : élément DANS un autre élément</span></code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Rappel de syntaxe CSS</div>
+    <div class="bd-row"><span class="bd-code">.classe</span><span class="bd-desc">cible tous les éléments qui ont cette classe CSS</span></div>
+    <div class="bd-row"><span class="bd-code">#identifiant</span><span class="bd-desc">cible l'UNIQUE élément qui a cet id (un id doit être unique sur une page)</span></div>
+    <div class="bd-row"><span class="bd-code">a b</span><span class="bd-desc">(espace entre deux sélecteurs) cible "b" à l'intérieur de "a", même profondément imbriqué</span></div>
+  </div>
+  <div class="note">Utile quand la page n'a ni rôle exploitable ni <code>data-testid</code> — c'est l'échappatoire, pas le premier réflexe (voir slide 03.1).</div>
+</section>
+
+<!-- 21. Combiner et filtrer -->
+<section class="slide light-glow">
+  <div class="slide-tag">03.6 — Affiner sa sélection</div>
+  <h2 class="slide-title">Combiner et filtrer un locator</h2>
+  <p class="slide-intro">Il arrive qu'un sélecteur trouve PLUSIEURS éléments (ex : tous les produits d'une liste). Playwright fournit des outils pour choisir précisément lequel utiliser.</p>
+  <pre class="code-block"><code>page.locator(<span class="st">'li.product'</span>).first();             <span class="cm">// le premier élément trouvé</span>
+page.locator(<span class="st">'li.product'</span>).nth(<span class="pr">2</span>);               <span class="cm">// le 3e élément (index 0)</span>
+page.locator(<span class="st">'li.product'</span>).filter({ hasText: <span class="st">'Sac à dos'</span> });
+page.locator(<span class="st">'.card'</span>).locator(<span class="st">'button'</span>);          <span class="cm">// locator imbriqué dans un autre</span></code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage</div>
+    <div class="bd-row"><span class="bd-code">.first() / .last()</span><span class="bd-desc">choisit le premier ou le dernier élément d'une liste de résultats</span></div>
+    <div class="bd-row"><span class="bd-code">.nth(2)</span><span class="bd-desc">choisit l'élément à la position 2 — attention, le comptage commence à 0 !</span></div>
+    <div class="bd-row"><span class="bd-code">.filter({hasText})</span><span class="bd-desc">garde uniquement les éléments qui contiennent ce texte quelque part à l'intérieur</span></div>
+  </div>
+  <div class="note"><strong>Piège fréquent :</strong> un locator qui matche plusieurs éléments fait échouer une action avec une "erreur de mode strict" (strict mode violation). C'est volontaire : Playwright refuse de deviner lequel vous vouliez. Utilisez <code>.first()</code>, <code>.nth()</code> ou un filtre pour lever l'ambiguïté.</div>
+</section>
+
+<!-- 22. DIVIDER MODULE 4 -->
+<section class="slide slide-divider">
+  <div class="section-tag">Module 04</div>
+  <h1 class="section-title">Les actions utilisateur</h1>
+  <p class="section-sub">Cliquer, saisir, cocher — simuler un vrai utilisateur</p>
+</section>
+
+<!-- 23. click / dblclick / hover -->
+<section class="slide light-glow">
+  <div class="slide-tag">04.1 — Interactions à la souris</div>
+  <h2 class="slide-title"><code>click()</code>, <code>dblclick()</code>, <code>hover()</code></h2>
+  <p class="slide-intro">Une fois un élément localisé (Module 03), on peut agir dessus. Ces trois méthodes reproduisent les gestes de souris les plus courants.</p>
+  <pre class="code-block"><code><span class="kw">await</span> page.getByRole(<span class="st">'button'</span>, { name: <span class="st">'Ajouter au panier'</span> }).click();
+<span class="kw">await</span> page.locator(<span class="st">'.item'</span>).dblclick();
+<span class="kw">await</span> page.getByRole(<span class="st">'link'</span>, { name: <span class="st">'Shop'</span> }).hover();</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage</div>
+    <div class="bd-row"><span class="bd-code">.click()</span><span class="bd-desc">simule un clic gauche, à l'endroit exact où l'utilisateur cliquerait</span></div>
+    <div class="bd-row"><span class="bd-code">.dblclick()</span><span class="bd-desc">deux clics rapprochés (rare, utile pour certains widgets)</span></div>
+    <div class="bd-row"><span class="bd-code">.hover()</span><span class="bd-desc">place le curseur SANS cliquer — utile pour révéler un menu déroulant</span></div>
+  </div>
+  <div class="note">Avant de cliquer, Playwright <strong>attend automatiquement</strong> que l'élément soit visible, stable et non recouvert par un autre élément (auto-waiting — détaillé au Module 06).</div>
+</section>
+
+<!-- 24. fill / press -->
+<section class="slide light-glow">
+  <div class="slide-tag">04.2 — Saisie de texte</div>
+  <h2 class="slide-title"><code>fill()</code> et <code>press()</code></h2>
+  <p class="slide-intro">Pour remplir un champ de formulaire, deux méthodes complémentaires : l'une écrit le texte d'un coup, l'autre simule l'appui d'une touche précise du clavier.</p>
+  <pre class="code-block"><code><span class="kw">await</span> page.getByLabel(<span class="st">'Identifiant'</span>).fill(<span class="st">'standard_user'</span>);
+<span class="kw">await</span> page.getByLabel(<span class="st">'Mot de passe'</span>).fill(<span class="st">'secret_sauce'</span>);
+<span class="kw">await</span> page.getByLabel(<span class="st">'Mot de passe'</span>).press(<span class="st">'Enter'</span>);</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage</div>
+    <div class="bd-row"><span class="bd-code">.fill('texte')</span><span class="bd-desc">efface le contenu actuel du champ et le remplace entièrement par "texte", en une seule opération rapide</span></div>
+    <div class="bd-row"><span class="bd-code">.press('Enter')</span><span class="bd-desc">simule l'appui d'UNE touche précise (aussi : 'Tab', 'Escape', 'ArrowDown'...)</span></div>
+  </div>
+  <div class="mini-example">
+    <div class="me-title">🧪 Mini-exemple — pourquoi éviter type()</div>
+    <pre class="code-block"><code><span class="cm">// type() existe mais est déconseillé : frappe touche par touche, donc plus lent</span>
+<span class="kw">await</span> page.getByLabel(<span class="st">'Recherche'</span>).type(<span class="st">'chaussures'</span>); <span class="cm">// ⚠️ lent</span>
+<span class="kw">await</span> page.getByLabel(<span class="st">'Recherche'</span>).fill(<span class="st">'chaussures'</span>);  <span class="cm">// ✓ rapide et fiable</span></code></pre>
+    <div class="me-explain">fill() est quasiment toujours le bon choix, sauf si vous testez spécifiquement un comportement JavaScript qui réagit à chaque touche tapée.</div>
+  </div>
+</section>
+
+<!-- 25. check / selectOption -->
+<section class="slide light-glow">
+  <div class="slide-tag">04.3 — Cases à cocher et listes</div>
+  <h2 class="slide-title"><code>check()</code>, <code>uncheck()</code>, <code>selectOption()</code></h2>
+  <p class="slide-intro">Trois méthodes dédiées aux éléments de formulaire à choix : cases à cocher et menus déroulants.</p>
+  <pre class="code-block"><code><span class="kw">await</span> page.getByLabel(<span class="st">'Se souvenir de moi'</span>).check();
+<span class="kw">await</span> page.getByLabel(<span class="st">'Newsletter'</span>).uncheck();
+<span class="kw">await</span> page.getByLabel(<span class="st">'Trier par'</span>).selectOption(<span class="st">'Prix croissant'</span>);
+<span class="kw">await</span> page.getByLabel(<span class="st">'Pays'</span>).selectOption({ value: <span class="st">'BE'</span> });</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage</div>
+    <div class="bd-row"><span class="bd-code">.check()</span><span class="bd-desc">coche la case si elle ne l'est pas déjà (ne fait rien si déjà cochée)</span></div>
+    <div class="bd-row"><span class="bd-code">.uncheck()</span><span class="bd-desc">décoche la case si elle est cochée</span></div>
+    <div class="bd-row"><span class="bd-code">.selectOption(...)</span><span class="bd-desc">choisit une option dans un menu déroulant — par son texte visible OU par sa valeur technique <code>value</code></span></div>
+  </div>
+  <div class="note">Utilisez <code>.check()</code> plutôt que <code>.click()</code> sur une case à cocher : l'intention est plus claire dans le code, et Playwright vérifie lui-même que la case est bien cochable.</div>
+</section>
+
+<!-- 26. autres actions -->
+<section class="slide light-glow">
+  <div class="slide-tag">04.4 — Actions complémentaires</div>
+  <h2 class="slide-title">Upload, glisser-déposer, défilement</h2>
+  <p class="slide-intro">Ces actions sont moins fréquentes que click/fill mais reviennent régulièrement dès qu'on teste des formulaires avancés ou des interfaces interactives.</p>
+  <pre class="code-block"><code><span class="kw">await</span> page.getByLabel(<span class="st">'Fichier'</span>).setInputFiles(<span class="st">'photo.jpg'</span>);
+<span class="kw">await</span> page.locator(<span class="st">'.carte'</span>).dragTo(page.locator(<span class="st">'.corbeille'</span>));
+<span class="kw">await</span> page.locator(<span class="st">'footer'</span>).scrollIntoViewIfNeeded();</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage</div>
+    <div class="bd-row"><span class="bd-code">.setInputFiles(...)</span><span class="bd-desc">sélectionne un fichier local pour un champ de type "upload", sans ouvrir de fenêtre système</span></div>
+    <div class="bd-row"><span class="bd-code">.dragTo(cible)</span><span class="bd-desc">glisse le premier élément jusqu'à la position du second (glisser-déposer)</span></div>
+    <div class="bd-row"><span class="bd-code">.scrollIntoViewIfNeeded()</span><span class="bd-desc">fait défiler la page pour amener l'élément dans la zone visible, seulement si nécessaire</span></div>
+  </div>
+</section>
+
+<!-- 27. DIVIDER MODULE 5 -->
+<section class="slide slide-divider">
+  <div class="section-tag">Module 05</div>
+  <h1 class="section-title">Les assertions</h1>
+  <p class="section-sub"><code>expect()</code> — vérifier que ce qui s'affiche est bien ce qu'on attend</p>
+</section>
+
+<!-- 28. toBeVisible etc -->
+<section class="slide light-glow">
+  <div class="slide-tag">05.1 — Assertions de visibilité et d'état</div>
+  <h2 class="slide-title"><code>toBeVisible()</code>, <code>toBeEnabled()</code>...</h2>
+  <p class="slide-intro">Une assertion Playwright suit toujours le même schéma : <code>expect(élément).assertion()</code>. Ce groupe de méthodes vérifie l'ÉTAT d'un élément — sans regarder son contenu texte.</p>
+  <pre class="code-block"><code><span class="kw">await</span> expect(page.getByText(<span class="st">'Bienvenue'</span>)).toBeVisible();
+<span class="kw">await</span> expect(page.locator(<span class="st">'.bandeau'</span>)).toBeHidden();
+<span class="kw">await</span> expect(page.getByRole(<span class="st">'button'</span>)).toBeEnabled();
+<span class="kw">await</span> expect(page.getByLabel(<span class="st">'CGV'</span>)).toBeChecked();</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage</div>
+    <div class="bd-row"><span class="bd-code">toBeVisible()</span><span class="bd-desc">l'élément existe ET est affiché à l'écran (pas caché par du CSS)</span></div>
+    <div class="bd-row"><span class="bd-code">toBeHidden()</span><span class="bd-desc">l'inverse : l'élément est absent ou masqué</span></div>
+    <div class="bd-row"><span class="bd-code">toBeEnabled()</span><span class="bd-desc">l'élément peut être cliqué/rempli (pas grisé/désactivé)</span></div>
+  </div>
+  <div class="note">Toutes les assertions <code>expect()</code> en Playwright sont <strong>auto-attendantes</strong> : si l'élément met 500ms à apparaître, le test ne casse pas — Playwright réessaie automatiquement jusqu'à un délai maximum (5 secondes par défaut).</div>
+</section>
+
+<!-- 29. toHaveText etc -->
+<section class="slide light-glow">
+  <div class="slide-tag">05.2 — Assertions de texte et de valeur</div>
+  <h2 class="slide-title"><code>toHaveText()</code>, <code>toHaveValue()</code></h2>
+  <p class="slide-intro">Ce groupe vérifie le CONTENU d'un élément : le texte affiché, ou la valeur saisie dans un champ.</p>
+  <pre class="code-block"><code><span class="kw">await</span> expect(page.locator(<span class="st">'h1'</span>)).toHaveText(<span class="st">'Produits'</span>);         <span class="cm">// texte exact</span>
+<span class="kw">await</span> expect(page.locator(<span class="st">'.prix'</span>)).toContainText(<span class="st">'€'</span>);          <span class="cm">// sous-chaîne</span>
+<span class="kw">await</span> expect(page.getByLabel(<span class="st">'Quantité'</span>)).toHaveValue(<span class="st">'2'</span>);         <span class="cm">// champ de formulaire</span></code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage — bien choisir entre les deux premières</div>
+    <div class="bd-row"><span class="bd-code">toHaveText()</span><span class="bd-desc">exige une correspondance EXACTE du texte (attention aux espaces, majuscules)</span></div>
+    <div class="bd-row"><span class="bd-code">toContainText()</span><span class="bd-desc">vérifie juste que le texte CONTIENT cette sous-chaîne — plus tolérant, souvent préférable</span></div>
+    <div class="bd-row"><span class="bd-code">toHaveValue()</span><span class="bd-desc">spécifique aux champs de saisie (input, textarea) — lit ce qui a été TAPÉ, pas ce qui est affiché autour</span></div>
+  </div>
+</section>
+
+<!-- 30. toHaveURL etc -->
+<section class="slide light-glow">
+  <div class="slide-tag">05.3 — Assertions de page et de liste</div>
+  <h2 class="slide-title"><code>toHaveURL()</code>, <code>toHaveCount()</code></h2>
+  <p class="slide-intro">Ces assertions ne portent pas sur un élément précis, mais sur la PAGE entière (son adresse, son titre) ou sur le NOMBRE d'éléments trouvés par un locator.</p>
+  <pre class="code-block"><code><span class="kw">await</span> expect(page).toHaveURL(<span class="pr">/\/panier\//</span>);
+<span class="kw">await</span> expect(page).toHaveTitle(<span class="pr">/Boutique/i</span>);
+<span class="kw">await</span> expect(page.locator(<span class="st">'li.product'</span>)).toHaveCount(<span class="pr">6</span>);</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage</div>
+    <div class="bd-row"><span class="bd-code">expect(page)</span><span class="bd-desc">ici on vérifie la page elle-même, pas un élément — remarquez l'absence de <code>.locator()</code></span></div>
+    <div class="bd-row"><span class="bd-code">/panier/</span><span class="bd-desc">une expression régulière : les barres obliques <code>/ /</code> délimitent un motif de recherche souple</span></div>
+    <div class="bd-row"><span class="bd-code">/Boutique/i</span><span class="bd-desc">le "i" final = insensible à la casse (Boutique = boutique = BOUTIQUE)</span></div>
+  </div>
+  <div class="note"><strong>Bonne pratique :</strong> préférez une expression régulière (<code>/panier/</code>) à une chaîne de caractères exacte pour l'URL — plus tolérant aux paramètres de requête (<code>?id=42</code>) sans changer le sens du test.</div>
+</section>
+
+<!-- 31. expect.poll -->
+<section class="slide light-glow">
+  <div class="slide-tag">05.4 — Cas avancé</div>
+  <h2 class="slide-title"><code>expect.poll()</code> — attendre une valeur asynchrone</h2>
+  <p class="slide-intro">Certaines valeurs (un compteur mis à jour par un appel réseau séparé, par exemple) ne sont pas couvertes par les assertions habituelles. <code>expect.poll()</code> relit une valeur en boucle jusqu'à ce qu'elle corresponde.</p>
+  <pre class="code-block"><code><span class="kw">await</span> expect
+  .poll(<span class="kw">async</span> () => Number(<span class="kw">await</span> badge.textContent()), { timeout: <span class="pr">10000</span> })
+  .toBeGreaterThan(<span class="pr">0</span>);</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage</div>
+    <div class="bd-row"><span class="bd-code">.poll(fn, opts)</span><span class="bd-desc">appelle la fonction fn plusieurs fois de suite, jusqu'à ce que le résultat passe l'assertion suivante</span></div>
+    <div class="bd-row"><span class="bd-code">timeout: 10000</span><span class="bd-desc">délai maximum en millisecondes (10000 = 10 secondes) avant d'abandonner</span></div>
+    <div class="bd-row"><span class="bd-code">.toBeGreaterThan(0)</span><span class="bd-desc">la condition attendue, appliquée à chaque nouvelle valeur lue</span></div>
+  </div>
+  <div class="note">Utile quand un badge de panier est rafraîchi par un appel AJAX séparé de l'action qui l'a déclenché — un cas fréquent sur les vrais sites marchands.</div>
+</section>
+
+<!-- 32. DIVIDER MODULE 6 -->
+<section class="slide slide-divider">
+  <div class="section-tag">Module 06</div>
+  <h1 class="section-title">Attente &amp; stabilité</h1>
+  <p class="section-sub">Pourquoi Playwright a (presque) toujours raison d'attendre</p>
+</section>
+
+<!-- 33. Auto-waiting -->
+<section class="slide light-glow">
+  <div class="slide-tag">06.1 — Le principe le plus important</div>
+  <h2 class="slide-title">L'auto-waiting expliqué</h2>
+  <p class="slide-intro">Une page web ne s'affiche jamais instantanément : images qui chargent, animations, contenu ajouté par JavaScript. Playwright gère ce délai tout seul, sans qu'on ait à l'écrire.</p>
+  <p class="slide-intro" style="margin-bottom:6px;">Avant chaque action (<code>click</code>, <code>fill</code>...), Playwright vérifie que l'élément est :</p>
+  <div class="two-col" style="margin-top:4px;">
+    <div>
+      <ul class="points"><li>Attaché au DOM</li><li>Visible</li><li>Stable (pas en train d'animer)</li></ul>
+    </div>
+    <div>
+      <ul class="points"><li>Non désactivé</li><li>Non recouvert par un autre élément</li><li>Prêt à recevoir l'action</li></ul>
+    </div>
+  </div>
+  <div class="note">Ces vérifications se font <strong>automatiquement, en arrière-plan</strong>, sans code supplémentaire — c'est ce qui rend les tests Playwright naturellement plus stables que ceux d'outils plus anciens (qui exigeaient d'écrire ces attentes à la main).</div>
+</section>
+
+<!-- 34. waitForURL etc -->
+<section class="slide light-glow">
+  <div class="slide-tag">06.2 — Attentes explicites</div>
+  <h2 class="slide-title"><code>waitForURL()</code>, <code>waitForLoadState()</code></h2>
+  <p class="slide-intro">L'auto-waiting couvre les actions sur un élément précis. Pour attendre un événement plus global (une redirection, la fin des requêtes réseau), on utilise ces méthodes explicites.</p>
+  <pre class="code-block"><code><span class="kw">await</span> page.getByRole(<span class="st">'button'</span>, { name: <span class="st">'Connexion'</span> }).click();
+<span class="kw">await</span> page.waitForURL(<span class="pr">'**/catalogue.html'</span>);      <span class="cm">// attend la redirection</span>
+
+<span class="kw">await</span> page.waitForLoadState(<span class="st">'networkidle'</span>); <span class="cm">// attend la fin des requêtes réseau</span></code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage</div>
+    <div class="bd-row"><span class="bd-code">waitForURL('**/x')</span><span class="bd-desc">les deux étoiles <code>**</code> signifient "n'importe quel début d'adresse" — utile pour matcher un domaine dynamique</span></div>
+    <div class="bd-row"><span class="bd-code">waitForLoadState</span><span class="bd-desc">'networkidle' = plus aucune requête réseau active depuis 500ms (page "au repos")</span></div>
+  </div>
+  <div class="note">À utiliser quand une action déclenche une navigation ou un chargement dont la fin n'est pas capturée par une simple assertion sur un élément.</div>
+</section>
+
+<!-- 35. Le piège waitForTimeout -->
+<section class="slide light-glow">
+  <div class="slide-tag">06.3 — L'anti-pattern à connaître</div>
+  <h2 class="slide-title">Le piège de <code>waitForTimeout()</code></h2>
+  <p class="slide-intro">Il existe une méthode qui met le test en pause pendant un temps fixe — mais elle est presque toujours une mauvaise idée. Comparons deux façons d'obtenir le même résultat.</p>
+  <div class="two-col">
+    <div>
+      <div class="mini-label" style="color:var(--danger);">✗ À éviter</div>
+      <pre class="code-block"><code><span class="kw">await</span> page.click(<span class="st">'button'</span>);
+<span class="kw">await</span> page.waitForTimeout(<span class="pr">3000</span>);
+<span class="kw">await</span> expect(banner).toBeVisible();</code></pre>
+    </div>
+    <div>
+      <div class="mini-label" style="color:var(--ok);">✓ À privilégier</div>
+      <pre class="code-block"><code><span class="kw">await</span> page.click(<span class="st">'button'</span>);
+<span class="kw">await</span> expect(banner)
+  .toBeVisible({ timeout: <span class="pr">10000</span> });</code></pre>
+    </div>
+  </div>
+  <div class="note"><strong>Pourquoi :</strong> une pause fixe (<code>waitForTimeout</code>) est soit trop courte (le test reste instable si le site répond parfois plus lentement), soit trop longue (le test devient lent inutilement à chaque exécution). Une assertion avec attente intégrée s'adapte, elle, au temps réel de réponse — elle continue dès que la condition est vraie, sans attendre inutilement.</div>
+</section>
+
+<!-- 36. DIVIDER MODULE 7 -->
+<section class="slide slide-divider">
+  <div class="section-tag">Module 07</div>
+  <h1 class="section-title">Lancer &amp; déboguer ses tests</h1>
+  <p class="section-sub">Les commandes du quotidien</p>
+</section>
+
+<!-- 37. Commandes CLI -->
+<section class="slide light-glow">
+  <div class="slide-tag">07.1 — Le strict nécessaire</div>
+  <h2 class="slide-title">Commandes CLI essentielles</h2>
+  <p class="slide-intro"><code>npx</code> est l'outil qui permet d'exécuter un programme installé dans le projet (ici, Playwright) sans avoir à l'installer globalement sur la machine.</p>
+  <pre class="code-block"><code>npx playwright test                        <span class="cm"># lance toute la suite de tests</span>
+npx playwright test mon-fichier.spec.ts    <span class="cm"># un seul fichier</span>
+npx playwright test -g <span class="st">"connexion"</span>        <span class="cm"># filtre par nom de test (-g = grep)</span>
+npx playwright test --headed               <span class="cm"># navigateur VISIBLE pendant l'exécution</span>
+npx playwright test --project=chromium     <span class="cm"># un seul navigateur, plus rapide</span>
+npx playwright test --debug                <span class="cm"># pas à pas, avec inspecteur</span></code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage</div>
+    <div class="bd-row"><span class="bd-code">-g "texte"</span><span class="bd-desc">ne lance que les tests dont le NOM contient ce texte (pratique pour tester un seul cas)</span></div>
+    <div class="bd-row"><span class="bd-code">--headed</span><span class="bd-desc">par défaut Playwright tourne "headless" (sans fenêtre visible) ; ce drapeau affiche le navigateur</span></div>
+  </div>
+</section>
+
+<!-- 38. Mode UI + Trace Viewer -->
+<section class="slide light-glow">
+  <div class="slide-tag">07.2 — Les meilleurs amis du débutant</div>
+  <h2 class="slide-title">Mode UI &amp; Trace Viewer</h2>
+  <p class="slide-intro">Deux outils visuels indispensables pour comprendre ce que fait réellement un test, sans deviner à partir du seul texte d'erreur.</p>
+  <pre class="code-block"><code>npx playwright test --ui              <span class="cm"># mode interactif</span>
+npx playwright show-report            <span class="cm"># rapport HTML après exécution</span>
+npx playwright show-trace trace.zip   <span class="cm"># rejoue un test étape par étape</span></code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Ce que fait chaque outil</div>
+    <div class="bd-row"><span class="bd-code">--ui</span><span class="bd-desc">liste tous les tests, permet d'en lancer un seul en direct, et d'inspecter le DOM à chaque étape</span></div>
+    <div class="bd-row"><span class="bd-code">show-report</span><span class="bd-desc">ouvre un tableau récapitulatif : durée, statut, capture d'écran de chaque test</span></div>
+    <div class="bd-row"><span class="bd-code">show-trace</span><span class="bd-desc">rejoue littéralement l'enregistrement d'un test échoué, action par action, avec le DOM de chaque instant</span></div>
+  </div>
+  <div class="note"><strong>Réflexe à prendre :</strong> face à un test qui échoue, ouvrez le Trace Viewer AVANT de modifier le code — 90% du temps, la cause est visible immédiatement.</div>
+</section>
+
+<!-- 39. Codegen -->
+<section class="slide light-glow">
+  <div class="slide-tag">07.3 — Générer du code automatiquement</div>
+  <h2 class="slide-title"><code>playwright codegen</code></h2>
+  <p class="slide-intro">Plutôt que d'écrire un sélecteur à la main, on peut demander à Playwright de l'observer pendant qu'on clique soi-même dans le navigateur.</p>
+  <pre class="code-block"><code>npx playwright codegen https://www.saucedemo.com</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Comment ça marche</div>
+    <div class="bd-row"><span class="bd-code">codegen &lt;url&gt;</span><span class="bd-desc">ouvre DEUX fenêtres : le navigateur cible, et une fenêtre "Playwright Inspector" qui affiche le code au fur et à mesure</span></div>
+    <div class="bd-row"><span class="bd-code">chaque clic</span><span class="bd-desc">génère automatiquement la ligne <code>page.getByRole(...).click()</code> correspondante</span></div>
+  </div>
+  <div class="note">Excellent pour découvrir les sélecteurs d'un site inconnu — à utiliser comme point de départ, puis à nettoyer (préférer <code>getByRole</code> à ce que codegen propose parfois de plus fragile).</div>
+</section>
+
+<!-- 40. playwright.config.ts -->
+<section class="slide light-glow">
+  <div class="slide-tag">07.4 — La configuration du projet</div>
+  <h2 class="slide-title"><code>playwright.config.ts</code> — l'essentiel</h2>
+  <p class="slide-intro">Ce fichier centralise les réglages appliqués à TOUS les tests du projet, pour éviter de les répéter dans chaque fichier.</p>
+  <pre class="code-block"><code><span class="kw">export default</span> defineConfig({
+  testDir: <span class="st">'./tests'</span>,
+  use: {
+    baseURL: <span class="st">'https://www.saucedemo.com'</span>,
+    trace: <span class="st">'on-first-retry'</span>,
+    screenshot: <span class="st">'only-on-failure'</span>,
+  },
+  projects: [
+    { name: <span class="st">'chromium'</span>, use: { ...devices[<span class="st">'Desktop Chrome'</span>] } },
+  ],
+});</code></pre>
+  <div class="breakdown">
+    <div class="bd-title">Décorticage des options clés</div>
+    <div class="bd-row"><span class="bd-code">testDir</span><span class="bd-desc">le dossier où Playwright va chercher les fichiers *.spec.ts</span></div>
+    <div class="bd-row"><span class="bd-code">baseURL</span><span class="bd-desc">permet d'écrire page.goto('/') au lieu de l'adresse complète (voir slide 02.3)</span></div>
+    <div class="bd-row"><span class="bd-code">screenshot</span><span class="bd-desc">'only-on-failure' = une capture d'écran est prise automatiquement, uniquement si le test échoue</span></div>
+  </div>
+</section>
+
+<!-- 41. DIVIDER EXERCICES -->
+<section class="slide slide-divider">
+  <div class="section-tag">Passons à la pratique</div>
+  <h1 class="section-title">Exercices sur un site exemple</h1>
+  <p class="section-sub">saucedemo.com — site officiel de démo, conçu pour l'automatisation</p>
+</section>
+
+<!-- 42. Exercice 1 -->
+<section class="slide slide-exercice">
+  <div class="exo-tag">⚙️ Exercice pratique 1</div>
+  <h2 class="exo-title">Tester une connexion réussie</h2>
+  <div class="exo-durée">15 min · Individuel · Site : https://www.saucedemo.com</div>
+  <ol class="exo-steps">
+    <li>Créez un fichier <strong>connexion.spec.ts</strong> dans <code>tests/</code></li>
+    <li>Naviguez vers <code>https://www.saucedemo.com</code></li>
+    <li>Remplissez les champs avec <strong>standard_user</strong> / <strong>secret_sauce</strong></li>
+    <li>Cliquez sur le bouton de connexion</li>
+    <li>Vérifiez que l'URL contient <strong>inventory.html</strong></li>
+  </ol>
+  <pre class="code-block"><code>test(<span class="st">'connexion réussie'</span>, <span class="kw">async</span> ({ page }) => {
+  <span class="kw">await</span> page.goto(<span class="st">'https://www.saucedemo.com'</span>);
+  <span class="kw">await</span> page.getByTestId(<span class="st">'username'</span>).fill(<span class="st">'standard_user'</span>);
+  <span class="kw">await</span> page.getByTestId(<span class="st">'password'</span>).fill(<span class="st">'secret_sauce'</span>);
+  <span class="kw">await</span> page.getByTestId(<span class="st">'login-button'</span>).click();
+
+  <span class="kw">await</span> expect(page).toHaveURL(<span class="pr">/inventory\.html/</span>);
+});</code></pre>
+</section>
+
+<!-- 43. Exercice 2 -->
+<section class="slide slide-exercice">
+  <div class="exo-tag">⚙️ Exercice pratique 2</div>
+  <h2 class="exo-title">Ajouter un produit au panier</h2>
+  <div class="exo-durée">15 min · Individuel · À partir du test précédent</div>
+  <ol class="exo-steps">
+    <li>Reprenez la connexion de l'exercice 1</li>
+    <li>Cliquez sur <strong>"Add to cart"</strong> pour le produit "Sauce Labs Backpack"</li>
+    <li>Vérifiez que le badge du panier affiche <strong>"1"</strong></li>
+    <li>Vérifiez que le bouton devient <strong>"Remove"</strong></li>
+  </ol>
+  <pre class="code-block"><code><span class="kw">await</span> page.getByTestId(<span class="st">'add-to-cart-sauce-labs-backpack'</span>).click();
+
+<span class="kw">await</span> expect(page.getByTestId(<span class="st">'shopping-cart-badge'</span>)).toHaveText(<span class="st">'1'</span>);
+<span class="kw">await</span> expect(page.getByTestId(<span class="st">'remove-sauce-labs-backpack'</span>)).toBeVisible();</code></pre>
+  <div class="exo-livrable"><strong>Livrable attendu :</strong> un test qui passe au vert avec <code>npx playwright test --headed --project=chromium</code></div>
+</section>
+
+<!-- 44. Exercice 3 -->
+<section class="slide slide-exercice">
+  <div class="exo-tag">⚙️ Exercice pratique 3 — bonus</div>
+  <h2 class="exo-title">Un cas négatif : mauvais mot de passe</h2>
+  <div class="exo-durée">10 min · Individuel · Tester l'échec, pas seulement le succès</div>
+  <ol class="exo-steps">
+    <li>Remplissez le formulaire avec un identifiant valide et un <strong>mauvais mot de passe</strong></li>
+    <li>Cliquez sur connexion</li>
+    <li>Vérifiez qu'un <strong>message d'erreur</strong> s'affiche</li>
+    <li>Vérifiez qu'on <strong>reste</strong> sur la page de connexion (pas de redirection)</li>
+  </ol>
+  <pre class="code-block"><code><span class="kw">await</span> expect(page.locator(<span class="st">'[data-test="error"]'</span>)).toBeVisible();
+<span class="kw">await</span> expect(page).not.toHaveURL(<span class="pr">/inventory\.html/</span>);</code></pre>
+  <div class="note"><strong>Pourquoi cet exercice compte :</strong> un testeur qui ne vérifie que les cas de succès laisse passer la moitié des bugs. Tester l'échec attendu est aussi important que tester la réussite.</div>
+</section>
+
+<!-- 45. Bonnes pratiques -->
+<section class="slide light-glow">
+  <div class="slide-tag">Avant de conclure</div>
+  <h2 class="slide-title">Bonnes pratiques à retenir</h2>
+  <ul class="points">
+    <li><strong>Préférez getByRole/getByLabel/getByTestId</strong> aux sélecteurs CSS fragiles</li>
+    <li><strong>Ne jamais</strong> utiliser <code>waitForTimeout()</code> comme solution par défaut</li>
+    <li><strong>Un test = un comportement</strong> vérifié, avec un nom explicite</li>
+    <li>Testez aussi les <strong>cas négatifs</strong> (champs vides, mauvaises données)</li>
+    <li>Utilisez le <strong>Trace Viewer</strong> avant de chercher ailleurs quand un test échoue</li>
+    <li>Sur un <strong>vrai site en production</strong> (pas un site de démo) : limitez la fréquence des exécutions</li>
+  </ul>
+</section>
+
+<!-- 46. RECAP -->
+<section class="slide light-glow">
+  <div class="slide-tag">Synthèse</div>
+  <h2 class="slide-title">Ce qu'il faut retenir</h2>
+  <div class="recap-grid">
+    <div class="recap-card"><b>Syntaxe</b>async/await partout : on écrit une action, on attend qu'elle finisse</div>
+    <div class="recap-card"><b>Structure</b>test() + expect() : naviguer, interagir, vérifier</div>
+    <div class="recap-card"><b>Sélecteurs</b>getByRole en premier réflexe, CSS en dernier recours</div>
+    <div class="recap-card"><b>Actions</b>click, fill, check, selectOption — attente automatique incluse</div>
+    <div class="recap-card"><b>Assertions</b>toBeVisible, toHaveText, toHaveURL, toHaveCount</div>
+    <div class="recap-card"><b>Débogage</b>--ui et --debug avant de chercher ailleurs</div>
+  </div>
+</section>
+
+<!-- 47. CTA FINAL -->
+<section class="slide slide-cta">
+  <h2>Merci.</h2>
+  <p>Des questions ? Contactez-moi directement.</p>
+  <div class="cta-links">
+    <a href="mailto:hello@dhcompany.pro">hello@dhcompany.pro</a>
+    <a href="https://dhcompany.pro">dhcompany.pro</a>
+    <a href="https://ia4africa.org">ia4africa.org</a>
+  </div>
+  <div class="cta-socials">@DigitalMaker237 sur LinkedIn &amp; X</div>
+</section>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const progressBar = document.getElementById('progress');
+  const counter = document.getElementById('counter');
+  counter.textContent = '1 / ' + slides.length;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, slides.length - 1));
+    slides[current].classList.add('active');
+    progressBar.style.width = ((current + 1) / slides.length * 100) + '%';
+    counter.textContent = (current + 1) + ' / ' + slides.length;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  });
+
+  document.getElementById('next-btn').addEventListener('click', () => goTo(current + 1));
+  document.getElementById('prev-btn').addEventListener('click', () => goTo(current - 1));
+
+  let xStart = null;
+  document.addEventListener('touchstart', e => { xStart = e.changedTouches[0].screenX; });
+  document.addEventListener('touchend', e => {
+    if (xStart === null) return;
+    const diff = xStart - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) diff > 0 ? goTo(current + 1) : goTo(current - 1);
+    xStart = null;
+  });
+
+  goTo(0);
+</script>
+</body>
+</html>
